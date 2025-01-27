@@ -17,9 +17,9 @@ enum Role {
 }
 
 enum EmployeeWorkShift {
-  MORNING
-  NOON
-  NIGHT
+  MORNING // 06.00-14.00
+  NOON // 14.00-20.00
+  NIGHT // 20.00-06.00
 }
 
 enum EmploymentStatus {
@@ -34,17 +34,10 @@ enum WorkerStation {
   PACKING
 }
 
-enum PickupStatus {
-  WAITING_FOR_DRIVER
+enum OrderStatus {
+  WAITING_FOR_PICKUP_DRIVER
   ON_THE_WAY_TO_CUSTOMER
   ON_THE_WAY_TO_OUTLET
-  RECEIVED_BY_OUTLET
-}
-
-enum OrderStatus {
-  // WAITING_FOR_PICKUP_DRIVER
-  // ON_THE_WAY_TO_CUSTOMER
-  // ON_THE_WAY_TO_OUTLET ga tau kira2 butuh atau ga
   ARRIVED_AT_OUTLET
   READY_FOR_WASHING
   BEING_WASHED
@@ -62,18 +55,14 @@ enum OrderStatus {
   CANCELLED_BY_OUTLET
 }
 
-enum DeliveryStatus {
-  NOT_READY_TO_DELIVER
-  WAITING_FOR_DRIVER
-  ON_THE_WAY_TO_OUTLET
-  ON_THE_WAY_TO_CUSTOMER
-  RECEIVED_BY_CUSTOMER
+enum TransportType {
+  PICKUP
+  DELIVERY
 }
 
 enum PaymentStatus {
   PENDING
   CANCELLED
-  DENIED
   EXPIRED
   SUCCEEDED
 }
@@ -99,8 +88,8 @@ model User {
   token          String?
   tokenExpiresIn DateTime?
 
-  employee     Employee? // penanda employee atau bukan
-  Address      Address[] // khusus customer
+  Employee     Employee? // penanda employee atau bukan
+  Address      Address[] // daftar alamat (khusus customer)
   Notification Notification[] // penampung notifikasi untuk semua role (customer dan employee)
 
   createdAt DateTime  @default(now())
@@ -113,6 +102,7 @@ model Employee {
   id        Int               @id @default(autoincrement())
   workShift EmployeeWorkShift
   station   WorkerStation?
+  isWorking Boolean           @default(false) // penanda sekarang lagi kerja atau tidak
 
   userId Int  @unique
   user   User @relation(fields: [userId], references: [id])
@@ -120,9 +110,8 @@ model Employee {
   Employment Employment[] // penampung data masa penugasan employee
 
   // daftar job employee
-  PickupJob   PickupJob[]
-  DeliveryJob DeliveryJob[]
-  LaundryJob  LaundryJob[]
+  LaundryJob   LaundryJob[]
+  TransportJob TransportJob[]
 
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
@@ -134,13 +123,16 @@ model Employment {
   // perinci status kepegawaian employee, dia kerja di outlet mana, sejak kapan, sampai kapan. kenapa ada tabel ini karena mostly bakal kepake banget buat attendance
   // secara teknis bertindak sebagai jembatan relasi many-to-many employee dan outlet
   // (satu employee bisa terrelasi ke banyak outlet (contohnya history si employee pernah kerja di outlet mana aja tapi dalam satu waktu cuma bisa kerja di satu outlet) satu outlet bisa terrelasi ke banyak employee)
-  id         Int      @id @default(autoincrement()) // ga dibikin composite key karena ada kemungkinan employee udah berenti kerja di satu outlet terus mulai kerja lagi di outlet yang sama
+  id               Int              @id @default(autoincrement()) // ga dibikin composite key karena ada kemungkinan employee udah berenti kerja di satu outlet terus mulai kerja lagi di outlet yang sama
+  employmentStatus EmploymentStatus @default(EMPLOYED)
+
   employeeId Int
   employee   Employee @relation(fields: [employeeId], references: [id])
-  outletId   Int
-  outlet     Outlet   @relation(fields: [outletId], references: [id])
 
-  employmentStatus EmploymentStatus @default(EMPLOYED)
+  outletId Int
+  outlet   Outlet @relation(fields: [outletId], references: [id])
+
+  EmployeeAttendance EmployeeAttendance[] // daftar kehadiran employee ketika khusus di masa employment ini saja
 
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
@@ -160,15 +152,12 @@ model Address {
   latitude    String
   longitude   String
 
-  // nullable foreign key untuk relasi antara user (many-to-one) atau outlet (one-to-one). hanya bisa salah satu (user atau outlet)
-  userId Int?
-  user   User? @relation(fields: [userId], references: [id])
+  // nullable foreign key untuk relasi antara user (many-to-one) atau outlet (one-t0-one). hanya bisa salah satu (customer atau outlet)
+  customerId Int?
+  customer   User?   @relation(fields: [customerId], references: [id])
+  Outlet     Outlet?
 
-  Outlet Outlet?
-
-  // daftar transport job yang pernah di-assign ke alamat ini
-  PickupJob   PickupJob[]
-  DeliveryJob DeliveryJob[]
+  Order Order[]
 
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
@@ -180,35 +169,12 @@ model Outlet {
   id         Int    @id @default(autoincrement())
   outletName String
 
-  addressId Int     @unique
-  address   Address @relation(fields: [addressId], references: [id])
+  outletAddressId Int     @unique
+  outletAddress   Address @relation(fields: [outletAddressId], references: [id])
 
   Employment Employment[] // daftar employee yang sedang dan pernah kerja di outlet
-  PickupJob  PickupJob[] // secara teknis, daftar order yang sedang dan pernah dihandle sama outlet
 
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  isDeleted Boolean   @default(false)
-  deletedAt DateTime?
-}
-
-model PickupJob {
-  // masih bingung apakah ini best practice apa ngga (insiasi order dari record pickupjob lalu dilanjut order terus delivery. alternatifnya ditampung semuanya (pickup-order-delivery) di satu tabel order gitu)
-  id             Int          @id @default(autoincrement())
-  pickupStatus   PickupStatus @default(WAITING_FOR_DRIVER)
-  pickupDistance Int // bisa jadi jarak garis lurus atau jarak tempuh sepeda motor (ini bikin lebih jadi ribet). ngitungnya mestinya dihandle sama API geocoding
-  pickupPrice    Int // pickupDistance dikali harga per satuan waktu jarak tempuh. variabel pengalinya belum tau best practicenya apakah perlu disimpan agar dinamis atau cukup nanti ditulis di controller aja
-
-  costumerAddressId Int
-  costumerAddress   Address @relation(fields: [costumerAddressId], references: [id]) // data alamat pickup customer data siapa customer yang order juga diambil dari sini. relationship many-to-one
-
-  outletId Int
-  outlet   Outlet @relation(fields: [outletId], references: [id]) // data outlet yang diassign buat ngerjain laundry. data alamat outlet diambil dari sini. relasi many-to-one
-
-  driverId Int?
-  driver   Employee? @relation(fields: [driverId], references: [id]) // data driver yang akan handle job. nullable karena pas data ke-create, ada jeda buat cari driver dulu. relasi many-to-one
-
-  Order Order? // *???one-to-one atau one-to-many (sekarang one-to-one)
+  Order Order[]
 
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
@@ -217,20 +183,24 @@ model PickupJob {
 }
 
 model Order {
-  // masih bingung apakah ini best practice apa ngga (insiasi order dari record pickupjob lalu dilanjut order terus delivery. alternatifnya ditampung semuanya (pickup-order-delivery) di satu tabel order gitu)
-  id                Int         @id @default(autoincrement())
-  orderStatus       OrderStatus @default(ARRIVED_AT_OUTLET)
-  weight            Int
-  isPaid            Boolean     @default(false) // indikator untuk sudah boleh lanjut delivery atau ga
-  totalLaundryPrice Int // sum harga orderItem di order ini (qty dikali laundryPrice dari loundryItemnya punya orderItem) ditambah weight dikali harga per satuan berat (belum termasuk ongkir)
+  id          Int         @id @default(autoincrement())
+  orderStatus OrderStatus @default(WAITING_FOR_DELIVERY_DRIVER)
 
-  pickupId Int       @unique
-  pickup   PickupJob @relation(fields: [pickupId], references: [id]) // *???one-to-one atau one-to-many (sekarang one-to-one)
+  customerAddressId Int
+  customerAddress   Address @relation(fields: [customerAddressId], references: [id]) // data alamat customer yang request order. data detail customer diambil dari sini
 
-  OrderItem   OrderItem[] // daftar pakaian dan kuantitasnya
-  LaundryJob  LaundryJob[] // isinya bakal ada 3 job: wash, iron, pack
-  DeliveryJob DeliveryJob? // *???one-to-one atau one-to-many (sekarang one-to-one)
-  Payment     Payment? // *???one-to-one atau one-to-many (sekarang one-to-one) kalo one-to-many bisa handle banyak payment antisipasi kalau payment si customernya gagal
+  outletId Int
+  outlet   Outlet @relation(fields: [outletId], references: [id]) // data outlet yang diassign buat ngerjain laundry. data alamat outlet diambil dari sini
+
+  laundryWeight Int?
+  laundryPrice  Int // weight dikali harga per satuan berat (belum termasuk ongkir)
+  OrderItem     OrderItem[]
+
+  LaundryJob   LaundryJob[] // isinya bakal ada 3 job: wash, iron, pack
+  TransportJob TransportJob[] // isinya bakal ada 2 job: pickup dan delivery
+
+  isPaid  Boolean   @default(false) // indikator untuk sudah boleh lanjut delivery atau ga
+  Payment Payment[] // bisa handle banyak payment antisipasi kalau payment si customernya gagal
 
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
@@ -239,28 +209,12 @@ model Order {
 }
 
 model OrderItem {
-  id  Int @id @default(autoincrement())
-  qty Int
+  id            Int    @id @default(autoincrement())
+  orderItemName String
+  qty           Int
 
   orderId Int
   order   Order @relation(fields: [orderId], references: [id])
-
-  laundryItemId Int
-  laundryItem   LaundryItem @relation(fields: [laundryItemId], references: [id])
-
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  isDeleted Boolean   @default(false)
-  deletedAt DateTime?
-}
-
-model LaundryItem {
-  // daftar jenis pakaian yang eligible buat dicuci dengan jasa app ini. superadmin punya hak buat create, edit atau delete
-  id           Int    @id @default(autoincrement())
-  itemName     String
-  laundryPrice Int // ini masih belum tau apakah perlu atau tidak. kalau ada ini memberi kebebasan si superadmin buat narifin harga tambahan untuk jenis cucian tertentu. kekurangannya harganya jadi sama buat semua outlet
-
-  OrderItem OrderItem[]
 
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
@@ -288,18 +242,14 @@ model LaundryJob {
   deletedAt DateTime?
 }
 
-model DeliveryJob {
-  // masih bingung apakah ini best practice apa ngga (insiasi order dari record pickupjob lalu dilanjut order terus delivery. alternatifnya ditampung semuanya (pickup-order-delivery) di satu tabel order gitu)
-  id               Int            @id @default(autoincrement())
-  deliveryStatus   DeliveryStatus @default(NOT_READY_TO_DELIVER)
-  deliveryDistance Int // bisa jadi jarak garis lurus atau jarak tempuh sepeda motor (ini bikin lebih jadi ribet). ngitungnya mestinya dihandle sama API geocoding
-  deliveryPrice    Int // deliveryDistance dikali harga per satuan waktu jarak tempuh. variabel pengalinya belum tau best practicenya apakah perlu disimpan agar dinamis atau cukup nanti ditulis di controller aja
+model TransportJob {
+  id            Int           @id @default(autoincrement())
+  transportType TransportType // pickup atau delivery
+  isCompleted   Boolean       @default(false)
+  distance      Int
 
-  costumerAddressId Int
-  costumerAddress   Address @relation(fields: [costumerAddressId], references: [id]) // kolom ini diadain lagi karena urang (fauzi) kepikiran ngasih fitur buat si customer bisa ngatur alamat pickup sama alamat deliverynya beda (tapi dua-duanya alamatnya mesti punya customer itu juga). ga wajib. bisa diilangin. kalo diilangin berarti alamat pickup sama delivery sama, terus nanti alamat deliverynya diambil dari data pickupJob. relasi many-to-one
-
-  orderId Int   @unique
-  order   Order @relation(fields: [orderId], references: [id]) // *???one-to-one atau one-to-many (sekarang one-to-one)
+  orderId Int
+  order   Order @relation(fields: [orderId], references: [id])
 
   driverId Int?
   driver   Employee? @relation(fields: [driverId], references: [id])
@@ -328,14 +278,14 @@ model Notification {
 model Payment {
   // kurleb sama seperti payment minpro, pake midtrans, ini ke-create bersamaan ketika ordernya ke-create
   id              Int           @id @default(autoincrement())
-  totalPrice      Int // ini sum totalLaundryPrice, pickupPrice dan deliveryPrice
+  totalPrice      Int // ini sum laundryPrice ditambah ongkir (flat)
   paymentStatus   PaymentStatus @default(PENDING)
   paymentMethod   String?
   snapToken       String?
   snapRedirectURL String?
 
   orderId Int   @unique
-  order   Order @relation(fields: [orderId], references: [id]) // *???one-to-one atau one-to-many (sekarang one-to-one)
+  order   Order @relation(fields: [orderId], references: [id])
 
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
@@ -347,6 +297,8 @@ model EmployeeAttendance {
   // data absensi harian
   id             Int            @id @default(autoincrement())
   attendanceType AttendanceType
+  employmentId   Int
+  employment     Employment     @relation(fields: [employmentId], references: [id])
 
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
