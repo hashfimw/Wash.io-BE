@@ -99,40 +99,23 @@ model User {
 }
 
 model Employee {
-  id        Int               @id @default(autoincrement())
-  workShift EmployeeWorkShift
-  station   WorkerStation?
-  isWorking Boolean           @default(false) // penanda sekarang lagi kerja atau tidak
+  id               Int               @id @default(autoincrement())
+  workShift        EmployeeWorkShift
+  station          WorkerStation?
+  isWorking        Boolean           @default(false) // penanda sekarang lagi kerja atau tidak
+  employmentStatus EmploymentStatus  @default(EMPLOYED)
 
   userId Int  @unique
   user   User @relation(fields: [userId], references: [id])
-
-  Employment Employment[] // penampung data masa penugasan employee
-
-  // daftar job employee
-  LaundryJob   LaundryJob[]
-  TransportJob TransportJob[]
-
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  isDeleted Boolean   @default(false)
-  deletedAt DateTime?
-}
-
-model Employment {
-  // perinci status kepegawaian employee, dia kerja di outlet mana, sejak kapan, sampai kapan. kenapa ada tabel ini karena mostly bakal kepake banget buat attendance
-  // secara teknis bertindak sebagai jembatan relasi many-to-many employee dan outlet
-  // (satu employee bisa terrelasi ke banyak outlet (contohnya history si employee pernah kerja di outlet mana aja tapi dalam satu waktu cuma bisa kerja di satu outlet) satu outlet bisa terrelasi ke banyak employee)
-  id               Int              @id @default(autoincrement()) // ga dibikin composite key karena ada kemungkinan employee udah berenti kerja di satu outlet terus mulai kerja lagi di outlet yang sama
-  employmentStatus EmploymentStatus @default(EMPLOYED)
-
-  employeeId Int
-  employee   Employee @relation(fields: [employeeId], references: [id])
 
   outletId Int
   outlet   Outlet @relation(fields: [outletId], references: [id])
 
   EmployeeAttendance EmployeeAttendance[] // daftar kehadiran employee ketika khusus di masa employment ini saja
+
+  // daftar job employee
+  LaundryJob   LaundryJob[]
+  TransportJob TransportJob[]
 
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
@@ -172,9 +155,8 @@ model Outlet {
   outletAddressId Int     @unique
   outletAddress   Address @relation(fields: [outletAddressId], references: [id])
 
-  Employment Employment[] // daftar employee yang sedang dan pernah kerja di outlet
-
-  Order Order[]
+  Order    Order[]
+  Employee Employee[]
 
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
@@ -297,11 +279,11 @@ model EmployeeAttendance {
   // data absensi harian
   id             Int            @id @default(autoincrement())
   attendanceType AttendanceType
-  employmentId   Int
-  employment     Employment     @relation(fields: [employmentId], references: [id])
+  employee       Employee       @relation(fields: [employeeId], references: [id])
 
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  isDeleted Boolean   @default(false)
-  deletedAt DateTime?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  isDeleted  Boolean   @default(false)
+  deletedAt  DateTime?
+  employeeId Int
 }
