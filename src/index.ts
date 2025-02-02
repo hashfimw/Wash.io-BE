@@ -2,6 +2,8 @@ import express, { Application, Request, Response } from "express";
 import cors from "cors";
 import multer from "multer";
 import dotenv from "dotenv";
+import { SuperAdmOutletRouter } from "./routers/superAdmOutlet.routes";
+import { SuperAdmEmployeeRouter } from "./routers/superAdmEmployee.routes";
 
 dotenv.config();
 
@@ -22,6 +24,14 @@ export const upload = multer({ storage: multer.memoryStorage() });
 app.get("/api", (req: Request, res: Response) => {
   res.status(200).send("Welcome to my API");
 });
+
+// Initialize routers
+const superAdmEmployee = new SuperAdmEmployeeRouter();
+const superAdmOutlets = new SuperAdmOutletRouter();
+
+// Routes
+app.use("/api/adm-employee", superAdmEmployee.getRouter());
+app.use("/api/adm-outlets", superAdmOutlets.getRouter());
 
 app.listen(PORT, () => {
   console.log(`server is running on => http://localhost:${PORT}/api`);
