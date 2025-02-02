@@ -8,6 +8,180 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
+model User {
+  id             Int            @id @default(autoincrement())
+  fullName       String?
+  email          String         @unique
+  password       String?
+  avatar         String         @default("https://res.cloudinary.com/dowc5iu9c/image/upload/v1735754490/avatar/default-avatar.png")
+  isVerified     Boolean        @default(false)
+  role           Role           @default(CUSTOMER)
+  token          String?
+  tokenExpiresIn DateTime?
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  isDeleted      Boolean        @default(false)
+  deletedAt      DateTime?
+  Address        Address[]
+  Employee       Employee?
+  Notification   Notification[]
+}
+
+model Employee {
+  id                 Int                  @id @default(autoincrement())
+  workShift          EmployeeWorkShift
+  userId             Int                  @unique
+  createdAt          DateTime             @default(now())
+  updatedAt          DateTime             @updatedAt
+  isDeleted          Boolean              @default(false)
+  deletedAt          DateTime?
+  station            WorkerStation?
+  isWorking          Boolean              @default(false)
+  employmentStatus   EmploymentStatus     @default(EMPLOYED)
+  outletId           Int
+  outlet             Outlet               @relation(fields: [outletId], references: [id])
+  user               User                 @relation(fields: [userId], references: [id])
+  EmployeeAttendance EmployeeAttendance[]
+  LaundryJob         LaundryJob[]
+  TransportJob       TransportJob[]
+}
+
+model Address {
+  id          Int       @id @default(autoincrement())
+  isPrimary   Boolean   @default(false)
+  addressLine String
+  province    String
+  regency     String
+  district    String
+  village     String
+  latitude    String
+  longitude   String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  isDeleted   Boolean   @default(false)
+  deletedAt   DateTime?
+  customerId  Int?
+  customer    User?     @relation(fields: [customerId], references: [id])
+  Order       Order[]
+  Outlet      Outlet?
+}
+
+model Outlet {
+  id              Int        @id @default(autoincrement())
+  outletName      String
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
+  isDeleted       Boolean    @default(false)
+  deletedAt       DateTime?
+  outletAddressId Int        @unique
+  Employee        Employee[]
+  Order           Order[]
+  outletAddress   Address    @relation(fields: [outletAddressId], references: [id])
+}
+
+model Order {
+  id                Int            @id @default(autoincrement())
+  orderStatus       OrderStatus    @default(WAITING_FOR_DELIVERY_DRIVER)
+  isPaid            Boolean        @default(false)
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+  isDeleted         Boolean        @default(false)
+  deletedAt         DateTime?
+  customerAddressId Int
+  laundryPrice      Int
+  laundryWeight     Int?
+  outletId          Int
+  LaundryJob        LaundryJob[]
+  customerAddress   Address        @relation(fields: [customerAddressId], references: [id])
+  outlet            Outlet         @relation(fields: [outletId], references: [id])
+  OrderItem         OrderItem[]
+  Payment           Payment?
+  TransportJob      TransportJob[]
+}
+
+model OrderItem {
+  id            Int       @id @default(autoincrement())
+  qty           Int
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  isDeleted     Boolean   @default(false)
+  deletedAt     DateTime?
+  orderId       Int
+  orderItemName String
+  order         Order     @relation(fields: [orderId], references: [id])
+}
+
+model LaundryJob {
+  id                Int           @id @default(autoincrement())
+  isCompleted       Boolean       @default(false)
+  byPassNote        String?
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+  isDeleted         Boolean       @default(false)
+  deletedAt         DateTime?
+  orderId           Int
+  workerId          Int
+  byPassStatus      ByPassStatus?
+  isByPassRequested Boolean       @default(false)
+  station           WorkerStation
+  order             Order         @relation(fields: [orderId], references: [id])
+  worker            Employee      @relation(fields: [workerId], references: [id])
+}
+
+model TransportJob {
+  id            Int           @id @default(autoincrement())
+  transportType TransportType
+  isCompleted   Boolean       @default(false)
+  distance      Int
+  orderId       Int
+  driverId      Int?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  isDeleted     Boolean       @default(false)
+  deletedAt     DateTime?
+  driver        Employee?     @relation(fields: [driverId], references: [id])
+  order         Order         @relation(fields: [orderId], references: [id])
+}
+
+model Notification {
+  id          Int       @id @default(autoincrement())
+  isRead      Boolean   @default(false)
+  title       String
+  description String
+  userId      Int
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  isDeleted   Boolean   @default(false)
+  deletedAt   DateTime?
+  user        User      @relation(fields: [userId], references: [id])
+}
+
+model Payment {
+  id              Int           @id @default(autoincrement())
+  totalPrice      Int
+  paymentStatus   PaymentStatus @default(PENDING)
+  paymentMethod   String?
+  snapToken       String?
+  snapRedirectURL String?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  isDeleted       Boolean       @default(false)
+  deletedAt       DateTime?
+  orderId         Int           @unique
+  order           Order         @relation(fields: [orderId], references: [id])
+}
+
+model EmployeeAttendance {
+  id             Int            @id @default(autoincrement())
+  attendanceType AttendanceType
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  isDeleted      Boolean        @default(false)
+  deletedAt      DateTime?
+  employeeId     Int
+  employee       Employee       @relation(fields: [employeeId], references: [id])
+}
+
 enum Role {
   SUPER_ADMIN
   OUTLET_ADMIN
@@ -17,9 +191,9 @@ enum Role {
 }
 
 enum EmployeeWorkShift {
-  MORNING // 06.00-14.00
-  NOON // 14.00-20.00
-  NIGHT // 20.00-06.00
+  MORNING
+  NOON
+  NIGHT
 }
 
 enum EmploymentStatus {
@@ -35,9 +209,6 @@ enum WorkerStation {
 }
 
 enum OrderStatus {
-  WAITING_FOR_PICKUP_DRIVER
-  ON_THE_WAY_TO_CUSTOMER
-  ON_THE_WAY_TO_OUTLET
   ARRIVED_AT_OUTLET
   READY_FOR_WASHING
   BEING_WASHED
@@ -53,6 +224,9 @@ enum OrderStatus {
   COMPLETED
   CANCELLED_BY_CUSTOMER
   CANCELLED_BY_OUTLET
+  WAITING_FOR_PICKUP_DRIVER
+  ON_THE_WAY_TO_CUSTOMER
+  ON_THE_WAY_TO_OUTLET
 }
 
 enum TransportType {
@@ -75,215 +249,4 @@ enum ByPassStatus {
 enum AttendanceType {
   SIGN_IN
   SIGN_OUT
-}
-
-model User {
-  id             Int       @id @default(autoincrement())
-  fullName       String
-  email          String    @unique
-  password       String
-  avatar         String    @default("https://res.cloudinary.com/dowc5iu9c/image/upload/v1735754490/avatar/default-avatar.png")
-  isVerified     Boolean   @default(false)
-  role           Role      @default(CUSTOMER)
-  token          String?
-  tokenExpiresIn DateTime?
-
-  Employee     Employee? // penanda employee atau bukan
-  Address      Address[] // daftar alamat (khusus customer)
-  Notification Notification[] // penampung notifikasi untuk semua role (customer dan employee)
-
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  isDeleted Boolean   @default(false)
-  deletedAt DateTime?
-}
-
-model Employee {
-  id               Int               @id @default(autoincrement())
-  workShift        EmployeeWorkShift
-  station          WorkerStation?
-  isWorking        Boolean           @default(false) // penanda sekarang lagi kerja atau tidak
-  employmentStatus EmploymentStatus  @default(EMPLOYED)
-
-  userId Int  @unique
-  user   User @relation(fields: [userId], references: [id])
-
-  outletId Int
-  outlet   Outlet @relation(fields: [outletId], references: [id])
-
-  EmployeeAttendance EmployeeAttendance[] // daftar kehadiran employee ketika khusus di masa employment ini saja
-
-  // daftar job employee
-  LaundryJob   LaundryJob[]
-  TransportJob TransportJob[]
-
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  isDeleted Boolean   @default(false)
-  deletedAt DateTime?
-}
-
-model Address {
-  // data address yang bisa dipake sebagai alamat customer atau alamat outlet
-  id          Int     @id @default(autoincrement())
-  isPrimary   Boolean @default(false)
-  addressLine String
-  province    String
-  regency     String
-  district    String
-  village     String
-  latitude    String
-  longitude   String
-
-  // nullable foreign key untuk relasi antara user (many-to-one) atau outlet (one-t0-one). hanya bisa salah satu (customer atau outlet)
-  customerId Int?
-  customer   User?   @relation(fields: [customerId], references: [id])
-  Outlet     Outlet?
-
-  Order Order[]
-
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  isDeleted Boolean   @default(false)
-  deletedAt DateTime?
-}
-
-model Outlet {
-  id         Int    @id @default(autoincrement())
-  outletName String
-
-  outletAddressId Int     @unique
-  outletAddress   Address @relation(fields: [outletAddressId], references: [id])
-
-  Order    Order[]
-  Employee Employee[]
-
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  isDeleted Boolean   @default(false)
-  deletedAt DateTime?
-}
-
-model Order {
-  id          Int         @id @default(autoincrement())
-  orderStatus OrderStatus @default(WAITING_FOR_DELIVERY_DRIVER)
-
-  customerAddressId Int
-  customerAddress   Address @relation(fields: [customerAddressId], references: [id]) // data alamat customer yang request order. data detail customer diambil dari sini
-
-  outletId Int
-  outlet   Outlet @relation(fields: [outletId], references: [id]) // data outlet yang diassign buat ngerjain laundry. data alamat outlet diambil dari sini
-
-  laundryWeight Int?
-  laundryPrice  Int // weight dikali harga per satuan berat (belum termasuk ongkir)
-  OrderItem     OrderItem[]
-
-  LaundryJob   LaundryJob[] // isinya bakal ada 3 job: wash, iron, pack
-  TransportJob TransportJob[] // isinya bakal ada 2 job: pickup dan delivery
-
-  isPaid  Boolean   @default(false) // indikator untuk sudah boleh lanjut delivery atau ga
-  Payment Payment[] // bisa handle banyak payment antisipasi kalau payment si customernya gagal
-
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  isDeleted Boolean   @default(false)
-  deletedAt DateTime?
-}
-
-model OrderItem {
-  id            Int    @id @default(autoincrement())
-  orderItemName String
-  qty           Int
-
-  orderId Int
-  order   Order @relation(fields: [orderId], references: [id])
-
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  isDeleted Boolean   @default(false)
-  deletedAt DateTime?
-}
-
-model LaundryJob {
-  id                Int           @id @default(autoincrement())
-  station           WorkerStation
-  isByPassRequested Boolean       @default(false) // penunjuk bahwa si worker request bypass atau ga. masih belum tau apakah worker mampu untuk bikin banyak bypass request dalam satu job atau cuma sekali aja. kalo sekali aja jadinya kayak gini 
-  isCompleted       Boolean       @default(false)
-  byPassNote        String?
-  byPassStatus      ByPassStatus?
-
-  orderId Int
-  order   Order @relation(fields: [orderId], references: [id])
-
-  workerId Int
-  worker   Employee @relation(fields: [workerId], references: [id])
-
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  isDeleted Boolean   @default(false)
-  deletedAt DateTime?
-}
-
-model TransportJob {
-  id            Int           @id @default(autoincrement())
-  transportType TransportType // pickup atau delivery
-  isCompleted   Boolean       @default(false)
-  distance      Int
-
-  orderId Int
-  order   Order @relation(fields: [orderId], references: [id])
-
-  driverId Int?
-  driver   Employee? @relation(fields: [driverId], references: [id])
-
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  isDeleted Boolean   @default(false)
-  deletedAt DateTime?
-}
-
-model Notification {
-  id          Int     @id @default(autoincrement())
-  isRead      Boolean @default(false) // buat indikator notifikasi baru sama notifikasi lama (entar beda styling yang baru sama yang lamanya)
-  title       String
-  description String
-
-  userId Int
-  user   User @relation(fields: [userId], references: [id])
-
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  isDeleted Boolean   @default(false)
-  deletedAt DateTime?
-}
-
-model Payment {
-  // kurleb sama seperti payment minpro, pake midtrans, ini ke-create bersamaan ketika ordernya ke-create
-  id              Int           @id @default(autoincrement())
-  totalPrice      Int // ini sum laundryPrice ditambah ongkir (flat)
-  paymentStatus   PaymentStatus @default(PENDING)
-  paymentMethod   String?
-  snapToken       String?
-  snapRedirectURL String?
-
-  orderId Int   @unique
-  order   Order @relation(fields: [orderId], references: [id])
-
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  isDeleted Boolean   @default(false)
-  deletedAt DateTime?
-}
-
-model EmployeeAttendance {
-  // data absensi harian
-  id             Int            @id @default(autoincrement())
-  attendanceType AttendanceType
-  employee       Employee       @relation(fields: [employeeId], references: [id])
-
-  createdAt  DateTime  @default(now())
-  updatedAt  DateTime  @updatedAt
-  isDeleted  Boolean   @default(false)
-  deletedAt  DateTime?
-  employeeId Int
 }
