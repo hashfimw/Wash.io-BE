@@ -9,17 +9,17 @@ export const isSuperAdmin = async (
   next: NextFunction
 ): Promise<void> => {
   try {
-    // Ambil user id dari token (asumsikan sudah di-decode di middleware auth sebelumnya)
-    const userId = req.user?.id; // pastikan ada middleware auth yang menyediakan req.user
+    // Ambil user id dari token
+    const userId = req.user?.id;
 
     if (!userId) {
       res.status(401).json({ message: "Unauthorized - Please login first" });
       return;
     }
 
-    // Check user role
+    // Check user role - Convert userId to number
     const user = await prisma.user.findUnique({
-      where: { id: userId },
+      where: { id: Number(userId) }, // Convert to number
     });
 
     if (!user || user.role !== Role.SUPER_ADMIN) {
