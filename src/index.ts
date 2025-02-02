@@ -2,6 +2,8 @@ import express, { Application, Request, Response } from "express";
 import cors from "cors";
 import multer from "multer";
 import dotenv from "dotenv";
+import { SuperAdmOutletRouter } from "./routers/superAdmOutlet.router";
+import { SuperAdmEmployeeRouter } from "./routers/superAdmEmployee.router";
 import path from "path";
 import { AuthRouter } from "./routers/auth.router";
 import { UserRouter } from "./routers/user.router";
@@ -26,6 +28,13 @@ app.get("/api", (req: Request, res: Response) => {
   res.status(200).send("Welcome to my API");
 });
 
+// Initialize routers
+const superAdmEmployee = new SuperAdmEmployeeRouter();
+const superAdmOutlets = new SuperAdmOutletRouter();
+
+// Routes
+app.use("/api/adm-employee", superAdmEmployee.getRouter());
+app.use("/api/adm-outlets", superAdmOutlets.getRouter());
 app.use("/api/public", express.static(path.join(__dirname, "../public")));
 
 const authRouter = new AuthRouter();
