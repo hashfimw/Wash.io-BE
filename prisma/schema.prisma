@@ -30,12 +30,12 @@ model User {
 }
 
 model Employee {
-  id               Int               @id @default(autoincrement())
-  workShift        EmployeeWorkShift
+  id               Int                @id @default(autoincrement())
+  workShift        EmployeeWorkShift?
   station          WorkerStation?
-  isPresent        Boolean           @default(false)
-  isWorking        Boolean           @default(false)
-  employmentStatus EmploymentStatus  @default(EMPLOYED)
+  isPresent        Boolean            @default(false)
+  isWorking        Boolean            @default(false)
+  employmentStatus EmploymentStatus   @default(EMPLOYED)
 
   userId Int  @unique
   user   User @relation(fields: [userId], references: [id])
