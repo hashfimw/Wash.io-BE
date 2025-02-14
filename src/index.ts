@@ -7,6 +7,9 @@ import { SuperAdmEmployeeRouter } from "./routers/superAdmEmployee.router";
 import path from "path";
 import { AuthRouter } from "./routers/auth.router";
 import { UserRouter } from "./routers/user.router";
+import { showOrderRouter } from "./routers/showOrderOutlets.router";
+import { OrderItemsRouter } from "./routers/processOrder.routes";
+import { BypassProcessRouter } from "./routers/bypassProcess.router";
 
 dotenv.config();
 
@@ -18,7 +21,7 @@ app.use(
   cors({
     methods: "GET, POST, PATCH, DELETE, OPTIONS",
     optionsSuccessStatus: 200,
-    origin: `${process.env.BASE_URL_FE!}`,
+    origin: `${process.env.BASE_URL_FE}`,
     credentials: true,
   })
 );
@@ -31,11 +34,17 @@ app.get("/api", (req: Request, res: Response) => {
 // Initialize routers
 const superAdmEmployee = new SuperAdmEmployeeRouter();
 const superAdmOutlets = new SuperAdmOutletRouter();
+const orderItemsRouter = new OrderItemsRouter();
+const showOrder = new showOrderRouter();
+const bypassProcess = new BypassProcessRouter();
 
 // Routes
 app.use("/api/adm-employee", superAdmEmployee.getRouter());
 app.use("/api/adm-outlets", superAdmOutlets.getRouter());
 app.use("/api/public", express.static(path.join(__dirname, "../public")));
+app.use("/api/orders", orderItemsRouter.getRouter());
+app.use("/api/orders/show-order", showOrder.getRouter());
+app.use("/api/bypass", bypassProcess.getRouter());
 
 const authRouter = new AuthRouter();
 const userRouter = new UserRouter();

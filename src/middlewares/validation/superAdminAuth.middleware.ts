@@ -1,7 +1,7 @@
 // src/middleware/superAdminAuth.middleware.ts
 import { Request, Response, NextFunction } from "express";
 import { Role } from "@prisma/client";
-import prisma from "../prisma";
+import prisma from "../../prisma";
 
 export const isSuperAdmin = async (
   req: Request,

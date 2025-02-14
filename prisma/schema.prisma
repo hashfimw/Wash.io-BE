@@ -29,7 +29,7 @@ model User {
 
 model Employee {
   id                 Int                  @id @default(autoincrement())
-  workShift          EmployeeWorkShift
+  workShift          EmployeeWorkShift?
   userId             Int                  @unique
   createdAt          DateTime             @default(now())
   updatedAt          DateTime             @updatedAt
@@ -39,6 +39,7 @@ model Employee {
   isWorking          Boolean              @default(false)
   employmentStatus   EmploymentStatus     @default(EMPLOYED)
   outletId           Int
+  isPresent          Boolean              @default(false)
   outlet             Outlet               @relation(fields: [outletId], references: [id])
   user               User                 @relation(fields: [userId], references: [id])
   EmployeeAttendance EmployeeAttendance[]
@@ -88,7 +89,7 @@ model Order {
   isDeleted         Boolean        @default(false)
   deletedAt         DateTime?
   customerAddressId Int
-  laundryPrice      Int
+  laundryPrice      Int?
   laundryWeight     Int?
   outletId          Int
   LaundryJob        LaundryJob[]
@@ -120,12 +121,12 @@ model LaundryJob {
   isDeleted         Boolean       @default(false)
   deletedAt         DateTime?
   orderId           Int
-  workerId          Int
+  workerId          Int?
   byPassStatus      ByPassStatus?
   isByPassRequested Boolean       @default(false)
   station           WorkerStation
   order             Order         @relation(fields: [orderId], references: [id])
-  worker            Employee      @relation(fields: [workerId], references: [id])
+  worker            Employee?     @relation(fields: [workerId], references: [id])
 }
 
 model TransportJob {
@@ -172,14 +173,27 @@ model Payment {
 }
 
 model EmployeeAttendance {
-  id             Int            @id @default(autoincrement())
-  attendanceType AttendanceType
-  createdAt      DateTime       @default(now())
-  updatedAt      DateTime       @updatedAt
-  isDeleted      Boolean        @default(false)
-  deletedAt      DateTime?
-  employeeId     Int
-  employee       Employee       @relation(fields: [employeeId], references: [id])
+  id               Int                @id @default(autoincrement())
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+  isDeleted        Boolean            @default(false)
+  deletedAt        DateTime?
+  employeeId       Int
+  isAttended       Boolean            @default(false)
+  AttendanceRecord AttendanceRecord[]
+  employee         Employee           @relation(fields: [employeeId], references: [id])
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model AttendanceRecord {
+  id                   Int                @id @default(autoincrement())
+  attendanceType       AttendanceType
+  employeeAttendanceId Int
+  createdAt            DateTime           @default(now())
+  updatedAt            DateTime
+  isDeleted            Boolean            @default(false)
+  deletedAt            DateTime?
+  EmployeeAttendance   EmployeeAttendance @relation(fields: [employeeAttendanceId], references: [id])
 }
 
 enum Role {
@@ -243,10 +257,10 @@ enum PaymentStatus {
 
 enum ByPassStatus {
   ACCEPTED
-  REJECTEED
+  REJECTED
 }
 
 enum AttendanceType {
-  SIGN_IN
-  SIGN_OUT
+  CLOCK_IN
+  CLOCK_OUT
 }

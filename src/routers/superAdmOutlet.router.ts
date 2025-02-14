@@ -4,9 +4,9 @@ import {
   validateCreateOutlet,
   validateDeleteOutlet,
   validateUpdateOutlet,
-} from "../middlewares/outletValidation.middleware";
+} from "../middlewares/validation/outletValidation.middleware";
 import { SuperAdmOutletController } from "../controllers/superAdmOutlets.controller";
-import { isSuperAdmin } from "../middlewares/superAdminAuth.middleware";
+import { isSuperAdmin } from "../middlewares/validation/superAdminAuth.middleware";
 
 export class SuperAdmOutletRouter {
   private router: Router;

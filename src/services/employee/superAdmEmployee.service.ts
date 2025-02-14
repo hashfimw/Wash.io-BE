@@ -8,7 +8,6 @@ export const createEmployeeService = async (req: Request, res: Response) => {
   const { fullName, email, password, role, workShift, station, outletId } =
     req.body;
 
-  // Hash password
   const salt = await genSalt(10);
   const hashedPassword = await hash(password, salt);
 
@@ -25,7 +24,6 @@ export const createEmployeeService = async (req: Request, res: Response) => {
     include: { Employee: true },
   });
 
-  // Hapus password dari response
   const { password: _, ...employeeWithoutPassword } = employee;
 
   return {

@@ -3,13 +3,13 @@ import {
   validateCreateEmployee,
   validateDeleteEmployee,
   validateUpdateEmployee,
-} from "../middlewares/employeeValidation.middleware";
+} from "../middlewares/validation/employeeValidation.middleware";
 import {
   validateAssignEmployee,
   validateMultipleAssignments,
 } from "../middlewares/assignValidation.middleware";
 import { SuperAdmEmployeeController } from "../controllers/superAdmEmployee.controller";
-import { isSuperAdmin } from "../middlewares/superAdminAuth.middleware";
+import { isSuperAdmin } from "../middlewares/validation/superAdminAuth.middleware";
 
 export class SuperAdmEmployeeRouter {
   private router: Router;
@@ -27,7 +27,7 @@ export class SuperAdmEmployeeRouter {
       isSuperAdmin,
       validateCreateEmployee,
       this.controller.createEmployeeController
-    ); //yang ini nambahin isSuperAdmin nunggu req.user dari fitur kemal
+    );
     this.router.get(
       "/",
       isSuperAdmin,
@@ -38,13 +38,13 @@ export class SuperAdmEmployeeRouter {
       isSuperAdmin,
       validateUpdateEmployee,
       this.controller.updateEmployeeController
-    ); //yang ini nambahin isSuperAdmin nunggu req.user dari fitur kemal
+    );
     this.router.delete(
       "/:id",
       isSuperAdmin,
       validateDeleteEmployee,
       this.controller.deleteEmployeeController
-    ); //yang ini nambahin isSuperAdmin nunggu req.user dari fitur kemal
+    );
     this.router.get(
       "/allusers",
       isSuperAdmin,
@@ -55,7 +55,7 @@ export class SuperAdmEmployeeRouter {
       isSuperAdmin,
       validateAssignEmployee,
       this.controller.assignEmployeeToOutletController
-    ); //yang ini nambahin isSuperAdmin nunggu req.user dari fitur kemal
+    );
 
     this.router.post(
       "/assign-multiple",
