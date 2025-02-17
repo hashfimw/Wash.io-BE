@@ -1,12 +1,12 @@
-import express, { Application, Request, Response } from "express";
+import express, { Application, Response } from "express";
 import cors from "cors";
-import multer from "multer";
 import dotenv from "dotenv";
 import { SuperAdmOutletRouter } from "./routers/superAdmOutlet.router";
 import { SuperAdmEmployeeRouter } from "./routers/superAdmEmployee.router";
 import path from "path";
 import { AuthRouter } from "./routers/auth.router";
 import { UserRouter } from "./routers/user.router";
+import AttendanceRouter from "./routers/attendance.router";
 
 dotenv.config();
 
@@ -23,7 +23,7 @@ app.use(
   })
 );
 
-app.get("/api", (req: Request, res: Response) => {
+app.get("/api", (res: Response) => {
   res.status(200).send("Welcome to my API");
 });
 
@@ -38,9 +38,11 @@ app.use("/api/public", express.static(path.join(__dirname, "../public")));
 
 const authRouter = new AuthRouter();
 const userRouter = new UserRouter();
+const attendanceRouter = new AttendanceRouter();
 
 app.use("/api/auth", authRouter.getRouter());
 app.use("/api/users", userRouter.getRouter());
+app.use("/api/attendances", attendanceRouter.getRouter());
 
 app.listen(PORT, () => {
   console.log(`server is running on => http://localhost:${PORT}/api`);
