@@ -175,6 +175,7 @@ model Notification {
   title       String
   description String
   isRead      Boolean @default(false)
+  url         String?
 
   userId Int
   user   User @relation(fields: [userId], references: [id])
@@ -205,6 +206,7 @@ model Payment {
 model EmployeeAttendance {
   id         Int     @id @default(autoincrement())
   isAttended Boolean @default(false)
+  canClockIn Boolean @default(false)
 
   employeeId Int
   employee   Employee @relation(fields: [employeeId], references: [id])
