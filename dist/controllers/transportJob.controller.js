@@ -49,5 +49,17 @@ class TransportJobController {
             }
         });
     }
+    updateTransportJobById(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                yield (0, transportJob_service_1.updateTransportJobByIdService)(+req.params.id, +req.user.id, +req.query.tzo);
+                res.status(201).send({ message: `Transport Job and its Order Status updated successfully` });
+            }
+            catch (error) {
+                console.log(error);
+                res.status(400).send(error);
+            }
+        });
+    }
 }
 exports.default = TransportJobController;

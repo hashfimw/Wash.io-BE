@@ -115,3 +115,71 @@ export const getTransportJobByIdService = async (transportJobId: number) => {
     throw error;
   }
 };
+
+export const updateTransportJobByIdService = async (transportJobId: number, userId: number, tzo: number) => {
+  try {
+    const transportJob = await getTransportJobByIdService(transportJobId);
+    const driver = await findUser(userId);
+    const orderId = transportJob.orderId;
+    const transportType = transportJob.transportType;
+    const currentOrderStatus = transportJob.orderStatus;
+    let newOrderStatus: OrderStatus = "WAITING_FOR_PICKUP_DRIVER";
+
+    if (driver.role != "DRIVER") throw { message: "This user can't access this feature" };
+    if (transportJob.outletId != driver.Employee!.outletId) throw { message: "Invalid Outlet Id!" };
+    if (!driver.Employee!.isPresent) throw { message: "You need to clock in attendance first!" };
+    if (transportJob.isCompleted) throw { message: "Job already completed!" };
+
+    const transportJobData: Prisma.TransportJobUpdateArgs = {
+      where: { id: transportJobId },
+      data: {},
+    };
+    const driverData: Prisma.EmployeeUpdateArgs = {
+      where: { id: driver.Employee!.id },
+      data: {},
+    };
+
+    if (currentOrderStatus == "WAITING_FOR_PICKUP_DRIVER" || currentOrderStatus == "WAITING_FOR_DELIVERY_DRIVER") {
+      await getIdleDriver(userId, tzo);
+
+      if (transportType == "PICKUP") newOrderStatus = "ON_THE_WAY_TO_CUSTOMER";
+      else if (transportType == "DELIVERY") newOrderStatus = "BEING_DELIVERED_TO_CUSTOMER";
+      transportJobData.data.driverId = driver.Employee!.id;
+      driverData.data.isWorking = true;
+    } else if (currentOrderStatus == "ON_THE_WAY_TO_CUSTOMER") {
+      if (transportJob.driverId != driver.Employee!.id) throw { message: "Invalid Driver Id!" };
+
+      newOrderStatus = "ON_THE_WAY_TO_OUTLET";
+      driverData.data.isWorking = true;
+    } else if (currentOrderStatus == "ON_THE_WAY_TO_OUTLET" || currentOrderStatus == "BEING_DELIVERED_TO_CUSTOMER") {
+      if (transportJob.driverId != driver.Employee!.id) throw { message: "Invalid Driver Id!" };
+
+      if (transportType == "PICKUP") newOrderStatus = "ARRIVED_AT_OUTLET";
+      if (transportType == "DELIVERY") newOrderStatus = "RECEIVED_BY_CUSTOMER";
+      transportJobData.data.isCompleted = true;
+      driverData.data.isWorking = false;
+    } else throw { message: "Invalid Order Status!" };
+
+    await prisma.$transaction(async (tx) => {
+      await tx.transportJob.update(transportJobData);
+      await tx.employee.update(driverData);
+      await tx.order.update({ where: { id: orderId }, data: { orderStatus: newOrderStatus } });
+      if (newOrderStatus == "ARRIVED_AT_OUTLET") {
+        const outletAdminId = (await tx.user.findFirst({
+          where: { Employee: { outletId: driver.Employee!.outletId }, role: "OUTLET_ADMIN" },
+        }))!.id;
+        await tx.notification.create({
+          data: {
+            userId: outletAdminId,
+            title: "New order alert",
+            description: "A new order arrived at the outlet!",
+            url: `${process.env.BASE_URL_FE!}/order/${orderId}`,
+          },
+        });
+      }
+    });
+    return;
+  } catch (error) {
+    throw error;
+  }
+};

@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { getTransportJobByIdService, getTransportJobsService } from "../services/transportJob/transportJob.service";
+import { getTransportJobByIdService, getTransportJobsService, updateTransportJobByIdService } from "../services/transportJob/transportJob.service";
 
 export default class TransportJobController {
   async getTransportJobs(req: Request, res: Response) {
@@ -34,6 +34,17 @@ export default class TransportJobController {
       const result = await getTransportJobByIdService(+id);
 
       res.status(200).send({ data: result });
+    } catch (error) {
+      console.log(error);
+      res.status(400).send(error);
+    }
+  }
+
+  async updateTransportJobById(req: Request, res: Response) {
+    try {
+      await updateTransportJobByIdService(+req.params.id, +req.user!.id, +req.query.tzo!);
+
+      res.status(201).send({ message: `Transport Job and its Order Status updated successfully` });
     } catch (error) {
       console.log(error);
       res.status(400).send(error);
