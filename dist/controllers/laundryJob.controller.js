@@ -47,5 +47,17 @@ class LaundryJobController {
             }
         });
     }
+    updateLaundryJobById(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                yield (0, laundryJob_service_1.updateLaundryJobByIdService)(+req.params.id, +req.user.id, req.body.orderItemInput, req.query.tzo);
+                res.status(201).send({ message: `Laundry Job and its Order Status updated successfully` });
+            }
+            catch (error) {
+                console.log(error);
+                res.status(400).send(error);
+            }
+        });
+    }
 }
 exports.default = LaundryJobController;
