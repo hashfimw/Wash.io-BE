@@ -25,7 +25,6 @@ app.use(
     credentials: true,
   })
 );
-export const upload = multer({ storage: multer.memoryStorage() });
 
 app.get("/api", (req: Request, res: Response) => {
   res.status(200).send("Welcome to my API");

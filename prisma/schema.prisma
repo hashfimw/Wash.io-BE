@@ -9,47 +9,54 @@ datasource db {
 }
 
 model User {
-  id             Int            @id @default(autoincrement())
+  id             Int       @id @default(autoincrement())
   fullName       String?
-  email          String         @unique
+  email          String    @unique
   password       String?
-  avatar         String         @default("https://res.cloudinary.com/dowc5iu9c/image/upload/v1735754490/avatar/default-avatar.png")
-  isVerified     Boolean        @default(false)
-  role           Role           @default(CUSTOMER)
+  avatar         String    @default("https://res.cloudinary.com/dowc5iu9c/image/upload/v1735754490/avatar/default-avatar.png")
+  isVerified     Boolean   @default(false)
+  role           Role      @default(CUSTOMER)
   token          String?
   tokenExpiresIn DateTime?
-  createdAt      DateTime       @default(now())
-  updatedAt      DateTime       @updatedAt
-  isDeleted      Boolean        @default(false)
-  deletedAt      DateTime?
-  Address        Address[]
-  Employee       Employee?
-  Notification   Notification[]
+
+  Employee     Employee?
+  Address      Address[]
+  Notification Notification[]
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  isDeleted Boolean   @default(false)
+  deletedAt DateTime?
 }
 
 model Employee {
-  id                 Int                  @id @default(autoincrement())
-  workShift          EmployeeWorkShift?
-  userId             Int                  @unique
-  createdAt          DateTime             @default(now())
-  updatedAt          DateTime             @updatedAt
-  isDeleted          Boolean              @default(false)
-  deletedAt          DateTime?
-  station            WorkerStation?
-  isWorking          Boolean              @default(false)
-  employmentStatus   EmploymentStatus     @default(EMPLOYED)
-  outletId           Int
-  isPresent          Boolean              @default(false)
-  outlet             Outlet               @relation(fields: [outletId], references: [id])
-  user               User                 @relation(fields: [userId], references: [id])
+  id               Int                @id @default(autoincrement())
+  workShift        EmployeeWorkShift?
+  station          WorkerStation?
+  isPresent        Boolean            @default(false)
+  isWorking        Boolean            @default(false)
+  employmentStatus EmploymentStatus   @default(EMPLOYED)
+
+  userId Int  @unique
+  user   User @relation(fields: [userId], references: [id])
+
+  outletId Int
+  outlet   Outlet @relation(fields: [outletId], references: [id])
+
+  LaundryJob   LaundryJob[]
+  TransportJob TransportJob[]
+
   EmployeeAttendance EmployeeAttendance[]
-  LaundryJob         LaundryJob[]
-  TransportJob       TransportJob[]
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  isDeleted Boolean   @default(false)
+  deletedAt DateTime?
 }
 
 model Address {
-  id          Int       @id @default(autoincrement())
-  isPrimary   Boolean   @default(false)
+  id          Int     @id @default(autoincrement())
+  isPrimary   Boolean @default(false)
   addressLine String
   province    String
   regency     String
@@ -57,76 +64,92 @@ model Address {
   village     String
   latitude    String
   longitude   String
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  isDeleted   Boolean   @default(false)
-  deletedAt   DateTime?
-  customerId  Int?
-  customer    User?     @relation(fields: [customerId], references: [id])
-  Order       Order[]
-  Outlet      Outlet?
+
+  customerId Int?
+  customer   User?   @relation(fields: [customerId], references: [id])
+  Outlet     Outlet?
+
+  Order Order[]
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  isDeleted Boolean   @default(false)
+  deletedAt DateTime?
 }
 
 model Outlet {
-  id              Int        @id @default(autoincrement())
-  outletName      String
-  createdAt       DateTime   @default(now())
-  updatedAt       DateTime   @updatedAt
-  isDeleted       Boolean    @default(false)
-  deletedAt       DateTime?
-  outletAddressId Int        @unique
-  Employee        Employee[]
-  Order           Order[]
-  outletAddress   Address    @relation(fields: [outletAddressId], references: [id])
+  id         Int    @id @default(autoincrement())
+  outletName String
+
+  outletAddressId Int     @unique
+  outletAddress   Address @relation(fields: [outletAddressId], references: [id])
+
+  Order    Order[]
+  Employee Employee[]
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  isDeleted Boolean   @default(false)
+  deletedAt DateTime?
 }
 
 model Order {
-  id                Int            @id @default(autoincrement())
-  orderStatus       OrderStatus    @default(WAITING_FOR_DELIVERY_DRIVER)
-  isPaid            Boolean        @default(false)
-  createdAt         DateTime       @default(now())
-  updatedAt         DateTime       @updatedAt
-  isDeleted         Boolean        @default(false)
-  deletedAt         DateTime?
+  id          Int         @id @default(autoincrement())
+  orderStatus OrderStatus @default(WAITING_FOR_DELIVERY_DRIVER)
+
   customerAddressId Int
-  laundryPrice      Int?
-  laundryWeight     Int?
-  outletId          Int
-  LaundryJob        LaundryJob[]
-  customerAddress   Address        @relation(fields: [customerAddressId], references: [id])
-  outlet            Outlet         @relation(fields: [outletId], references: [id])
-  OrderItem         OrderItem[]
-  Payment           Payment?
-  TransportJob      TransportJob[]
+  customerAddress   Address @relation(fields: [customerAddressId], references: [id])
+
+  outletId Int
+  outlet   Outlet @relation(fields: [outletId], references: [id])
+
+  laundryWeight Int?
+  laundryPrice  Int?
+  OrderItem     OrderItem[]
+
+  LaundryJob   LaundryJob[]
+  TransportJob TransportJob[]
+  isPaid       Boolean        @default(false)
+  Payment      Payment[]
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  isDeleted Boolean   @default(false)
+  deletedAt DateTime?
 }
 
 model OrderItem {
-  id            Int       @id @default(autoincrement())
+  id            Int    @id @default(autoincrement())
   qty           Int
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-  isDeleted     Boolean   @default(false)
-  deletedAt     DateTime?
-  orderId       Int
   orderItemName String
-  order         Order     @relation(fields: [orderId], references: [id])
+
+  orderId Int
+  order   Order @relation(fields: [orderId], references: [id])
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  isDeleted Boolean   @default(false)
+  deletedAt DateTime?
 }
 
 model LaundryJob {
   id                Int           @id @default(autoincrement())
+  station           WorkerStation
+  isByPassRequested Boolean       @default(false)
   isCompleted       Boolean       @default(false)
   byPassNote        String?
-  createdAt         DateTime      @default(now())
-  updatedAt         DateTime      @updatedAt
-  isDeleted         Boolean       @default(false)
-  deletedAt         DateTime?
-  orderId           Int
-  workerId          Int?
   byPassStatus      ByPassStatus?
-  isByPassRequested Boolean       @default(false)
-  station           WorkerStation
-  order             Order         @relation(fields: [orderId], references: [id])
-  worker            Employee?     @relation(fields: [workerId], references: [id])
+
+  orderId Int
+  order   Order @relation(fields: [orderId], references: [id])
+
+  workerId Int?
+  worker   Employee? @relation(fields: [workerId], references: [id])
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  isDeleted Boolean   @default(false)
+  deletedAt DateTime?
 }
 
 model TransportJob {
@@ -134,28 +157,33 @@ model TransportJob {
   transportType TransportType
   isCompleted   Boolean       @default(false)
   distance      Int
-  orderId       Int
-  driverId      Int?
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
-  isDeleted     Boolean       @default(false)
-  deletedAt     DateTime?
-  driver        Employee?     @relation(fields: [driverId], references: [id])
-  order         Order         @relation(fields: [orderId], references: [id])
+
+  orderId Int
+  order   Order @relation(fields: [orderId], references: [id])
+
+  driverId Int?
+  driver   Employee? @relation(fields: [driverId], references: [id])
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  isDeleted Boolean   @default(false)
+  deletedAt DateTime?
 }
 
 model Notification {
-  id          Int       @id @default(autoincrement())
-  isRead      Boolean   @default(false)
+  id          Int     @id @default(autoincrement())
   title       String
   description String
-  userId      Int
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  isDeleted   Boolean   @default(false)
-  deletedAt   DateTime?
+  isRead      Boolean @default(false)
   url         String?
-  user        User      @relation(fields: [userId], references: [id])
+
+  userId Int
+  user   User @relation(fields: [userId], references: [id])
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  isDeleted Boolean   @default(false)
+  deletedAt DateTime?
 }
 
 model Payment {
@@ -165,37 +193,43 @@ model Payment {
   paymentMethod   String?
   snapToken       String?
   snapRedirectURL String?
-  createdAt       DateTime      @default(now())
-  updatedAt       DateTime      @updatedAt
-  isDeleted       Boolean       @default(false)
-  deletedAt       DateTime?
-  orderId         Int           @unique
-  order           Order         @relation(fields: [orderId], references: [id])
+
+  orderId Int   @unique
+  order   Order @relation(fields: [orderId], references: [id])
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  isDeleted Boolean   @default(false)
+  deletedAt DateTime?
 }
 
 model EmployeeAttendance {
-  id               Int                @id @default(autoincrement())
-  createdAt        DateTime           @default(now())
-  updatedAt        DateTime           @updatedAt
-  isDeleted        Boolean            @default(false)
-  deletedAt        DateTime?
-  employeeId       Int
-  isAttended       Boolean            @default(false)
-  canClockIn       Boolean            @default(false)
+  id         Int     @id @default(autoincrement())
+  isAttended Boolean @default(false)
+  canClockIn Boolean @default(false)
+
+  employeeId Int
+  employee   Employee @relation(fields: [employeeId], references: [id])
+
   AttendanceRecord AttendanceRecord[]
-  employee         Employee           @relation(fields: [employeeId], references: [id])
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  isDeleted Boolean   @default(false)
+  deletedAt DateTime?
 }
 
-/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model AttendanceRecord {
-  id                   Int                @id @default(autoincrement())
-  attendanceType       AttendanceType
+  id             Int            @id @default(autoincrement())
+  attendanceType AttendanceType
+
   employeeAttendanceId Int
-  createdAt            DateTime           @default(now())
-  updatedAt            DateTime
-  isDeleted            Boolean            @default(false)
-  deletedAt            DateTime?
-  EmployeeAttendance   EmployeeAttendance @relation(fields: [employeeAttendanceId], references: [id])
+  employeeAttendance   EmployeeAttendance @relation(fields: [employeeAttendanceId], references: [id])
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  isDeleted Boolean   @default(false)
+  deletedAt DateTime?
 }
 
 enum Role {
@@ -225,6 +259,9 @@ enum WorkerStation {
 }
 
 enum OrderStatus {
+  WAITING_FOR_PICKUP_DRIVER
+  ON_THE_WAY_TO_CUSTOMER
+  ON_THE_WAY_TO_OUTLET
   ARRIVED_AT_OUTLET
   READY_FOR_WASHING
   BEING_WASHED
@@ -240,9 +277,6 @@ enum OrderStatus {
   COMPLETED
   CANCELLED_BY_CUSTOMER
   CANCELLED_BY_OUTLET
-  WAITING_FOR_PICKUP_DRIVER
-  ON_THE_WAY_TO_CUSTOMER
-  ON_THE_WAY_TO_OUTLET
 }
 
 enum TransportType {
