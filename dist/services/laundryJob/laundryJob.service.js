@@ -65,6 +65,7 @@ const getLaundryJobs = (filter, meta) => __awaiter(void 0, void 0, void 0, funct
 });
 const getLaundryJobsService = (queries) => __awaiter(void 0, void 0, void 0, function* () {
     try {
+        const dates = (0, dateTime_service_1.dateValidator)(queries.startDate, queries.endDate);
         const worker = yield (0, finder_service_1.findUser)(queries.userId);
         if (worker.role != "WORKER")
             throw { message: "This user can't access this feature" };
@@ -75,6 +76,12 @@ const getLaundryJobsService = (queries) => __awaiter(void 0, void 0, void 0, fun
             const orderIds = yield (0, transportJob_service_1.findOutletsOrderIds)(outletId);
             filter.orderId = { in: orderIds };
             filter.workerId = { equals: null };
+        }
+        else if (queries.requestType == "history") {
+            filter.workerId = queries.userId;
+            filter.isCompleted = Boolean(+queries.isCompleted);
+            filter.createdAt = { gt: dates.start };
+            filter.createdAt = { lt: dates.end };
         }
         else
             throw { message: "Invalid request type!" };

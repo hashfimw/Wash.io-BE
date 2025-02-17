@@ -16,6 +16,7 @@ const attendance_router_1 = __importDefault(require("./routers/attendance.router
 const attendanceScheduler_service_1 = __importDefault(require("./services/attendance/attendanceScheduler.service"));
 const transportJob_router_1 = __importDefault(require("./routers/transportJob.router"));
 const laundryJob_router_1 = __importDefault(require("./routers/laundryJob.router"));
+const notification_router_1 = __importDefault(require("./routers/notification.router"));
 dotenv_1.default.config();
 const PORT = 8000;
 const app = (0, express_1.default)();
@@ -42,11 +43,13 @@ const userRouter = new user_router_1.UserRouter();
 const attendanceRouter = new attendance_router_1.default();
 const transportJobRouter = new transportJob_router_1.default();
 const laundryJobRouter = new laundryJob_router_1.default();
+const notificationRouter = new notification_router_1.default();
 app.use("/api/auth", authRouter.getRouter());
 app.use("/api/users", userRouter.getRouter());
 app.use("/api/attendances", attendanceRouter.getRouter());
 app.use("/api/transport-jobs", transportJobRouter.getRouter());
 app.use("/api/laundry-jobs", laundryJobRouter.getRouter());
+app.use("/api/notifications", notificationRouter.getRouter());
 app.listen(PORT, () => {
     console.log(`server is running on => http://localhost:${PORT}/api`);
 });

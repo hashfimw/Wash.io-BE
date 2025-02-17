@@ -48,6 +48,7 @@ interface LaundryJobQueries extends PaginationQuerieswithDate {
 
 export const getLaundryJobsService = async (queries: LaundryJobQueries) => {
   try {
+    const dates = dateValidator(queries.startDate, queries.endDate);
     const worker = await findUser(queries.userId);
     if (worker.role != "WORKER") throw { message: "This user can't access this feature" };
 
@@ -59,6 +60,11 @@ export const getLaundryJobsService = async (queries: LaundryJobQueries) => {
 
       filter.orderId = { in: orderIds };
       filter.workerId = { equals: null };
+    } else if (queries.requestType == "history") {
+      filter.workerId = queries.userId;
+      filter.isCompleted = Boolean(+queries.isCompleted);
+      filter.createdAt = { gt: dates.start };
+      filter.createdAt = { lt: dates.end };
     } else throw { message: "Invalid request type!" };
 
     return await getLaundryJobs(filter, queries);
