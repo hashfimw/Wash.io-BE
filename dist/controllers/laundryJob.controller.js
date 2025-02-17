@@ -9,16 +9,15 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const transportJob_service_1 = require("../services/transportJob/transportJob.service");
-class TransportJobController {
-    getTransportJobs(req, res) {
+const laundryJob_service_1 = require("../services/laundryJob/laundryJob.service");
+class LaundryJobController {
+    getLaundryJobs(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const queries = {
                     userId: +req.user.id,
                     tzo: req.query.tzo,
                     requestType: req.query.requestType,
-                    transportType: req.query.transportType || "all",
                     isCompleted: req.query.isCompleted || "1",
                     startDate: req.query.startDate,
                     endDate: req.query.endDate,
@@ -27,7 +26,7 @@ class TransportJobController {
                     sortBy: req.query.sortBy || "createdAt",
                     sortOrder: req.query.sortOrder || "desc",
                 };
-                const result = yield (0, transportJob_service_1.getTransportJobsService)(queries);
+                const result = yield (0, laundryJob_service_1.getLaundryJobsService)(queries);
                 res.status(200).send({ data: result.data, meta: result.meta });
             }
             catch (error) {
@@ -36,10 +35,10 @@ class TransportJobController {
             }
         });
     }
-    getTransportJobById(req, res) {
+    getLaundryJobById(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const result = yield (0, transportJob_service_1.getTransportJobByIdService)(+req.params.id);
+                const result = yield (0, laundryJob_service_1.getLaundryJobByIdService)(+req.params.id);
                 res.status(200).send({ data: result });
             }
             catch (error) {
@@ -48,17 +47,5 @@ class TransportJobController {
             }
         });
     }
-    updateTransportJobById(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            try {
-                yield (0, transportJob_service_1.updateTransportJobByIdService)(+req.params.id, +req.user.id, req.query.tzo);
-                res.status(201).send({ message: `Transport Job and its Order Status updated successfully` });
-            }
-            catch (error) {
-                console.log(error);
-                res.status(400).send(error);
-            }
-        });
-    }
 }
-exports.default = TransportJobController;
+exports.default = LaundryJobController;

@@ -126,7 +126,7 @@ export const getTransportJobByIdService = async (transportJobId: number) => {
   }
 };
 
-export const updateTransportJobByIdService = async (transportJobId: number, userId: number, tzo: number) => {
+export const updateTransportJobByIdService = async (transportJobId: number, userId: number, tzo: string) => {
   try {
     const transportJob = await getTransportJobByIdService(transportJobId);
     const driver = await findUser(userId);
@@ -150,7 +150,7 @@ export const updateTransportJobByIdService = async (transportJobId: number, user
     };
 
     if (currentOrderStatus == "WAITING_FOR_PICKUP_DRIVER" || currentOrderStatus == "WAITING_FOR_DELIVERY_DRIVER") {
-      await getIdleDriver(userId, tzo);
+      await getIdleDriver(userId, +tzo);
 
       if (transportType == "PICKUP") newOrderStatus = "ON_THE_WAY_TO_CUSTOMER";
       else if (transportType == "DELIVERY") newOrderStatus = "BEING_DELIVERED_TO_CUSTOMER";
