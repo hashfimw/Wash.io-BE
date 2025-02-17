@@ -69,6 +69,11 @@ export const getAttendancesService = async (queries: AttendanceQueries) => {
       if (employee.role != "DRIVER" && employee.role != "WORKER") throw { message: "This user can't access this feature!" };
 
       filter.employeeAttendanceId = { in: employee.Employee!.EmployeeAttendance.map((item) => item.id) };
+    } else if (queries.requestType == "outlet") {
+      if (employee.role != "OUTLET_ADMIN") throw { message: "This user can't access this feature!" };
+
+      const attendanceIds = await findOutletsAttendancesId(employee.Employee!.outletId, queries.role);
+      filter.employeeAttendanceId = { in: attendanceIds };
     } else throw { message: "Invalid request type!" };
 
     return await getAttendances(filter, queries);
