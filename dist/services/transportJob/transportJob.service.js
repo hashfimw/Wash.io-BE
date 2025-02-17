@@ -81,6 +81,7 @@ const findOutletsOrderIds = (outletId_1, ...args_1) => __awaiter(void 0, [outlet
 exports.findOutletsOrderIds = findOutletsOrderIds;
 const getTransportJobsService = (queries) => __awaiter(void 0, void 0, void 0, function* () {
     try {
+        const dates = (0, dateTime_service_1.dateValidator)(queries.startDate, queries.endDate);
         const filter = {};
         if (queries.transportType != "all") {
             filter.transportType = queries.transportType;
@@ -99,6 +100,15 @@ const getTransportJobsService = (queries) => __awaiter(void 0, void 0, void 0, f
             filter.orderId = { in: orderIds };
             filter.transportType = "PICKUP";
             filter.isCompleted = true;
+        }
+        else if (queries.requestType == "history") {
+            const driver = yield (0, finder_service_1.findUser)(queries.userId);
+            if (driver.role != "DRIVER")
+                throw { message: "This user can't access this feature" };
+            filter.driverId = driver.id;
+            filter.isCompleted = Boolean(+queries.isCompleted);
+            filter.createdAt = { gt: dates.start };
+            filter.createdAt = { lt: dates.end };
         }
         else
             throw { message: "Invalid request type!" };

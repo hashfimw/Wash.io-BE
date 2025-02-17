@@ -1,7 +1,7 @@
 import { PaginationQueries, PaginationQuerieswithDate } from "../../types/pagination.type";
 import prisma from "../../prisma";
 import { findUser } from "../helpers/finder.service";
-import { shiftChecker } from "../helpers/dateTime.service";
+import { dateValidator, shiftChecker } from "../helpers/dateTime.service";
 import { OrderStatus, Prisma, TransportType } from "../../../prisma/generated/client";
 
 const getIdleDriver = async (userId: number, tzo: number) => {
@@ -62,6 +62,8 @@ interface TransportJobQueries extends PaginationQuerieswithDate {
 
 export const getTransportJobsService = async (queries: TransportJobQueries) => {
   try {
+    const dates = dateValidator(queries.startDate, queries.endDate);
+    
     const filter: Prisma.TransportJobWhereInput = {};
     if (queries.transportType != "all") {
       filter.transportType = queries.transportType as TransportType;
@@ -81,6 +83,14 @@ export const getTransportJobsService = async (queries: TransportJobQueries) => {
       filter.orderId = { in: orderIds };
       filter.transportType = "PICKUP";
       filter.isCompleted = true;
+    } else if (queries.requestType == "history") {
+      const driver = await findUser(queries.userId);
+      if (driver.role != "DRIVER") throw { message: "This user can't access this feature" };
+
+      filter.driverId = driver.id;
+      filter.isCompleted = Boolean(+queries.isCompleted);
+      filter.createdAt = { gt: dates.start };
+      filter.createdAt = { lt: dates.end };
     } else throw { message: "Invalid request type!" };
 
     return await getTransportJobs(filter, queries);
