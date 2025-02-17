@@ -3,10 +3,12 @@ import cors from "cors";
 import dotenv from "dotenv";
 import { SuperAdmOutletRouter } from "./routers/superAdmOutlet.router";
 import { SuperAdmEmployeeRouter } from "./routers/superAdmEmployee.router";
+import cron from "node-cron";
 import path from "path";
 import { AuthRouter } from "./routers/auth.router";
 import { UserRouter } from "./routers/user.router";
 import AttendanceRouter from "./routers/attendance.router";
+import attendanceSchedule from "./services/attendance/attendanceScheduler.service";
 
 dotenv.config();
 
@@ -26,6 +28,8 @@ app.use(
 app.get("/api", (res: Response) => {
   res.status(200).send("Welcome to my API");
 });
+
+cron.schedule("*/15 * * * *", attendanceSchedule);
 
 // Initialize routers
 const superAdmEmployee = new SuperAdmEmployeeRouter();
