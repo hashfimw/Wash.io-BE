@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { getLaundryJobByIdService, getLaundryJobsService } from "../services/laundryJob/laundryJob.service";
+import { getLaundryJobByIdService, getLaundryJobsService, updateLaundryJobByIdService } from "../services/laundryJob/laundryJob.service";
 
 export default class LaundryJobController {
   async getLaundryJobs(req: Request, res: Response) {
@@ -31,6 +31,17 @@ export default class LaundryJobController {
       const result = await getLaundryJobByIdService(+req.params.id);
 
       res.status(200).send({ data: result });
+    } catch (error) {
+      console.log(error);
+      res.status(400).send(error);
+    }
+  }
+
+  async updateLaundryJobById(req: Request, res: Response) {
+    try {
+      await updateLaundryJobByIdService(+req.params.id, +req.user!.id, req.body.orderItemInput, req.query.tzo as string);
+
+      res.status(201).send({ message: `Laundry Job and its Order Status updated successfully` });
     } catch (error) {
       console.log(error);
       res.status(400).send(error);
