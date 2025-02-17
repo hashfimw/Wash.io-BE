@@ -1,9 +1,9 @@
-import { EmployeeWorkShift } from "@prisma/client";
 import prisma from "../../prisma";
 import { find } from "geo-tz";
 import { DateTime } from "luxon";
 import { Request, Response } from "express";
 import { findUser } from "../helpers/finder.service";
+import { EmployeeWorkShift } from "../../../prisma/generated/client";
 
 const shiftStartScheduler = async (ids: number[], workShift: EmployeeWorkShift) => {
   try {

@@ -9,6 +9,7 @@ import { AuthRouter } from "./routers/auth.router";
 import { UserRouter } from "./routers/user.router";
 import AttendanceRouter from "./routers/attendance.router";
 import attendanceSchedule from "./services/attendance/attendanceScheduler.service";
+import TransportJobRouter from "./routers/transportJob.router";
 
 dotenv.config();
 
@@ -43,10 +44,12 @@ app.use("/api/public", express.static(path.join(__dirname, "../public")));
 const authRouter = new AuthRouter();
 const userRouter = new UserRouter();
 const attendanceRouter = new AttendanceRouter();
+const transportJobRouter = new TransportJobRouter();
 
 app.use("/api/auth", authRouter.getRouter());
 app.use("/api/users", userRouter.getRouter());
 app.use("/api/attendances", attendanceRouter.getRouter());
+app.use("/api/transport-jobs", transportJobRouter.getRouter());
 
 app.listen(PORT, () => {
   console.log(`server is running on => http://localhost:${PORT}/api`);

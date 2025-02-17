@@ -1,4 +1,4 @@
-import { AttendanceType, Prisma, Role } from "@prisma/client";
+import { AttendanceType, Prisma, Role } from "../../../prisma/generated/client";
 import prisma from "../../prisma";
 import { PaginationQueries, PaginationQuerieswithDate } from "../../types/pagination.type";
 import { dateValidator } from "../helpers/dateTime.service";

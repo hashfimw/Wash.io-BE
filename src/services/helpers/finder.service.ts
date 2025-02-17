@@ -1,4 +1,4 @@
-import { Prisma, Role, WorkerStation } from "@prisma/client";
+import { Prisma, Role, WorkerStation } from "../../../prisma/generated/client";
 import prisma from "../../prisma";
 
 export const findUser = async (id: number) => {

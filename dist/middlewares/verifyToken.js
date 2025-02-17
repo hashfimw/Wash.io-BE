@@ -11,14 +11,15 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.checkUser = exports.verifyToken = void 0;
 const jsonwebtoken_1 = require("jsonwebtoken");
+const config_1 = require("../utils/config");
 const verifyToken = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
     try {
         const token = (_a = req.header("Authorization")) === null || _a === void 0 ? void 0 : _a.replace("Bearer ", "");
         // const token = req.cookies?.token; // kalo sudah pakai cookies
         if (!token)
-            throw "Unauthorize!";
-        const verifiedUser = (0, jsonwebtoken_1.verify)(token, process.env.JWT_KEY);
+            throw { message: "Unauthorize!" };
+        const verifiedUser = (0, jsonwebtoken_1.verify)(token, config_1.appConfig.SecretKey);
         req.user = verifiedUser;
         console.log(verifiedUser);
         next();
@@ -39,28 +40,3 @@ const checkUser = (req, res, next) => {
     }
 };
 exports.checkUser = checkUser;
-// export const verifyTokenPro = async (
-//   req: Request,
-//   res: Response,
-//   next: NextFunction
-// ) => {
-//   try {
-//     const token = req.header("Authorization")?.replace("Bearer ", "");
-//     // const token = req.cookies?.token; // kalo sudah pakai cookies
-//     if (!token) throw "Unauthorize!";
-//     const verifiedPromotor = verify(token, process.env.JWT_KEY!);
-//     req.promotor = verifiedPromotor as PromotorPayload;
-//     console.log(verifiedPromotor);
-//     next();
-//   } catch (err) {
-//     console.log(err);
-//     res.status(400).send(err);
-//   }
-// };
-// export const checkPromotor = (req: Request, res: Response, next: NextFunction) => {
-//   if (req.promotor?.id) {
-//     next();
-//   } else {
-//     res.status(400).send({ message: "Unauthorize, Promotor Only!" });
-//   }
-// };

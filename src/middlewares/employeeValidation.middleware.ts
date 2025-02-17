@@ -1,7 +1,7 @@
 // src/middleware/employeeValidation.middleware.ts
 import { Request, Response, NextFunction } from "express";
-import { Role, WorkerStation } from "@prisma/client";
 import prisma from "../prisma";
+import { Role, WorkerStation } from "../../prisma/generated/client";
 
 export const validateCreateEmployee = async (
   req: Request,

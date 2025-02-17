@@ -1,5 +1,5 @@
+import { AttendanceType, Prisma } from "../../../prisma/generated/client";
 import prisma from "../../prisma";
-import { AttendanceType, Prisma } from "@prisma/client";
 import { findUser } from "../helpers/finder.service";
 
 const getEmployee = async (userId: number, attendanceType: AttendanceType) => {

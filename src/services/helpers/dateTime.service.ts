@@ -1,4 +1,4 @@
-import { EmployeeWorkShift } from "@prisma/client";
+import { EmployeeWorkShift } from "../../../prisma/generated/client";
 
 export const localTimeChecker = (tzo: number) => {
   const nowUTC = new Date().getTime();
