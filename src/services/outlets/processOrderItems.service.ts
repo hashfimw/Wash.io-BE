@@ -63,7 +63,7 @@ export const processOrderService = async (req: Request, res: Response) => {
 };
 
 // Create template item
-export const createOrderItemTemplateService = async (req: Request) => {
+export const createOrderItemService = async (req: Request, res: Response) => {
   const { orderItemName } = req.body;
 
   const item = await prisma.orderItem.create({
@@ -80,7 +80,7 @@ export const createOrderItemTemplateService = async (req: Request) => {
 };
 
 // Get all template items
-export const getOrderItemTemplatesService = async () => {
+export const getOrderItemService = async () => {
   const items = await prisma.orderItem.findMany({
     where: {
       orderId: null,
@@ -98,7 +98,7 @@ export const getOrderItemTemplatesService = async () => {
 };
 
 // Update template item
-export const updateOrderItemTemplateService = async (req: Request) => {
+export const updateOrderItemService = async (req: Request, res: Response) => {
   const { id } = req.params;
   const { orderItemName } = req.body;
 
@@ -118,7 +118,7 @@ export const updateOrderItemTemplateService = async (req: Request) => {
 };
 
 // Soft delete template item
-export const deleteOrderItemTemplateService = async (req: Request) => {
+export const deleteOrderItemService = async (req: Request, res: Response) => {
   const { id } = req.params;
 
   await prisma.orderItem.update({

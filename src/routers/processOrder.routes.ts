@@ -1,7 +1,7 @@
 // src/routes/order.routes.ts
 import { Router } from "express";
 import { verifyToken } from "../middlewares/verifyToken";
-import { processOrderItemController } from "../controllers/orderItems.controller";
+import { processOrderItemController } from "../controllers/processOrderItems.controller";
 
 export class OrderItemsRouter {
   private router: Router;

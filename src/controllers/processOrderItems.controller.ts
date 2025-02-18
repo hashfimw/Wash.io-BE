@@ -1,11 +1,11 @@
 import { Request, Response } from "express";
 import {
-  createLaundryItemService,
-  deleteLaundryItemService,
-  getLaundryItemsByOutletService,
+  createOrderItemService,
+  deleteOrderItemService,
   processOrderService,
-  updateLaundryItemService,
+  updateOrderItemService,
 } from "../services/outlets/processOrderItems.service";
+import { getAllOrdersService } from "../services/outlets/orderOutlets.service";
 
 export class processOrderItemController {
   processOrders = async (req: Request, res: Response): Promise<void> => {
@@ -23,7 +23,7 @@ export class processOrderItemController {
     res: Response
   ): Promise<void> => {
     try {
-      const result = await createLaundryItemService(req, res);
+      const result = await createOrderItemService(req, res);
       res.status(201).json(result);
     } catch (error) {
       console.log(error);
@@ -36,7 +36,7 @@ export class processOrderItemController {
     res: Response
   ): Promise<void> => {
     try {
-      const result = await updateLaundryItemService(req, res);
+      const result = await updateOrderItemService(req, res);
       res.status(200).json(result);
     } catch (error) {
       console.log(error);
@@ -49,7 +49,7 @@ export class processOrderItemController {
     res: Response
   ): Promise<void> => {
     try {
-      const result = await deleteLaundryItemService(req, res);
+      const result = await deleteOrderItemService(req, res);
       res.status(200).json(result);
     } catch (error) {
       console.log(error);
@@ -62,7 +62,7 @@ export class processOrderItemController {
     res: Response
   ): Promise<void> => {
     try {
-      const result = await getLaundryItemsByOutletService(req, res);
+      const result = await getAllOrdersService(req, res);
       res.status(200).json(result);
     } catch (error) {
       console.log(error);
