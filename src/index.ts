@@ -19,13 +19,12 @@ const app: Application = express();
 app.use(express.json());
 app.use(
   cors({
-    methods: "GET, POST, PATCH, DELETE, OPTIONS",
+    methods: "GET, POST, PATCH, PUT, DELETE, OPTIONS",
     optionsSuccessStatus: 200,
     origin: `${process.env.BASE_URL_FE}`,
     credentials: true,
   })
 );
-export const upload = multer({ storage: multer.memoryStorage() });
 
 app.get("/api", (req: Request, res: Response) => {
   res.status(200).send("Welcome to my API");
@@ -39,7 +38,7 @@ const showOrder = new showOrderRouter();
 const bypassProcess = new BypassProcessRouter();
 
 // Routes
-app.use("/api/adm-employee", superAdmEmployee.getRouter());
+app.use("/api/adm-employees", superAdmEmployee.getRouter());
 app.use("/api/adm-outlets", superAdmOutlets.getRouter());
 app.use("/api/public", express.static(path.join(__dirname, "../public")));
 app.use("/api/orders", orderItemsRouter.getRouter());

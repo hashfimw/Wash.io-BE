@@ -1,4 +1,3 @@
-// src/controllers/report.controller.ts
 import { Request, Response } from "express";
 import {
   getEmployeePerformanceService,

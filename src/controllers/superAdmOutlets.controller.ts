@@ -1,4 +1,3 @@
-// src/controllers/superAdmOutlet.controller.ts
 import { Request, Response } from "express";
 import {
   createOutletService,

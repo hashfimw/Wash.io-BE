@@ -11,7 +11,7 @@ export class UserController {
     try {
       const result = await getUserService(req, res);
 
-      return res.status(200).send(result);
+      return res.status(200).json(result);
     } catch (error) {
       console.log(error);
       res.status(400).send(error);

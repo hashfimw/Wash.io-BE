@@ -1,4 +1,3 @@
-// src/controllers/order.controller.ts
 import { Request, Response } from "express";
 import {
   getAllOrdersService,

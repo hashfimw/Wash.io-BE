@@ -1,4 +1,3 @@
-// src/routes/bypassProcess.routes.ts
 import { Router } from "express";
 import { BypassProcessController } from "../controllers/bypassProcess.controller";
 import { verifyToken } from "../middlewares/verifyToken";
@@ -6,6 +5,7 @@ import {
   validateOutletAdmin,
   validateWorkerBypass,
 } from "../middlewares/validation/bypassValidation.middleware";
+import { isOutletAdmin } from "../middlewares/validation/outletAdminAuth.middleware";
 
 export class BypassProcessRouter {
   private router: Router;

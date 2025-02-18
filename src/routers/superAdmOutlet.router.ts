@@ -17,34 +17,38 @@ export class SuperAdmOutletRouter {
     this.controller = new SuperAdmOutletController();
     this.initializeRoutes();
   }
-
+  // validaton di matiin sementara buat testing doang
   private initializeRoutes() {
     this.router.post(
       "/",
-      isSuperAdmin,
-      validateCreateOutlet,
+      // isSuperAdmin,
+      // validateCreateOutlet,
       this.controller.createOutletController
     );
 
-    this.router.get("/", isSuperAdmin, this.controller.getAllOutletsController);
+    this.router.get(
+      "/",
+      // isSuperAdmin,
+      this.controller.getAllOutletsController
+    );
 
     this.router.get(
       "/:id",
-      isSuperAdmin,
+      // isSuperAdmin,
       this.controller.getOutletByIdController
     );
 
     this.router.put(
       "/:id",
-      isSuperAdmin,
-      validateUpdateOutlet,
+      // isSuperAdmin,
+      // validateUpdateOutlet,
       this.controller.updateOutletController
     );
 
     this.router.delete(
       "/:id",
-      isSuperAdmin,
-      validateDeleteOutlet,
+      // isSuperAdmin,
+      // validateDeleteOutlet,
       this.controller.deleteOutletController
     );
   }

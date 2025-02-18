@@ -17,8 +17,8 @@ export class UserRouter {
   private initializeRoutes() {
     this.router.get(
       "/",
-      verifyToken,
-      checkUser,
+      // verifyToken,
+      // checkUser,
       asyncHandler(this.userController.getUsers)
     );
 
@@ -38,8 +38,8 @@ export class UserRouter {
 
     this.router.get(
       "/:id",
-      verifyToken,
-      checkUser,
+      // verifyToken,
+      // checkUser,
       asyncHandler(this.userController.getUsersId)
     );
 

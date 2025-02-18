@@ -102,14 +102,14 @@ model Order {
 
 model OrderItem {
   id            Int       @id @default(autoincrement())
-  qty           Int
+  qty           Int?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
   isDeleted     Boolean   @default(false)
   deletedAt     DateTime?
-  orderId       Int
+  orderId       Int?
   orderItemName String
-  order         Order     @relation(fields: [orderId], references: [id])
+  order         Order?    @relation(fields: [orderId], references: [id])
 }
 
 model LaundryJob {
@@ -154,6 +154,7 @@ model Notification {
   updatedAt   DateTime  @updatedAt
   isDeleted   Boolean   @default(false)
   deletedAt   DateTime?
+  url         String?
   user        User      @relation(fields: [userId], references: [id])
 }
 
@@ -180,20 +181,20 @@ model EmployeeAttendance {
   deletedAt        DateTime?
   employeeId       Int
   isAttended       Boolean            @default(false)
+  canClockIn       Boolean            @default(false)
   AttendanceRecord AttendanceRecord[]
   employee         Employee           @relation(fields: [employeeId], references: [id])
 }
 
-/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model AttendanceRecord {
   id                   Int                @id @default(autoincrement())
   attendanceType       AttendanceType
   employeeAttendanceId Int
   createdAt            DateTime           @default(now())
-  updatedAt            DateTime
+  updatedAt            DateTime           @updatedAt
   isDeleted            Boolean            @default(false)
   deletedAt            DateTime?
-  EmployeeAttendance   EmployeeAttendance @relation(fields: [employeeAttendanceId], references: [id])
+  employeeAttendance   EmployeeAttendance @relation(fields: [employeeAttendanceId], references: [id])
 }
 
 enum Role {

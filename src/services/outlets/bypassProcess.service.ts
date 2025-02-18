@@ -58,7 +58,7 @@ export const handleBypassRequestService = async (
     const job = await prisma.laundryJob.update({
       where: { id: Number(laundryJobId) },
       data: {
-        byPassStatus: isApproved ? "ACCEPTED" : "REJECTEED",
+        byPassStatus: isApproved ? "ACCEPTED" : "REJECTED",
         isCompleted: isApproved,
       },
       include: {
@@ -75,7 +75,7 @@ export const handleBypassRequestService = async (
       // Notifikasi untuk worker jika bypass ditolak
       await prisma.notification.create({
         data: {
-          userId: job.worker.userId,
+          userId: job.worker!.userId,
           title: "Bypass Request Rejected",
           description: `Your bypass request for Order #${laundryJobId} has been rejected. Please find missing items within 30 minutes.`,
         },
@@ -90,7 +90,7 @@ export const handleBypassRequestService = async (
         if (checkJob && !checkJob.isCompleted) {
           await prisma.notification.create({
             data: {
-              userId: job.worker.userId,
+              userId: job.worker!.userId,
               title: "Time's Up!",
               description: `30 minutes have passed. Please update missing items for Order #${laundryJobId}`,
             },
@@ -101,7 +101,7 @@ export const handleBypassRequestService = async (
       // Notifikasi untuk worker jika bypass disetujui
       await prisma.notification.create({
         data: {
-          userId: job.worker.userId,
+          userId: job.worker!.userId,
           title: "Bypass Request Approved",
           description: `Your bypass request for Order #${laundryJobId} has been approved. Proceed to next station.`,
         },

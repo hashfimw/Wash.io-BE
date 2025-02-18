@@ -14,14 +14,12 @@ export class OrderItemsRouter {
   }
 
   private initializeRoutes() {
-    // Order routes
     this.router.post(
       "/process-order",
       verifyToken,
       this.controller.processOrders
     );
 
-    // Laundry Item routes
     this.router.post(
       "/items",
       verifyToken,

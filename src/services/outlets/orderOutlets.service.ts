@@ -3,6 +3,7 @@ import { Request, Response } from "express";
 import prisma from "../../prisma";
 import { Role } from "@prisma/client";
 
+// Untuk Super Admin
 export const getAllOrdersService = async (req: Request, res: Response) => {
   const { outletId } = req.query;
 
@@ -47,31 +48,18 @@ export const getAllOrdersService = async (req: Request, res: Response) => {
   };
 };
 
+// Untuk Outlet Admin
 export const getOutletOrdersService = async (req: Request, res: Response) => {
-  if (!req.user) {
-    throw new Error("Unauthorized");
-  }
-
-  // Karena id dari UserPayload adalah string, kita perlu cek user dan rolenya dulu
   const user = await prisma.user.findUnique({
-    where: { id: Number(req.user.id) },
+    where: { id: Number(req.user?.id) },
     include: {
       Employee: true,
     },
   });
 
-  if (!user) {
-    throw new Error("User not found");
-  }
-
-  // Get orders berdasarkan role
   const orders = await prisma.order.findMany({
     where: {
-      ...(user.role === Role.OUTLET_ADMIN
-        ? {
-            outletId: user.Employee?.outletId,
-          }
-        : {}),
+      outletId: user?.Employee?.outletId,
       isDeleted: false,
     },
     include: {
@@ -110,34 +98,28 @@ export const getOutletOrdersService = async (req: Request, res: Response) => {
 export const trackOrderService = async (req: Request, res: Response) => {
   const { orderId } = req.params;
 
-  if (!req.user) {
-    throw new Error("Unauthorized");
-  }
-
-  // Ambil data user lengkap dari database
-  const user = await prisma.user.findUnique({
-    where: { id: Number(req.user.id) },
-    include: {
-      Employee: true,
-    },
-  });
-
-  if (!user) {
-    throw new Error("User not found");
-  }
+  // sementara dikomen dlu karena di frontend belum bisa login
+  // const user = await prisma.user.findUnique({
+  //   where: { id: Number(req.user?.id) },
+  //   include: {
+  //     Employee: true,
+  //   },
+  // });
 
   // Query order dengan kondisi berbeda berdasarkan role
   const order = await prisma.order.findFirst({
     where: {
       id: Number(orderId),
-      ...(user.role === Role.OUTLET_ADMIN
-        ? {
-            outletId: user.Employee?.outletId,
-          }
-        : {}),
+      // Jika Outlet Admin, tambahkan filter outletId
+      // ...(user?.role === Role.OUTLET_ADMIN
+      //   ? {
+      //       outletId: user?.Employee?.outletId,
+      //     }
+      //   : {}),
       isDeleted: false,
     },
     include: {
+      outlet: true,
       OrderItem: true,
       LaundryJob: {
         include: {
@@ -161,10 +143,9 @@ export const trackOrderService = async (req: Request, res: Response) => {
   });
 
   if (!order) {
-    throw new Error("Order not found");
+    throw new Error("Order not found or unauthorized to access this order");
   }
 
-  // Track timeline berdasarkan jobs
   const timeline = [
     ...order.LaundryJob.map((job) => ({
       stage: job.station,

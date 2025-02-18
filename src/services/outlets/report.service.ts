@@ -1,7 +1,7 @@
-// src/services/report.service.ts
 import { Request, Response } from "express";
 import prisma from "../../prisma";
 
+//masih belum fix
 export const getSalesReportService = async (req: Request, res: Response) => {
   const { startDate, endDate, outletId, period = "daily" } = req.query;
   const user = await prisma.user.findUnique({
@@ -34,7 +34,7 @@ export const getSalesReportService = async (req: Request, res: Response) => {
     case "yearly":
       report = orders.reduce<Record<number, number>>((acc, order) => {
         const year = order.createdAt.getFullYear();
-        acc[year] = (acc[year] || 0) + order.laundryPrice;
+        acc[year] = (acc[year] || 0) + order.laundryPrice!;
         return acc;
       }, {});
       break;
@@ -43,14 +43,14 @@ export const getSalesReportService = async (req: Request, res: Response) => {
         const month = `${order.createdAt.getFullYear()}-${
           order.createdAt.getMonth() + 1
         }`;
-        acc[month] = (acc[month] || 0) + order.laundryPrice;
+        acc[month] = (acc[month] || 0) + order.laundryPrice!;
         return acc;
       }, {});
       break;
     default:
       report = orders.reduce<Record<string, number>>((acc, order) => {
         const day = order.createdAt.toISOString().split("T")[0];
-        acc[day] = (acc[day] || 0) + order.laundryPrice;
+        acc[day] = (acc[day] || 0) + order.laundryPrice!;
         return acc;
       }, {});
   }

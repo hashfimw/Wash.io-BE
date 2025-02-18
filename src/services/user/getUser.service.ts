@@ -8,7 +8,9 @@ export const getUserService = async (req: Request, res: Response) => {
     const page = parseInt(req.query.page as string) || 1;
     const limit = parseInt(req.query.limit as string) || 5;
 
-    const filter: Prisma.UserWhereInput = {};
+    const filter: Prisma.UserWhereInput = {
+      role: "CUSTOMER", // nambahin filter by role
+    };
 
     if (search) {
       filter.OR = [
@@ -27,9 +29,9 @@ export const getUserService = async (req: Request, res: Response) => {
       skip: limit * (page - 1),
     });
 
-    res.status(200).json({ total_page, page, limit, users });
+    return { total_page, page, limit, users };
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: "Something went wrong !" });
+    throw error;
   }
 };

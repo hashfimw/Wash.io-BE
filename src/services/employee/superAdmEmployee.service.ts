@@ -20,6 +20,7 @@ export const createEmployeeService = async (req: Request, res: Response) => {
       Employee: {
         create: { workShift, station, outletId },
       },
+      isVerified: true,
     },
     include: { Employee: true },
   });
@@ -38,7 +39,11 @@ export const getAllEmployeesService = async (req: Request, res: Response) => {
       isDeleted: false,
       role: { in: [Role.WORKER, Role.DRIVER, Role.OUTLET_ADMIN] },
     },
-    include: { Employee: true },
+    include: {
+      Employee: {
+        include: { outlet: true },
+      },
+    },
   });
 
   return {
@@ -101,51 +106,5 @@ export const getAllUsersService = async (req: Request, res: Response) => {
   return {
     message: "Users fetched successfully",
     data: users,
-  };
-};
-
-export const assignEmployeeToOutletService = async (
-  req: Request,
-  res: Response
-) => {
-  const { id, outletId } = req.body;
-
-  const employee = await prisma.employee.update({
-    where: {
-      id: Number(id),
-    },
-    data: {
-      outletId: Number(outletId),
-    },
-    include: {
-      user: true,
-      outlet: true,
-    },
-  });
-
-  return {
-    message: "Employee assigned to outlet successfully",
-    data: employee,
-  };
-};
-
-export const reassignMultipleEmployeesService = async (
-  req: Request,
-  res: Response
-) => {
-  const { assignments } = req.body;
-
-  const results = await prisma.$transaction(
-    assignments.map((assign: { id: number; outletId: number }) =>
-      prisma.employee.update({
-        where: { id: assign.id },
-        data: { outletId: assign.outletId },
-      })
-    )
-  );
-
-  return {
-    message: "Multiple employees reassigned successfully",
-    data: results,
   };
 };
