@@ -103,8 +103,8 @@ const attendanceSchedule = () => __awaiter(void 0, void 0, void 0, function* () 
                 offsetedMinute = 1440 + offsetedMinute;
             const currentHour = Math.round(((offsetedMinute / 60) % 24) * 100) / 100;
             console.log({ tzo: item.offset, currentHour: currentHour, outlets: item.ids });
-            console.log({ attendance: { MORNING: currentHour == 5, NOON: currentHour == 13, NIGHT: currentHour == 21 } });
-            console.log({ failSafe: { MORNING: currentHour == 6, NOON: currentHour == 14, NIGHT: currentHour == 22 } });
+            console.log({ start: { MORNING: currentHour == 5, NOON: currentHour == 13, NIGHT: currentHour == 21 } });
+            console.log({ end: { MORNING: currentHour == 6, NOON: currentHour == 14, NIGHT: currentHour == 22 } });
             if (currentHour == 5)
                 yield shiftStartScheduler(item.ids, "MORNING");
             if (currentHour == 6)
@@ -142,7 +142,7 @@ const forceAlterEmployeeAttendances = (req, res) => __awaiter(void 0, void 0, vo
             else if (workShift == "NIGHT")
                 length = yield shiftStartScheduler([outletId], "NIGHT");
             else
-                throw { message: "Invalid request type!" };
+                throw { message: "Invalid work shift request type!" };
         }
         else if (requestType == "end") {
             if (workShift == "MORNING")
@@ -152,8 +152,10 @@ const forceAlterEmployeeAttendances = (req, res) => __awaiter(void 0, void 0, vo
             else if (workShift == "NIGHT")
                 length = yield shiftEndScheduler([outletId], "NIGHT");
             else
-                throw { message: "Invalid request type!" };
+                throw { message: "Invalid work shift request type!" };
         }
+        else
+            throw { message: "Invalid request type!" };
         res.status(201).send({ message: `Employee Attendance(s) have forcibly altered on ${length} Employee(s)!` });
     }
     catch (error) {

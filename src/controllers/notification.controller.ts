@@ -5,7 +5,7 @@ import { Prisma } from "@prisma/client";
 export default class NotificationController {
   getNotifications = async (req: Request, res: Response) => {
     try {
-      const { requestType = "unread" } = req.query;
+      const { requestType = "unread", limit = "10", page = "1" } = req.query;
 
       const filter: Prisma.NotificationWhereInput = { userId: +req.user!.id };
       if (requestType != "all") {
@@ -13,12 +13,16 @@ export default class NotificationController {
         else if (requestType == "read") filter.isRead = true;
       }
 
+      const total = await prisma.notification.count({ where: filter });
+
       const notifications = await prisma.notification.findMany({
         where: filter,
         orderBy: { createdAt: "desc" },
+        skip: (+page - 1) * +limit,
+        take: +limit,
       });
 
-      res.status(200).send(notifications);
+      res.status(200).send({ data: notifications, meta: { page: +page, limit: +limit, total: +total } });
     } catch (error) {
       console.log(error);
       res.status(400).send(error);

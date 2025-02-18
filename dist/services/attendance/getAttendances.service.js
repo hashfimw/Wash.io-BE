@@ -37,7 +37,7 @@ const getAttendances = (filter, meta) => __awaiter(void 0, void 0, void 0, funct
                     role: item.employeeAttendance.employee.user.role,
                 };
             }),
-            meta: { page: meta.page, limit: meta.limit, total: total },
+            meta: { page: +meta.page, limit: +meta.limit, total: total },
         };
     }
     catch (error) {

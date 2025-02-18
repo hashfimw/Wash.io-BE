@@ -102,8 +102,8 @@ const attendanceSchedule = async () => {
       if (offsetedMinute < 0) offsetedMinute = 1440 + offsetedMinute;
       const currentHour = Math.round(((offsetedMinute / 60) % 24) * 100) / 100;
       console.log({ tzo: item.offset, currentHour: currentHour, outlets: item.ids });
-      console.log({ attendance: { MORNING: currentHour == 5, NOON: currentHour == 13, NIGHT: currentHour == 21 } });
-      console.log({ failSafe: { MORNING: currentHour == 6, NOON: currentHour == 14, NIGHT: currentHour == 22 } });
+      console.log({ start: { MORNING: currentHour == 5, NOON: currentHour == 13, NIGHT: currentHour == 21 } });
+      console.log({ end: { MORNING: currentHour == 6, NOON: currentHour == 14, NIGHT: currentHour == 22 } });
       if (currentHour == 5) await shiftStartScheduler(item.ids, "MORNING");
       if (currentHour == 6) await shiftEndScheduler(item.ids, "NIGHT");
       if (currentHour == 13) await shiftStartScheduler(item.ids, "NOON");
@@ -122,7 +122,7 @@ export default attendanceSchedule;
 export const forceAlterEmployeeAttendances = async (req: Request, res: Response) => {
   try {
     const workShift = req.query.workShift as EmployeeWorkShift;
-    const requestType = req.query.requestType;
+    const requestType = req.query.requestType as "start" | "end";
 
     const admin = await findUser(+req.user!.id);
     if (admin.role != "OUTLET_ADMIN") throw { message: "This user can't access this feature" };
@@ -135,13 +135,13 @@ export const forceAlterEmployeeAttendances = async (req: Request, res: Response)
       if (workShift == "MORNING") length = await shiftStartScheduler([outletId], "MORNING");
       else if (workShift == "NOON") length = await shiftStartScheduler([outletId], "NOON");
       else if (workShift == "NIGHT") length = await shiftStartScheduler([outletId], "NIGHT");
-      else throw { message: "Invalid request type!" };
+      else throw { message: "Invalid work shift request type!" };
     } else if (requestType == "end") {
       if (workShift == "MORNING") length = await shiftEndScheduler([outletId], "MORNING");
       else if (workShift == "NOON") length = await shiftEndScheduler([outletId], "NOON");
       else if (workShift == "NIGHT") length = await shiftEndScheduler([outletId], "NIGHT");
-      else throw { message: "Invalid request type!" };
-    }
+      else throw { message: "Invalid work shift request type!" };
+    } else throw { message: "Invalid request type!" };
 
     res.status(201).send({ message: `Employee Attendance(s) have forcibly altered on ${length} Employee(s)!` });
   } catch (error) {

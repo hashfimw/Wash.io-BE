@@ -26,7 +26,7 @@ const getAttendances = async (filter: Prisma.AttendanceRecordWhereInput, meta: P
           role: item.employeeAttendance.employee.user.role,
         };
       }),
-      meta: { page: meta.page, limit: meta.limit, total: total },
+      meta: { page: +meta.page, limit: +meta.limit, total: total },
     };
   } catch (error) {
     throw error;
@@ -50,7 +50,7 @@ const findOutletsAttendancesId = async (outletId: number, role: string) => {
 
 interface AttendanceQueries extends PaginationQuerieswithDate {
   userId: number;
-  requestType: string;
+  requestType: "employee" | "outlet";
   attendanceType: string;
   role: string;
 }

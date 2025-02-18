@@ -21,7 +21,7 @@ export default class AttendanceController {
     try {
       const queries = {
         userId: +req.user!.id,
-        requestType: req.query.requestType as string,
+        requestType: req.query.requestType as "employee" | "outlet",
         attendanceType: (req.query.attendanceType as string) || "all",
         role: (req.query.role as string) || "all",
         startDate: req.query.startDate as string,

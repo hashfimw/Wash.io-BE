@@ -21,7 +21,7 @@ const verifyToken = (req, res, next) => __awaiter(void 0, void 0, void 0, functi
             throw { message: "Unauthorize!" };
         const verifiedUser = (0, jsonwebtoken_1.verify)(token, config_1.appConfig.SecretKey);
         req.user = verifiedUser;
-        console.log(verifiedUser);
+        // console.log(verifiedUser);
         next();
     }
     catch (err) {

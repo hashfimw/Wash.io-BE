@@ -57,7 +57,7 @@ const getTransportJobs = (filter, meta) => __awaiter(void 0, void 0, void 0, fun
         });
         const count = yield prisma_1.default.transportJob.count({ where: filter });
         const total = Math.ceil(count / +meta.limit);
-        return { data: transportJobs, meta: { page: meta.page, limit: meta.limit, total: total } };
+        return { data: transportJobs, meta: { page: +meta.page, limit: +meta.limit, total: total } };
     }
     catch (error) {
         throw error;

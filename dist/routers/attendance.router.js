@@ -16,7 +16,7 @@ class AttendanceRouter {
     initializeRoutes() {
         this.router.get("/", verifyToken_1.verifyToken, this.controller.getAttendances);
         this.router.post("/", verifyToken_1.verifyToken, this.controller.createAttendance);
-        this.router.post("/force-start", verifyToken_1.verifyToken, attendanceScheduler_service_1.forceAlterEmployeeAttendances);
+        this.router.post("/force", verifyToken_1.verifyToken, attendanceScheduler_service_1.forceAlterEmployeeAttendances);
     }
     getRouter() {
         return this.router;

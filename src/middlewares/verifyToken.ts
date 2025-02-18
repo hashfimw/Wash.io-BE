@@ -11,7 +11,7 @@ export const verifyToken = async (req: Request, res: Response, next: NextFunctio
 
     const verifiedUser = verify(token, appConfig.SecretKey);
     req.user = verifiedUser as UserPayload;
-    console.log(verifiedUser);
+    // console.log(verifiedUser);
 
     next();
   } catch (err) {

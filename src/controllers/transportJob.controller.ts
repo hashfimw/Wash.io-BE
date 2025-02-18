@@ -7,7 +7,7 @@ export default class TransportJobController {
       const queries = {
         userId: +req.user!.id,
         tzo: req.query.tzo as string,
-        requestType: req.query.requestType as string,
+        requestType: req.query.requestType as "request" | "order" | "history",
         transportType: (req.query.transportType as string) || "all",
         isCompleted: (req.query.isCompleted as string) || "1",
         startDate: req.query.startDate as string,

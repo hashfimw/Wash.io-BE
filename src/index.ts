@@ -7,11 +7,15 @@ import cron from "node-cron";
 import path from "path";
 import { AuthRouter } from "./routers/auth.router";
 import { UserRouter } from "./routers/user.router";
+import { AddressRouter } from "./routers/address.router";
+import { PickupOrderRouter } from "./routers/pickupOrder.router";
 import AttendanceRouter from "./routers/attendance.router";
 import attendanceSchedule from "./services/attendance/attendanceScheduler.service";
 import TransportJobRouter from "./routers/transportJob.router";
 import LaundryJobRouter from "./routers/laundryJob.router";
 import NotificationRouter from "./routers/notification.router";
+import { createOrder, getNearestOutlets, payOrder, updateOrder } from "./temporary";
+import { verifyToken } from "./middlewares/verifyToken";
 
 dotenv.config();
 
@@ -45,6 +49,8 @@ app.use("/api/public", express.static(path.join(__dirname, "../public")));
 
 const authRouter = new AuthRouter();
 const userRouter = new UserRouter();
+const addressRouter = new AddressRouter();
+const pickupOrderRouter = new PickupOrderRouter();
 const attendanceRouter = new AttendanceRouter();
 const transportJobRouter = new TransportJobRouter();
 const laundryJobRouter = new LaundryJobRouter();
@@ -52,10 +58,17 @@ const notificationRouter = new NotificationRouter();
 
 app.use("/api/auth", authRouter.getRouter());
 app.use("/api/users", userRouter.getRouter());
+app.use("/api/address", addressRouter.getRouter());
+app.use("/api/pickup-orders", pickupOrderRouter.getRouter());
 app.use("/api/attendances", attendanceRouter.getRouter());
 app.use("/api/transport-jobs", transportJobRouter.getRouter());
 app.use("/api/laundry-jobs", laundryJobRouter.getRouter());
 app.use("/api/notifications", notificationRouter.getRouter());
+
+app.get("/api/outlets/nearest", verifyToken, getNearestOutlets);
+app.post("/api/orders", createOrder);
+app.patch("/api/orders/:id", updateOrder);
+app.patch("/api/payments/:id", payOrder);
 
 app.listen(PORT, () => {
   console.log(`server is running on => http://localhost:${PORT}/api`);

@@ -32,7 +32,7 @@ const getTransportJobs = async (filter: Prisma.TransportJobWhereInput, meta: Pag
     const count = await prisma.transportJob.count({ where: filter });
     const total = Math.ceil(count / +meta.limit);
 
-    return { data: transportJobs, meta: { page: meta.page, limit: meta.limit, total: total } };
+    return { data: transportJobs, meta: { page: +meta.page, limit: +meta.limit, total: total } };
   } catch (error) {
     throw error;
   }
@@ -55,7 +55,7 @@ export const findOutletsOrderIds = async (outletId: number, orderStatus: OrderSt
 interface TransportJobQueries extends PaginationQuerieswithDate {
   userId: number;
   tzo: string;
-  requestType: string;
+  requestType: "request" | "order" | "history";
   transportType: string;
   isCompleted: string;
 }
@@ -63,7 +63,7 @@ interface TransportJobQueries extends PaginationQuerieswithDate {
 export const getTransportJobsService = async (queries: TransportJobQueries) => {
   try {
     const dates = dateValidator(queries.startDate, queries.endDate);
-    
+
     const filter: Prisma.TransportJobWhereInput = {};
     if (queries.transportType != "all") {
       filter.transportType = queries.transportType as TransportType;

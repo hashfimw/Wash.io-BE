@@ -42,7 +42,7 @@ const getLaundryJobs = async (filter: Prisma.LaundryJobWhereInput, meta: Paginat
 interface LaundryJobQueries extends PaginationQuerieswithDate {
   userId: number;
   tzo: string;
-  requestType: string;
+  requestType: "request" | "history";
   isCompleted: string;
 }
 

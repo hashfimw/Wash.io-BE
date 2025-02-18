@@ -17,7 +17,7 @@ class NotificationController {
     constructor() {
         this.getNotifications = (req, res) => __awaiter(this, void 0, void 0, function* () {
             try {
-                const { requestType = "unread" } = req.query;
+                const { requestType = "unread", limit = "10", page = "1" } = req.query;
                 const filter = { userId: +req.user.id };
                 if (requestType != "all") {
                     if (requestType == "unread")
@@ -25,11 +25,14 @@ class NotificationController {
                     else if (requestType == "read")
                         filter.isRead = true;
                 }
+                const total = yield prisma_1.default.notification.count({ where: filter });
                 const notifications = yield prisma_1.default.notification.findMany({
                     where: filter,
                     orderBy: { createdAt: "desc" },
+                    skip: (+page - 1) * +limit,
+                    take: +limit,
                 });
-                res.status(200).send(notifications);
+                res.status(200).send({ data: notifications, meta: { page: +page, limit: +limit, total: +total } });
             }
             catch (error) {
                 console.log(error);

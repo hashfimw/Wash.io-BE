@@ -13,18 +13,24 @@ export class AuthRouter {
 
   private initializeRoutes(): void {
     this.router.post("/register", this.authController.registerController);
-
-    this.router.post("/complete-register", this.authController.completeRegistController);
-
+    this.router.post(
+      "/complete-register",
+      this.authController.completeRegistController
+    );
     this.router.post("/login", this.authController.loginController);
-
     this.router.post("/google", this.authController.getGoogleTokenController);
-
-    this.router.post("/forgotPassword", this.authController.forgotPasswordController);
-
-    this.router.post("/resetPassword", this.authController.resetPasswordController);
-
-    this.router.patch("/verify/:token", this.authController.verifyEmailController);
+    this.router.post(
+      "/forgotPassword",
+      this.authController.forgotPasswordController
+    );
+    this.router.post(
+      "/resetPassword",
+      this.authController.resetPasswordController
+    );
+    this.router.patch(
+      "/verify/:token",
+      this.authController.verifyEmailController
+    );
   }
 
   getRouter(): Router {

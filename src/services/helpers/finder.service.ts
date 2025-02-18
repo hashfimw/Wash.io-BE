@@ -13,8 +13,8 @@ export const findUser = async (id: number) => {
     });
     if (!user) throw { message: "User not found!" };
     if (user.isDeleted) throw { message: "User has been deleted!" };
+    if (user.Employee?.employmentStatus != "EMPLOYED") throw { message: "User is no longer employed!" };
     if (user.Employee?.isDeleted) throw { message: "User's employement data has been deleted!" };
-    if (user.Employee?.employmentStatus != "EMPLOYED") throw { message: "User's employement status is not on employment!" };
     return user;
   } catch (error) {
     throw error;

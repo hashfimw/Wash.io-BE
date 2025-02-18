@@ -29,10 +29,10 @@ const findUser = (id) => __awaiter(void 0, void 0, void 0, function* () {
             throw { message: "User not found!" };
         if (user.isDeleted)
             throw { message: "User has been deleted!" };
-        if ((_a = user.Employee) === null || _a === void 0 ? void 0 : _a.isDeleted)
+        if (((_a = user.Employee) === null || _a === void 0 ? void 0 : _a.employmentStatus) != "EMPLOYED")
+            throw { message: "User is no longer employed!" };
+        if ((_b = user.Employee) === null || _b === void 0 ? void 0 : _b.isDeleted)
             throw { message: "User's employement data has been deleted!" };
-        if (((_b = user.Employee) === null || _b === void 0 ? void 0 : _b.employmentStatus) != "EMPLOYED")
-            throw { message: "User's employement status is not on employment!" };
         return user;
     }
     catch (error) {
