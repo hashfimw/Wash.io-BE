@@ -4,7 +4,7 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 export class PickupOrderController {
-  // ✅ Membuat pickup order hanya berdasarkan addressId dari customer
+  // Membuat pickup order hanya berdasarkan addressId dari customer
   async createPickupOrder(req: Request, res: Response): Promise<void> {
     try {
       const userId = req.user?.id;
@@ -13,7 +13,7 @@ export class PickupOrderController {
       console.log("User ID:", userId);
       console.log("Address ID:", addressId);
 
-      // 🔍 Cek apakah alamat milik user dan belum dihapus
+      // Cek apakah alamat milik user dan belum dihapus
       const address = await prisma.address.findUnique({
         where: { id: addressId },
       });
@@ -23,12 +23,12 @@ export class PickupOrderController {
         return;
       }
 
-      // 🔍 Cari outlet terdekat berdasarkan koordinat latitude & longitude
+      // Cari outlet terdekat berdasarkan koordinat latitude & longitude
       const nearestOutlet = await prisma.outlet.findFirst({
         where: { isDeleted: false },
         orderBy: {
           outletAddress: {
-            latitude: "asc", // 🛠️ Bisa diubah dengan fungsi jarak jika perlu
+            latitude: "asc", // Bisa diubah dengan fungsi jarak jika perlu
           },
         },
       });
@@ -38,7 +38,6 @@ export class PickupOrderController {
         return;
       }
 
-      // ✅ Buat pickup order tanpa laundryPrice, laundryWeight, dan items
       const order = await prisma.order.create({
         data: {
           customerAddressId: addressId,
@@ -54,7 +53,7 @@ export class PickupOrderController {
     }
   }
 
-  // ✅ Mendapatkan satu pickup order berdasarkan ID
+  // Mendapatkan satu pickup order berdasarkan ID
   async getPickupOrder(req: Request, res: Response): Promise<void> {
     try {
       const { id } = req.params;
@@ -75,7 +74,7 @@ export class PickupOrderController {
     }
   }
 
-  // ✅ Mendapatkan semua pickup order yang masih aktif
+  // Mendapatkan semua pickup order yang masih aktif
   async getPickupOrders(req: Request, res: Response): Promise<void> {
     try {
       const orders = await prisma.order.findMany({
@@ -89,7 +88,7 @@ export class PickupOrderController {
     }
   }
 
-  // ✅ Memperbarui status pickup order
+  // Memperbarui status pickup order
   async updatePickupOrder(req: Request, res: Response): Promise<void> {
     try {
       const { id } = req.params;
@@ -107,7 +106,7 @@ export class PickupOrderController {
     }
   }
 
-  // ✅ Menghapus pickup order secara soft delete
+  // Menghapus pickup order secara soft delete
   async deletePickupOrder(req: Request, res: Response): Promise<void> {
     try {
       const { id } = req.params;
