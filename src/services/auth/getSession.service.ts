@@ -2,11 +2,7 @@ import { Request, Response } from "express";
 import { verify } from "jsonwebtoken";
 import prisma from "../../prisma";
 import { appConfig } from "../../utils/config";
-<<<<<<< HEAD
-import { Role } from "@prisma/client";
-=======
 import { Role } from "../../../prisma/generated/client";
->>>>>>> 72e08bd638b1a53f8e069a02f358159c0f3fabec
 
 export const getSessionService = async (
   req: Request,
