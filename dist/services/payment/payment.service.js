@@ -83,7 +83,7 @@ const createPaymentService = (req, res) => __awaiter(void 0, void 0, void 0, fun
         // Calculate total price
         const pickupOrder = yield prisma_1.default.transportJob.findFirst({ where: { orderId, transportType: "PICKUP" } });
         const distance = pickupOrder.distance / 1000;
-        const fare = distance * 10000;
+        const fare = Math.round(distance * 10000);
         const totalPrice = order.laundryPrice + fare;
         // Check if payment already exists
         const existingPayment = yield prisma_1.default.payment.findUnique({
@@ -113,6 +113,7 @@ const createPaymentService = (req, res) => __awaiter(void 0, void 0, void 0, fun
         const itemsSum = items.map((item) => item.price * item.quantity).reduce((a, b) => a + b);
         items.push({ id: "ITEM-FARE", price: fare, quantity: 1, name: "Fare" });
         items.push({ id: "ITEM-DIFF", price: totalPrice - fare - itemsSum, quantity: 1, name: "Difference" });
+        console.log(items);
         // Create Midtrans snap token
         const snapResponse = yield snap.createTransaction({
             transaction_details: transactionDetails,

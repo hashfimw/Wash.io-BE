@@ -74,10 +74,12 @@ export const createPickupOrderService = async (req: Request, res: Response): Pro
       });
 
       const driverIds = await getIdleEmployees(nearestOutlet.id, "DRIVER");
+      const distance = Math.round(nearestOutlet.distance * 10) * 100 
+      console.log(distance)
 
       const transportJobId = (
         await tx.transportJob.create({
-          data: { orderId: order.id, transportType: "PICKUP", distance: nearestOutlet.distance * 1000 },
+          data: { orderId: order.id, transportType: "PICKUP", distance: distance },
         })
       ).id;
 
