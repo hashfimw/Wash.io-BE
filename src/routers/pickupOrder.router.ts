@@ -32,12 +32,6 @@ export class PickupOrderRouter {
       "/:id",
       this.pickupOrderController.getPickupOrder.bind(this.pickupOrderController)
     );
-    this.router.put(
-      "/:id",
-      this.pickupOrderController.updatePickupOrder.bind(
-        this.pickupOrderController
-      )
-    );
     this.router.delete(
       "/:id",
       this.pickupOrderController.deletePickupOrder.bind(

@@ -17,6 +17,7 @@ class AuthRouter {
         this.router.post("/forgotPassword", this.authController.forgotPasswordController);
         this.router.post("/resetPassword", this.authController.resetPasswordController);
         this.router.patch("/verify/:token", this.authController.verifyEmailController);
+        this.router.get("/session", this.authController.getSessionController);
     }
     getRouter() {
         return this.router;

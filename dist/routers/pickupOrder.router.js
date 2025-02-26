@@ -16,7 +16,6 @@ class PickupOrderRouter {
         this.router.get("/", this.pickupOrderController.getPickupOrders.bind(this.pickupOrderController));
         this.router.post("/", this.pickupOrderController.createPickupOrder.bind(this.pickupOrderController));
         this.router.get("/:id", this.pickupOrderController.getPickupOrder.bind(this.pickupOrderController));
-        this.router.put("/:id", this.pickupOrderController.updatePickupOrder.bind(this.pickupOrderController));
         this.router.delete("/:id", this.pickupOrderController.deletePickupOrder.bind(this.pickupOrderController));
     }
     getRouter() {

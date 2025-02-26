@@ -57,8 +57,8 @@ export const loginService = async (req: Request, res: Response) => {
     }
 
     // Generate JWT token
-    const payload = { id: user.id };
-    const token = sign(payload, appConfig.SecretKey, { expiresIn: "30d" });
+    const payload = { id: user.id, role: user.role };
+    const token = sign(payload, appConfig.SecretKey, { expiresIn: "1d" });
 
     // Send response with token
     res.status(200).send({

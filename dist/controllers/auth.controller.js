@@ -17,6 +17,7 @@ const login_service_1 = require("../services/auth/login.service");
 const getGoogleToken_service_1 = require("../services/auth/getGoogleToken.service");
 const forgotPassword_service_1 = require("../services/auth/forgotPassword.service");
 const resetPassword_service_1 = require("../services/auth/resetPassword.service");
+const getSession_service_1 = require("../services/auth/getSession.service");
 class AuthController {
     registerController(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -95,6 +96,18 @@ class AuthController {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const result = yield (0, resetPassword_service_1.resetPasswrodService)(req, res);
+                res.status(200).send(result);
+            }
+            catch (error) {
+                console.log(error);
+                res.status(400).send(error);
+            }
+        });
+    }
+    getSessionController(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const result = yield (0, getSession_service_1.getSessionService)(req, res);
                 res.status(200).send(result);
             }
             catch (error) {

@@ -3,7 +3,6 @@ import { find } from "geo-tz";
 import { DateTime } from "luxon";
 import { Request, Response } from "express";
 import { EmployeeWorkShift } from "../../../prisma/generated/client";
-import { updateDeliveredOrderStatus } from "../../temporary";
 
 const shiftStartScheduler = async (ids: number[], workShift: EmployeeWorkShift) => {
   try {
@@ -32,7 +31,7 @@ const shiftStartScheduler = async (ids: number[], workShift: EmployeeWorkShift) 
         data: { isPresent: false },
       });
     });
-    console.log({ message: `Employee attendances created on ${employeeIds.length} Employee(s)` });
+    // console.log({ message: `Employee attendances created on ${employeeIds.length} Employee(s)` });
 
     return employeeIds.length;
   } catch (error) {
@@ -57,7 +56,7 @@ const shiftEndScheduler = async (ids: number[], workShift: EmployeeWorkShift) =>
         where: { id: { in: employeeAttendenceIds } },
         data: { canClockIn: false },
       });
-      console.log({ message: `Employee attendances updated on ${employeeAttendenceIds.length} Employee(s)` });
+      // console.log({ message: `Employee attendances updated on ${employeeAttendenceIds.length} Employee(s)` });
     }
 
     return employeeAttendenceIds.length;
@@ -105,9 +104,9 @@ const attendanceSchedule = async () => {
       let offsetedMinute = currentMinute + item.offset;
       if (offsetedMinute < 0) offsetedMinute = 1440 + offsetedMinute;
       const currentHour = Math.round(((offsetedMinute / 60) % 24) * 100) / 100;
-      console.log({ tzo: item.offset, currentHour: currentHour, outlets: item.ids });
-      console.log({ start: { MORNING: currentHour == 5, NOON: currentHour == 13, NIGHT: currentHour == 21 } });
-      console.log({ end: { MORNING: currentHour == 6, NOON: currentHour == 14, NIGHT: currentHour == 22 } });
+      // console.log({ tzo: item.offset, currentHour: currentHour, outlets: item.ids });
+      // console.log({ start: { MORNING: currentHour == 5, NOON: currentHour == 13, NIGHT: currentHour == 21 } });
+      // console.log({ end: { MORNING: currentHour == 6, NOON: currentHour == 14, NIGHT: currentHour == 22 } });
       if (currentHour == 5) await shiftStartScheduler(item.ids, "MORNING");
       if (currentHour == 6) await shiftEndScheduler(item.ids, "NIGHT");
       if (currentHour == 13) await shiftStartScheduler(item.ids, "NOON");
@@ -115,8 +114,7 @@ const attendanceSchedule = async () => {
       if (currentHour == 21) await shiftStartScheduler(item.ids, "NIGHT");
       if (currentHour == 22) await shiftEndScheduler(item.ids, "NOON");
     }
-    updateDeliveredOrderStatus();
-    console.log(`running cron job at ${new Date().toLocaleString()}`);
+    // console.log(`running cron job at ${new Date().toLocaleString()}`);
   } catch (error) {
     console.log(error);
   }

@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { createAttendanceRecordService } from "../services/attendance/createAttendance.service";
 import { getAttendancesService } from "../services/attendance/getAttendances.service";
-import { AttendanceType } from "prisma/generated/client";
+import { AttendanceType } from "../../prisma/generated/client";
 
 export default class AttendanceController {
   async createAttendance(req: Request, res: Response) {

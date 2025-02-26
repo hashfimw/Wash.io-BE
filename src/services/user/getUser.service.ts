@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import prisma from "../../prisma";
-import { Prisma } from "prisma/generated/client";
+import { Prisma } from "../../../prisma/generated/client";
 
 export const getUserService = async (req: Request, res: Response) => {
   try {
@@ -8,7 +8,9 @@ export const getUserService = async (req: Request, res: Response) => {
     const page = parseInt(req.query.page as string) || 1;
     const limit = parseInt(req.query.limit as string) || 5;
 
-    const filter: Prisma.UserWhereInput = {};
+    const filter: Prisma.UserWhereInput = {
+      role: "CUSTOMER",
+    };
 
     if (search) {
       filter.OR = [

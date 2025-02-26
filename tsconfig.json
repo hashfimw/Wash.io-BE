@@ -7,8 +7,11 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "outDir": "./dist",
-    "baseUrl": ".",
-    "types": ["./src/custom.d.ts"]
+    "moduleResolution": "node",
+    "typeRoots": [
+      "./src/types",
+      "./node_modules/@types"
+    ]
   },
   "include": ["**/*.ts"],
   "exclude": ["node_modules"]

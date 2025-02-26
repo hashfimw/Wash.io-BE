@@ -19,7 +19,9 @@ const getUserService = (req, res) => __awaiter(void 0, void 0, void 0, function*
         const search = req.query.search;
         const page = parseInt(req.query.page) || 1;
         const limit = parseInt(req.query.limit) || 5;
-        const filter = {};
+        const filter = {
+            role: "CUSTOMER",
+        };
         if (search) {
             filter.OR = [
                 { fullName: { contains: search, mode: "insensitive" } },

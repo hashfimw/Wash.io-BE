@@ -16,7 +16,6 @@ exports.forceAlterEmployeeAttendances = void 0;
 const prisma_1 = __importDefault(require("../../prisma"));
 const geo_tz_1 = require("geo-tz");
 const luxon_1 = require("luxon");
-const temporary_1 = require("../../temporary");
 const shiftStartScheduler = (ids, workShift) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const getEmployeeIds = yield prisma_1.default.employee.findMany({
@@ -42,7 +41,7 @@ const shiftStartScheduler = (ids, workShift) => __awaiter(void 0, void 0, void 0
                 data: { isPresent: false },
             });
         }));
-        console.log({ message: `Employee attendances created on ${employeeIds.length} Employee(s)` });
+        // console.log({ message: `Employee attendances created on ${employeeIds.length} Employee(s)` });
         return employeeIds.length;
     }
     catch (error) {
@@ -65,7 +64,7 @@ const shiftEndScheduler = (ids, workShift) => __awaiter(void 0, void 0, void 0, 
                 where: { id: { in: employeeAttendenceIds } },
                 data: { canClockIn: false },
             });
-            console.log({ message: `Employee attendances updated on ${employeeAttendenceIds.length} Employee(s)` });
+            // console.log({ message: `Employee attendances updated on ${employeeAttendenceIds.length} Employee(s)` });
         }
         return employeeAttendenceIds.length;
     }
@@ -107,9 +106,9 @@ const attendanceSchedule = () => __awaiter(void 0, void 0, void 0, function* () 
             if (offsetedMinute < 0)
                 offsetedMinute = 1440 + offsetedMinute;
             const currentHour = Math.round(((offsetedMinute / 60) % 24) * 100) / 100;
-            console.log({ tzo: item.offset, currentHour: currentHour, outlets: item.ids });
-            console.log({ start: { MORNING: currentHour == 5, NOON: currentHour == 13, NIGHT: currentHour == 21 } });
-            console.log({ end: { MORNING: currentHour == 6, NOON: currentHour == 14, NIGHT: currentHour == 22 } });
+            // console.log({ tzo: item.offset, currentHour: currentHour, outlets: item.ids });
+            // console.log({ start: { MORNING: currentHour == 5, NOON: currentHour == 13, NIGHT: currentHour == 21 } });
+            // console.log({ end: { MORNING: currentHour == 6, NOON: currentHour == 14, NIGHT: currentHour == 22 } });
             if (currentHour == 5)
                 yield shiftStartScheduler(item.ids, "MORNING");
             if (currentHour == 6)
@@ -123,8 +122,7 @@ const attendanceSchedule = () => __awaiter(void 0, void 0, void 0, function* () 
             if (currentHour == 22)
                 yield shiftEndScheduler(item.ids, "NOON");
         }
-        (0, temporary_1.updateDeliveredOrderStatus)();
-        console.log(`running cron job at ${new Date().toLocaleString()}`);
+        // console.log(`running cron job at ${new Date().toLocaleString()}`);
     }
     catch (error) {
         console.log(error);

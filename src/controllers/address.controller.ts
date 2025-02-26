@@ -1,180 +1,62 @@
 import { Request, Response } from "express";
-import prisma from "../prisma";
+import { findNearestOutletService } from "../services/address/findNearestOutlet.service";
+import { getAddressByIdService } from "../services/address/getAddressById.service";
+import { deleteUserAddressService } from "../services/address/deleteUserAddress.service";
+import { updateUserAddressService } from "../services/address/updateUserAddress.service";
 
 export class AddressController {
-  private haversineDistance = (
-    lat1: number,
-    lon1: number,
-    lat2: number,
-    lon2: number
-  ): number => {
-    const toRad = (value: number): number => (value * Math.PI) / 180;
-    const R = 6371; // Radius bumi dalam km
-    const dLat = toRad(lat2 - lat1);
-    const dLon = toRad(lon2 - lon1);
-
-    const a =
-      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-      Math.cos(toRad(lat1)) *
-        Math.cos(toRad(lat2)) *
-        Math.sin(dLon / 2) *
-        Math.sin(dLon / 2);
-
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    return R * c; // Jarak dalam km
-  };
-
-  async findNearestOutlet(req: Request, res: Response): Promise<void> {
+  async findNearestOutlet(req: Request, res: Response) {
     try {
-      const { latitude, longitude } = req.body;
+      const result = await findNearestOutletService(req, res);
 
-      if (!latitude || !longitude || isNaN(latitude) || isNaN(longitude)) {
-        res.status(400).json({
-          message: "Latitude dan Longitude diperlukan dan harus berupa angka",
-        });
-        return;
-      }
-
-      const outlets = await prisma.outlet.findMany({
-        include: { outletAddress: true },
-      });
-
-      if (outlets.length === 0) {
-        res.status(404).json({ message: "Tidak ada outlet yang tersedia" });
-        return;
-      }
-
-      const nearestOutlet = outlets
-        .map((outlet) => {
-          const distance = this.haversineDistance(
-            parseFloat(latitude),
-            parseFloat(longitude),
-            parseFloat(outlet.outletAddress.latitude),
-            parseFloat(outlet.outletAddress.longitude)
-          );
-          return { ...outlet, distance };
-        })
-        .sort((a, b) => a.distance - b.distance)[0];
-
-      res.json({ nearestOutlet });
+      res.status(200).send(result);
     } catch (error) {
-      console.error(error);
-      res
-        .status(500)
-        .json({ message: "Terjadi kesalahan dalam pencarian outlet" });
+      console.log(error);
+      res.status(400).send(error);
     }
   }
 
-  async getUserAddress(req: Request, res: Response): Promise<void> {
+  async getAddressById(req: Request, res: Response) {
     try {
-      const { userId } = req.params;
-      const addresses = await prisma.address.findMany({
-        where: { customerId: parseInt(userId), isDeleted: false },
-      });
-      res.json(addresses);
+      const result = await getAddressByIdService(req, res);
+
+      res.status(200).send(result);
     } catch (error) {
-      res
-        .status(500)
-        .json({ message: "Terjadi kesalahan dalam mengambil alamat pengguna" });
+      console.log(error);
+      res.status(400).send(error);
     }
   }
 
-  async getAddressById(req: Request, res: Response): Promise<void> {
+  async createUserAddress(req: Request, res: Response) {
     try {
-      const { addressId } = req.params;
-      const address = await prisma.address.findUnique({
-        where: { id: parseInt(addressId), isDeleted: false },
-      });
-      if (!address) {
-        res.status(404).json({ message: "Alamat tidak ditemukan" });
-        return;
-      }
-      res.json(address);
+      const result = await getAddressByIdService(req, res);
+
+      res.status(200).send(result);
     } catch (error) {
-      res
-        .status(500)
-        .json({ message: "Terjadi kesalahan dalam mengambil alamat" });
+      console.log(error);
+      res.status(400).send(error);
     }
   }
 
-  async createUserAddress(req: Request, res: Response): Promise<void> {
+  async updateUserAddress(req: Request, res: Response) {
     try {
-      const {
-        customerId,
-        addressLine,
-        province,
-        regency,
-        district,
-        village,
-        latitude,
-        longitude,
-        isPrimary,
-      } = req.body;
+      const result = await updateUserAddressService(req, res);
 
-      if (isPrimary) {
-        await prisma.address.updateMany({
-          where: { customerId, isPrimary: true },
-          data: { isPrimary: false },
-        });
-      }
-
-      const address = await prisma.address.create({
-        data: {
-          customerId,
-          addressLine,
-          province,
-          regency,
-          district,
-          village,
-          latitude,
-          longitude,
-          isPrimary,
-        },
-      });
-      res.status(201).json(address);
+      res.status(200).send(result);
     } catch (error) {
-      res
-        .status(500)
-        .json({ message: "Terjadi kesalahan dalam membuat alamat" });
+      console.log(error);
+      res.status(400).send(error);
     }
   }
 
-  async updateUserAddress(req: Request, res: Response): Promise<void> {
+  async deleteUserAddress(req: Request, res: Response) {
     try {
-      const { addressId } = req.params;
-      const data = req.body;
+      const result = await deleteUserAddressService(req, res);
 
-      if (data.isPrimary) {
-        await prisma.address.updateMany({
-          where: { customerId: data.customerId, isPrimary: true },
-          data: { isPrimary: false },
-        });
-      }
-
-      const updatedAddress = await prisma.address.update({
-        where: { id: parseInt(addressId), isDeleted: false },
-        data,
-      });
-      res.json(updatedAddress);
+      res.status(200).send(result);
     } catch (error) {
-      res
-        .status(500)
-        .json({ message: "Terjadi kesalahan dalam memperbarui alamat" });
-    }
-  }
-
-  async deleteUserAddress(req: Request, res: Response): Promise<void> {
-    try {
-      const { addressId } = req.params;
-      await prisma.address.update({
-        where: { id: parseInt(addressId) },
-        data: { isDeleted: true, deletedAt: new Date() },
-      });
-      res.json({ message: "Alamat berhasil dihapus" });
-    } catch (error) {
-      res
-        .status(500)
-        .json({ message: "Terjadi kesalahan dalam menghapus alamat" });
+      console.log(error);
+      res.status(400).send(error);
     }
   }
 }
