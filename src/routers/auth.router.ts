@@ -31,6 +31,7 @@ export class AuthRouter {
       "/verify/:token",
       this.authController.verifyEmailController
     );
+    this.router.get("/session", this.authController.getSessionController);
   }
 
   getRouter(): Router {

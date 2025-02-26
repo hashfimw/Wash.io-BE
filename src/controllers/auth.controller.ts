@@ -6,6 +6,7 @@ import { loginService } from "../services/auth/login.service";
 import { getGoogleTokenService } from "../services/auth/getGoogleToken.service";
 import { forgotPasswordService } from "../services/auth/forgotPassword.service";
 import { resetPasswrodService } from "../services/auth/resetPassword.service";
+import { getSessionService } from "../services/auth/getSession.service";
 
 export class AuthController {
   async registerController(req: Request, res: Response) {
@@ -78,6 +79,17 @@ export class AuthController {
   async resetPasswordController(req: Request, res: Response) {
     try {
       const result = await resetPasswrodService(req, res);
+
+      res.status(200).send(result);
+    } catch (error) {
+      console.log(error);
+      res.status(400).send(error);
+    }
+  }
+
+  async getSessionController(req: Request, res: Response): Promise<void> {
+    try {
+      const result = await getSessionService(req, res);
 
       res.status(200).send(result);
     } catch (error) {
