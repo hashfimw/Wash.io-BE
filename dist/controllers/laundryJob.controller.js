@@ -9,24 +9,25 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const laundryJob_service_1 = require("../services/laundryJob/laundryJob.service");
+const getLaundryJob_service_1 = require("../services/laundryJob/getLaundryJob.service");
+const updateLaundryJob_service_1 = require("../services/laundryJob/updateLaundryJob.service");
 class LaundryJobController {
     getLaundryJobs(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const queries = {
                     userId: +req.user.id,
-                    tzo: req.query.tzo,
+                    tzo: +req.query.tzo,
                     requestType: req.query.requestType,
-                    isCompleted: req.query.isCompleted || "1",
+                    isCompleted: req.query.isCompleted || "true",
                     startDate: req.query.startDate,
                     endDate: req.query.endDate,
-                    limit: req.query.limit || "10",
-                    page: req.query.page || "1",
+                    limit: +req.query.limit || 10,
+                    page: +req.query.page || 1,
                     sortBy: req.query.sortBy || "createdAt",
                     sortOrder: req.query.sortOrder || "desc",
                 };
-                const result = yield (0, laundryJob_service_1.getLaundryJobsService)(queries);
+                const result = yield (0, getLaundryJob_service_1.getLaundryJobsService)(queries);
                 res.status(200).send({ data: result.data, meta: result.meta });
             }
             catch (error) {
@@ -38,7 +39,19 @@ class LaundryJobController {
     getLaundryJobById(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const result = yield (0, laundryJob_service_1.getLaundryJobByIdService)(+req.params.id);
+                const result = yield (0, getLaundryJob_service_1.getLaundryJobByIdService)(+req.user.id, +req.params.id);
+                res.status(200).send({ data: result });
+            }
+            catch (error) {
+                console.log(error);
+                res.status(400).send(error);
+            }
+        });
+    }
+    getOngoingLaundryJob(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const result = yield (0, getLaundryJob_service_1.getOngoingLaundryJobService)(+req.user.id);
                 res.status(200).send({ data: result });
             }
             catch (error) {
@@ -50,7 +63,7 @@ class LaundryJobController {
     updateLaundryJobById(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                yield (0, laundryJob_service_1.updateLaundryJobByIdService)(+req.params.id, +req.user.id, req.body.orderItemInput, req.query.tzo);
+                yield (0, updateLaundryJob_service_1.updateLaundryJobByIdService)(+req.params.id, +req.user.id, req.body.orderItemInput, +req.query.tzo);
                 res.status(201).send({ message: `Laundry Job and its Order Status updated successfully` });
             }
             catch (error) {

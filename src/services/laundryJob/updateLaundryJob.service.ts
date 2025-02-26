@@ -1,114 +1,17 @@
-import { PaginationQueries, PaginationQuerieswithDate } from "../../types/pagination.type";
-import { findOutletsOrderIds } from "../transportJob/transportJob.service";
 import prisma from "../../prisma";
+import { OrderStatus, Prisma } from "../../../prisma/generated/client";
 import { findUser, getIdleEmployees } from "../helpers/finder.service";
-import { dateValidator, shiftChecker } from "../helpers/dateTime.service";
-import { Prisma, WorkerStation, OrderStatus } from "../../../prisma/generated/client";
 import { createMultipleNotificationDataService } from "../notification/notification.service";
-
-const getIdleWorker = async (id: number, tzo: number) => {
-  try {
-    const worker = await findUser(id);
-    const workShift = shiftChecker(tzo);
-
-    if (tzo < -840 || tzo > 720 || !tzo) throw { message: "Invalid time zone offset!" };
-    if (worker.Employee!.workShift != workShift) throw { message: "You're out of your shift hours!" };
-    if (!worker.Employee!.isPresent) throw { message: "You need to clock in attendance first!" };
-    if (worker.Employee!.isWorking) throw { message: "You can't access this feature if you're assigned on ongoing job!" };
-
-    return worker;
-  } catch (error) {
-    throw error;
-  }
-};
-
-const getLaundryJobs = async (filter: Prisma.LaundryJobWhereInput, meta: PaginationQueries) => {
-  try {
-    const laundryJobs = await prisma.laundryJob.findMany({
-      where: filter,
-      skip: (+meta.page - 1) * +meta.limit,
-      take: +meta.limit,
-      orderBy: { [meta.sortBy]: meta.sortOrder },
-    });
-    const count = await prisma.laundryJob.count({ where: filter });
-    const total = Math.ceil(count / +meta.limit);
-
-    return { data: laundryJobs, meta: { page: meta.page, limit: meta.limit, total: total } };
-  } catch (error) {
-    throw error;
-  }
-};
-
-interface LaundryJobQueries extends PaginationQuerieswithDate {
-  userId: number;
-  tzo: string;
-  requestType: "request" | "history";
-  isCompleted: string;
-}
-
-export const getLaundryJobsService = async (queries: LaundryJobQueries) => {
-  try {
-    const dates = dateValidator(queries.startDate, queries.endDate);
-    const worker = await findUser(queries.userId);
-    if (worker.role != "WORKER") throw { message: "This user can't access this feature" };
-
-    const filter: Prisma.LaundryJobWhereInput = {};
-    filter.station = worker.Employee!.station as WorkerStation;
-    if (queries.requestType == "request") {
-      const outletId = (await getIdleWorker(queries.userId, +queries.tzo)).Employee!.outletId;
-      const orderIds = await findOutletsOrderIds(outletId);
-
-      filter.orderId = { in: orderIds };
-      filter.workerId = { equals: null };
-    } else if (queries.requestType == "history") {
-      filter.workerId = queries.userId;
-      filter.isCompleted = Boolean(+queries.isCompleted);
-      filter.createdAt = { gt: dates.start };
-      filter.createdAt = { lt: dates.end };
-    } else throw { message: "Invalid request type!" };
-
-    return await getLaundryJobs(filter, queries);
-  } catch (error) {
-    throw error;
-  }
-};
-
-export const getLaundryJobByIdService = async (laundryJobId: number) => {
-  try {
-    const laundryJob = await prisma.laundryJob.findUnique({
-      where: { id: laundryJobId },
-      include: { worker: { include: { user: true } }, order: { include: { customerAddress: { include: { customer: true } }, OrderItem: true } } },
-    });
-
-    if (!laundryJob) throw { message: "Invalid Laundry Job id!" };
-
-    const { worker, order, ...jobDetails } = laundryJob;
-    const { customer, ...address } = order.customerAddress;
-
-    return {
-      ...jobDetails,
-      orderStatus: order.orderStatus,
-      isPaid: order.isPaid,
-      workerId: worker?.id,
-      workerName: worker?.user!.fullName,
-      outletId: order.outletId,
-      orderItem: order.OrderItem,
-      customerName: customer!.fullName,
-      address,
-    };
-  } catch (error) {
-    throw error;
-  }
-};
+import { getIdleWorker, getLaundryJobByIdService } from "./getLaundryJob.service";
 
 interface OrderItemInput {
   orderItemId: number;
   qty: number;
 }
 
-export const updateLaundryJobByIdService = async (laundryJobId: number, userId: number, orderItemInput: OrderItemInput[], tzo: string) => {
+export const updateLaundryJobByIdService = async (laundryJobId: number, userId: number, orderItemInput: OrderItemInput[], tzo: number) => {
   try {
-    const laundryJob = await getLaundryJobByIdService(laundryJobId);
+    const laundryJob = await getLaundryJobByIdService(userId, laundryJobId);
     const worker = await findUser(userId);
     const orderId = laundryJob.orderId;
     const station = laundryJob.station;
@@ -116,10 +19,8 @@ export const updateLaundryJobByIdService = async (laundryJobId: number, userId: 
     let newOrderStatus: OrderStatus = "WAITING_FOR_PICKUP_DRIVER";
 
     if (worker.role != "WORKER") throw { message: "This user can't access this feature" };
-    if (laundryJob.outletId != worker.Employee!.outletId) throw { message: "Invalid Outlet Id!" };
     if (!worker.Employee!.isPresent) throw { message: "You need to clock in attendance first!" };
     if (laundryJob.isCompleted) throw { message: "Job already completed!" };
-    if (worker.Employee!.station != laundryJob.station) throw { message: "Invalid station!" };
 
     const laundryJobData: Prisma.LaundryJobUpdateArgs = {
       where: { id: laundryJobId },
@@ -134,7 +35,7 @@ export const updateLaundryJobByIdService = async (laundryJobId: number, userId: 
     let notificationData: Prisma.NotificationCreateManyInput[] = [];
 
     if (currentOrderStatus == "READY_FOR_WASHING" || currentOrderStatus == "WASHING_COMPLETED" || currentOrderStatus == "IRONING_COMPLETED") {
-      await getIdleWorker(userId, +tzo);
+      await getIdleWorker(userId, tzo);
       const orderItems = laundryJob.orderItem.map((item) => {
         return { orderItemId: item.id, qty: item.qty };
       });
@@ -194,6 +95,18 @@ export const updateLaundryJobByIdService = async (laundryJobId: number, userId: 
           return { ...item, url: `${process.env.BASE_URL_FE!}/laundry-job/${laundryJobId}` };
         });
         await tx.notification.createMany({ data: notificationData });
+      }
+      if (newOrderStatus == "AWAITING_PAYMENT") {
+        const customerId = (await tx.order.findFirst({ where: { id: orderId }, include: { customerAddress: true } }))?.customerAddress!.customerId!;
+
+        await tx.notification.create({
+          data: {
+            userId: customerId,
+            title: "Order payment alert",
+            description: "Your fresh laundry has been packed and waiting to be paid before being delivered. Pay your order now!",
+            url: `${process.env.BASE_URL_FE!}/order/${orderId}`,
+          },
+        });
       }
     });
 

@@ -21,15 +21,17 @@ export default class AttendanceController {
     try {
       const queries = {
         userId: +req.user!.id,
-        requestType: req.query.requestType as "employee" | "outlet",
-        attendanceType: (req.query.attendanceType as string) || "all",
-        role: (req.query.role as string) || "all",
+        attendanceType: req.query.attendanceType as "CLOCK_IN" | "CLOCK_OUT",
+        name: req.query.name as string,
+        role: req.query.role as "DRIVER" | "WORKER",
+        workShift: req.query.workShift as string,
+        outletName: req.query.outletName as string,
         startDate: req.query.startDate as string,
         endDate: req.query.endDate as string,
-        limit: (req.query.limit as string) || "10",
-        page: (req.query.page as string) || "1",
-        sortBy: (req.query.sortBy as string) || "createdAt",
-        sortOrder: (req.query.sortOrder as string) || "desc",
+        limit: +(req.query.limit as string) || 10,
+        page: +(req.query.page as string) || 1,
+        sortBy: (req.query.sortBy as string) || "date",
+        sortOrder: (req.query.sortOrder as "asc" | "desc") || "desc",
       };
 
       const result = await getAttendancesService(queries);

@@ -2,8 +2,8 @@ import prisma from "../../prisma";
 import { find } from "geo-tz";
 import { DateTime } from "luxon";
 import { Request, Response } from "express";
-import { findUser } from "../helpers/finder.service";
 import { EmployeeWorkShift } from "../../../prisma/generated/client";
+import { updateDeliveredOrderStatus } from "../../temporary";
 
 const shiftStartScheduler = async (ids: number[], workShift: EmployeeWorkShift) => {
   try {
@@ -42,19 +42,23 @@ const shiftStartScheduler = async (ids: number[], workShift: EmployeeWorkShift) 
 
 const shiftEndScheduler = async (ids: number[], workShift: EmployeeWorkShift) => {
   try {
-    const employeeAttendenceIds = (
-      await prisma.employee.findMany({
-        where: { outletId: { in: ids }, isDeleted: false, workShift: workShift },
-        select: { EmployeeAttendance: { select: { id: true }, orderBy: { id: "desc" }, take: 1 } },
-      })
-    ).map((item) => {
-      return item.EmployeeAttendance[0].id;
+    const employeeAttendence = await prisma.employee.findMany({
+      where: { outletId: { in: ids }, isDeleted: false, workShift: workShift },
+      select: { EmployeeAttendance: { select: { id: true }, orderBy: { id: "desc" }, take: 1 } },
     });
-    await prisma.employeeAttendance.updateMany({
-      where: { id: { in: employeeAttendenceIds } },
-      data: { canClockIn: false },
+
+    const employeeAttendenceIds: number[] = [];
+    employeeAttendence.map((item) => {
+      if (item.EmployeeAttendance.length > 0) employeeAttendenceIds.push(item.EmployeeAttendance[0].id);
     });
-    console.log({ message: `Employee attendances updated on ${employeeAttendenceIds.length} Employee(s)` });
+
+    if (employeeAttendenceIds.length > 0) {
+      await prisma.employeeAttendance.updateMany({
+        where: { id: { in: employeeAttendenceIds } },
+        data: { canClockIn: false },
+      });
+      console.log({ message: `Employee attendances updated on ${employeeAttendenceIds.length} Employee(s)` });
+    }
 
     return employeeAttendenceIds.length;
   } catch (error) {
@@ -111,6 +115,7 @@ const attendanceSchedule = async () => {
       if (currentHour == 21) await shiftStartScheduler(item.ids, "NIGHT");
       if (currentHour == 22) await shiftEndScheduler(item.ids, "NOON");
     }
+    updateDeliveredOrderStatus();
     console.log(`running cron job at ${new Date().toLocaleString()}`);
   } catch (error) {
     console.log(error);
@@ -123,11 +128,9 @@ export const forceAlterEmployeeAttendances = async (req: Request, res: Response)
   try {
     const workShift = req.query.workShift as EmployeeWorkShift;
     const requestType = req.query.requestType as "start" | "end";
+    const outletId = +(req.query.outletId as string);
 
-    const admin = await findUser(+req.user!.id);
-    if (admin.role != "OUTLET_ADMIN") throw { message: "This user can't access this feature" };
-
-    const outletId = admin.Employee!.outletId;
+    if (!outletId) throw { message: "Invalid outlet Id!" };
 
     let length = 0;
 
@@ -142,6 +145,8 @@ export const forceAlterEmployeeAttendances = async (req: Request, res: Response)
       else if (workShift == "NIGHT") length = await shiftEndScheduler([outletId], "NIGHT");
       else throw { message: "Invalid work shift request type!" };
     } else throw { message: "Invalid request type!" };
+
+    if (length == 0) throw { message: "No alteration(s) made!" };
 
     res.status(201).send({ message: `Employee Attendance(s) have forcibly altered on ${length} Employee(s)!` });
   } catch (error) {

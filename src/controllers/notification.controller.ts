@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import prisma from "../prisma";
-import { Prisma } from "@prisma/client";
+import { Prisma } from "../../prisma/generated/client";
 
 export default class NotificationController {
   getNotifications = async (req: Request, res: Response) => {
@@ -13,8 +13,6 @@ export default class NotificationController {
         else if (requestType == "read") filter.isRead = true;
       }
 
-      const total = await prisma.notification.count({ where: filter });
-
       const notifications = await prisma.notification.findMany({
         where: filter,
         orderBy: { createdAt: "desc" },
@@ -22,7 +20,10 @@ export default class NotificationController {
         take: +limit,
       });
 
-      res.status(200).send({ data: notifications, meta: { page: +page, limit: +limit, total: +total } });
+      const total_data = await prisma.notification.count({ where: filter });
+      const total_pages = Math.ceil(total_data / +limit);
+
+      res.status(200).send({ data: notifications, meta: { page: +page, limit: +limit, total_pages: +total_pages, total_data: +total_data } });
     } catch (error) {
       console.log(error);
       res.status(400).send(error);
@@ -38,7 +39,19 @@ export default class NotificationController {
 
       res.status(201).send({ message: "Notification(s) are marked read by the user!" });
     } catch (error) {
-      throw error;
+      console.log(error);
+      res.status(400).send(error);
+    }
+  };
+
+  markNotificationAsReadById = async (req: Request, res: Response) => {
+    try {
+      await prisma.notification.update({ where: { id: +req.params.id }, data: { isRead: true } });
+
+      res.status(201).send({ message: "Notification is marked read by the user!" });
+    } catch (error) {
+      console.log(error);
+      res.status(400).send(error);
     }
   };
 }

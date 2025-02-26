@@ -23,7 +23,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.payOrder = exports.updateOrder = exports.createOrder = exports.getNearestOutlets = void 0;
+exports.updateDeliveredOrderStatus = exports.payOrder = exports.updateOrder = exports.createOrder = exports.getNearestOutlets = void 0;
 const prisma_1 = __importDefault(require("./prisma"));
 const notification_service_1 = require("./services/notification/notification.service");
 const finder_service_1 = require("./services/helpers/finder.service");
@@ -90,6 +90,7 @@ const createOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
             customerAddressId: req.query.customerAddressId,
             distance: req.query.distance,
         };
+        console.log({ distance: +queries.distance });
         const outlet = yield prisma_1.default.outlet.findFirst({
             where: { id: +queries.outletId },
         });
@@ -98,6 +99,7 @@ const createOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         if (!queries.distance)
             throw { message: "Invalid distance!" };
         const driverIds = yield (0, finder_service_1.getIdleEmployees)(+queries.outletId, "DRIVER");
+        const distance = +queries.distance * 1000;
         // if (driverIds.length == 0) throw { message: "No idle Driver present at the outlet!" };
         // const customerAddress = await findAddress(+queries.customerAddressId);
         // const outletAddress = await findAddress(outlet!.outletAddressId);
@@ -107,11 +109,11 @@ const createOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
                 data: { outletId: +queries.outletId, customerAddressId: +queries.customerAddressId },
             });
             const transportJobId = (yield tx.transportJob.create({
-                data: { orderId: order.id, transportType: "PICKUP", distance: +queries.distance },
+                data: { orderId: order.id, transportType: "PICKUP", distance },
             })).id;
             if (driverIds.length > 0) {
                 yield tx.notification.createMany({
-                    data: (0, notification_service_1.createMultipleNotificationDataService)(driverIds, "Pickup Job alert", " A new pickup job is available!", `https://example.com/transport-job/${transportJobId}`),
+                    data: (0, notification_service_1.createMultipleNotificationDataService)(driverIds, "Pickup Job alert", " A new pickup job is available!", `${process.env.BASE_URL_FE}/transport-job/${transportJobId}`),
                 });
             }
         }));
@@ -154,13 +156,13 @@ const updateOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         yield prisma_1.default.$transaction((tx) => __awaiter(void 0, void 0, void 0, function* () {
             yield tx.order.update({
                 where: { id: +id },
-                data: { laundryWeight: +body.weight, laundryPrice, OrderItem: { createMany: { data: orderItem } }, orderStatus: "READY_FOR_WASHING" },
+                data: { laundryWeight: +body.weight * 1000, laundryPrice, OrderItem: { createMany: { data: orderItem } }, orderStatus: "READY_FOR_WASHING" },
             });
             const laundryJobId = (yield tx.laundryJob.create({
                 data: { station: "WASHING", orderId: +id },
             })).id;
             yield tx.notification.createMany({
-                data: (0, notification_service_1.createMultipleNotificationDataService)(washerIds, "Washing Job alert", " A new washing job is available!", `https://example.com/laundry-job/${laundryJobId}`),
+                data: (0, notification_service_1.createMultipleNotificationDataService)(washerIds, "Washing Job alert", " A new washing job is available!", `${process.env.BASE_URL_FE}/laundry-job/${laundryJobId}`),
             });
         }));
         res.status(201).send({ message: `Order updated successfully!` });
@@ -176,22 +178,29 @@ const payOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const { id } = req.params;
         const data = yield prisma_1.default.transportJob.findFirst({
             where: { orderId: +id, transportType: "PICKUP" },
-            select: { distance: true, order: { select: { outletId: true, orderStatus: true, isPaid: true } } },
+            select: { distance: true, order: { select: { outletId: true, orderStatus: true, isPaid: true, laundryPrice: true } } },
         });
         const driverIds = yield (0, finder_service_1.getIdleEmployees)(data.order.outletId, "DRIVER");
         if (data.order.isPaid)
             throw { message: "Order already paid!" };
+        if (!data.order.laundryPrice)
+            throw { message: "Order hasn't weighed!" };
+        let fare = 5000;
+        if (data.distance > 1000)
+            fare = data.distance * 5;
+        const totalPrice = data.order.laundryPrice + fare;
         const updateData = { isPaid: true };
         if (data.order.orderStatus == "AWAITING_PAYMENT")
             updateData.orderStatus = "WAITING_FOR_DELIVERY_DRIVER";
         yield prisma_1.default.$transaction((tx) => __awaiter(void 0, void 0, void 0, function* () {
+            yield tx.payment.create({ data: { totalPrice, orderId: +id, paymentStatus: "SUCCEEDED" } });
             yield tx.order.update({ where: { id: +id }, data: updateData });
             if (data.order.orderStatus == "AWAITING_PAYMENT") {
                 const transportJobId = (yield tx.transportJob.create({
                     data: { orderId: +id, transportType: "DELIVERY", distance: data.distance },
                 })).id;
                 yield tx.notification.createMany({
-                    data: (0, notification_service_1.createMultipleNotificationDataService)(driverIds, "Delivery Job alert", " A new delivery job is available!", `https://example.com/transport-job/${transportJobId}`),
+                    data: (0, notification_service_1.createMultipleNotificationDataService)(driverIds, "Delivery Job alert", " A new delivery job is available!", `${process.env.BASE_URL_FE}/transport-job/${transportJobId}`),
                 });
             }
         }));
@@ -220,3 +229,33 @@ exports.payOrder = payOrder;
 //     res.status(400).send(error);
 //   }
 // };
+const updateDeliveredOrderStatus = () => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        (yield prisma_1.default.order.findMany({
+            where: { orderStatus: "RECEIVED_BY_CUSTOMER" },
+            include: { customerAddress: true },
+        })).map((item) => __awaiter(void 0, void 0, void 0, function* () {
+            const expire = new Date(new Date(item.updatedAt).getTime() + 172800000);
+            const now = new Date();
+            const userId = item.customerAddress.customerId;
+            if (now > expire) {
+                yield prisma_1.default.$transaction((tx) => __awaiter(void 0, void 0, void 0, function* () {
+                    yield tx.order.update({ where: { id: item.id }, data: { orderStatus: "COMPLETED" } });
+                    yield tx.notification.create({
+                        data: {
+                            userId,
+                            title: "Order auto=completion alert",
+                            description: "Your delivered order is automatically changed its status 2 days after it is delivered.",
+                            url: `${process.env.BASE_URL_FE}/order/${item.id}`,
+                        },
+                    });
+                }));
+                console.log(`Completed order status updated on order #${item.id}!`);
+            }
+        }));
+    }
+    catch (error) {
+        throw error;
+    }
+});
+exports.updateDeliveredOrderStatus = updateDeliveredOrderStatus;

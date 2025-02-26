@@ -9,25 +9,26 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const transportJob_service_1 = require("../services/transportJob/transportJob.service");
+const getTransportJob_service_1 = require("../services/transportJob/getTransportJob.service");
+const updateTransportJob_service_1 = require("../services/transportJob/updateTransportJob.service");
 class TransportJobController {
     getTransportJobs(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const queries = {
                     userId: +req.user.id,
-                    tzo: req.query.tzo,
+                    tzo: +req.query.tzo,
                     requestType: req.query.requestType,
                     transportType: req.query.transportType || "all",
-                    isCompleted: req.query.isCompleted || "1",
+                    isCompleted: req.query.isCompleted || "true",
                     startDate: req.query.startDate,
                     endDate: req.query.endDate,
-                    limit: req.query.limit || "10",
-                    page: req.query.page || "1",
+                    limit: +req.query.limit || 10,
+                    page: +req.query.page || 1,
                     sortBy: req.query.sortBy || "createdAt",
                     sortOrder: req.query.sortOrder || "desc",
                 };
-                const result = yield (0, transportJob_service_1.getTransportJobsService)(queries);
+                const result = yield (0, getTransportJob_service_1.getTransportJobsService)(queries);
                 res.status(200).send({ data: result.data, meta: result.meta });
             }
             catch (error) {
@@ -39,7 +40,19 @@ class TransportJobController {
     getTransportJobById(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const result = yield (0, transportJob_service_1.getTransportJobByIdService)(+req.params.id);
+                const result = yield (0, getTransportJob_service_1.getTransportJobByIdService)(req.user.id, +req.params.id);
+                res.status(200).send({ data: result });
+            }
+            catch (error) {
+                console.log(error);
+                res.status(400).send(error);
+            }
+        });
+    }
+    getOngoingTransportJob(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const result = yield (0, getTransportJob_service_1.getOngoingTransportJobService)(+req.user.id);
                 res.status(200).send({ data: result });
             }
             catch (error) {
@@ -51,7 +64,7 @@ class TransportJobController {
     updateTransportJobById(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                yield (0, transportJob_service_1.updateTransportJobByIdService)(+req.params.id, +req.user.id, req.query.tzo);
+                yield (0, updateTransportJob_service_1.updateTransportJobByIdService)(+req.params.id, +req.user.id, +req.query.tzo);
                 res.status(201).send({ message: `Transport Job and its Order Status updated successfully` });
             }
             catch (error) {

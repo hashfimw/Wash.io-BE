@@ -1,20 +1,21 @@
 import { Request, Response } from "express";
-import { getLaundryJobByIdService, getLaundryJobsService, updateLaundryJobByIdService } from "../services/laundryJob/laundryJob.service";
+import { getLaundryJobByIdService, getLaundryJobsService, getOngoingLaundryJobService } from "../services/laundryJob/getLaundryJob.service";
+import { updateLaundryJobByIdService } from "../services/laundryJob/updateLaundryJob.service";
 
 export default class LaundryJobController {
   async getLaundryJobs(req: Request, res: Response) {
     try {
       const queries = {
         userId: +req.user!.id,
-        tzo: req.query.tzo as string,
+        tzo: +(req.query.tzo as string),
         requestType: req.query.requestType as "request" | "history",
-        isCompleted: (req.query.isCompleted as string) || "1",
+        isCompleted: (req.query.isCompleted as string) || "true",
         startDate: req.query.startDate as string,
         endDate: req.query.endDate as string,
-        limit: (req.query.limit as string) || "10",
-        page: (req.query.page as string) || "1",
+        limit: +(req.query.limit as string) || 10,
+        page: +(req.query.page as string) || 1,
         sortBy: (req.query.sortBy as string) || "createdAt",
-        sortOrder: (req.query.sortOrder as string) || "desc",
+        sortOrder: (req.query.sortOrder as "asc" | "desc") || "desc",
       };
 
       const result = await getLaundryJobsService(queries);
@@ -28,7 +29,18 @@ export default class LaundryJobController {
 
   async getLaundryJobById(req: Request, res: Response) {
     try {
-      const result = await getLaundryJobByIdService(+req.params.id);
+      const result = await getLaundryJobByIdService(+req.user!.id, +req.params.id);
+
+      res.status(200).send({ data: result });
+    } catch (error) {
+      console.log(error);
+      res.status(400).send(error);
+    }
+  }
+
+  async getOngoingLaundryJob(req: Request, res: Response) {
+    try {
+      const result = await getOngoingLaundryJobService(+req.user!.id);
 
       res.status(200).send({ data: result });
     } catch (error) {
@@ -39,7 +51,7 @@ export default class LaundryJobController {
 
   async updateLaundryJobById(req: Request, res: Response) {
     try {
-      await updateLaundryJobByIdService(+req.params.id, +req.user!.id, req.body.orderItemInput, req.query.tzo as string);
+      await updateLaundryJobByIdService(+req.params.id, +req.user!.id, req.body.orderItemInput, +(req.query.tzo as string));
 
       res.status(201).send({ message: `Laundry Job and its Order Status updated successfully` });
     } catch (error) {

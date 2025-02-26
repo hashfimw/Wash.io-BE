@@ -14,6 +14,7 @@ export default class LaundryJobRouter {
 
   private initializeRoutes() {
     this.router.get("/", verifyToken, this.controller.getLaundryJobs);
+    this.router.get("/ongoing", verifyToken, this.controller.getOngoingLaundryJob);
     this.router.get("/:id", verifyToken, this.controller.getLaundryJobById);
     this.router.patch("/:id", verifyToken, this.controller.updateLaundryJobById);
   }

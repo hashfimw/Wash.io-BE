@@ -61,7 +61,7 @@ const loginService = (req, res) => __awaiter(void 0, void 0, void 0, function* (
         }
         // Generate JWT token
         const payload = { id: user.id };
-        const token = (0, jsonwebtoken_1.sign)(payload, config_1.appConfig.SecretKey, { expiresIn: "1d" });
+        const token = (0, jsonwebtoken_1.sign)(payload, config_1.appConfig.SecretKey, { expiresIn: "30d" });
         // Send response with token
         res.status(200).send({
             message: "Login Successfuly! ✅",

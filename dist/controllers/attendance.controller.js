@@ -30,14 +30,16 @@ class AttendanceController {
             try {
                 const queries = {
                     userId: +req.user.id,
-                    requestType: req.query.requestType,
-                    attendanceType: req.query.attendanceType || "all",
-                    role: req.query.role || "all",
+                    attendanceType: req.query.attendanceType,
+                    name: req.query.name,
+                    role: req.query.role,
+                    workShift: req.query.workShift,
+                    outletName: req.query.outletName,
                     startDate: req.query.startDate,
                     endDate: req.query.endDate,
-                    limit: req.query.limit || "10",
-                    page: req.query.page || "1",
-                    sortBy: req.query.sortBy || "createdAt",
+                    limit: +req.query.limit || 10,
+                    page: +req.query.page || 1,
+                    sortBy: req.query.sortBy || "date",
                     sortOrder: req.query.sortOrder || "desc",
                 };
                 const result = yield (0, getAttendances_service_1.getAttendancesService)(queries);

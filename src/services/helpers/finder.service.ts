@@ -1,4 +1,4 @@
-import { Prisma, Role, WorkerStation } from "../../../prisma/generated/client";
+import { OrderStatus, Prisma, Role, WorkerStation } from "../../../prisma/generated/client";
 import prisma from "../../prisma";
 
 export const findUser = async (id: number) => {
@@ -13,8 +13,10 @@ export const findUser = async (id: number) => {
     });
     if (!user) throw { message: "User not found!" };
     if (user.isDeleted) throw { message: "User has been deleted!" };
-    if (user.Employee?.employmentStatus != "EMPLOYED") throw { message: "User is no longer employed!" };
-    if (user.Employee?.isDeleted) throw { message: "User's employement data has been deleted!" };
+    if (user.role != "SUPER_ADMIN") {
+      if (user.Employee?.employmentStatus != "EMPLOYED") throw { message: "User is no longer employed!" };
+      if (user.Employee?.isDeleted) throw { message: "User's employement data has been deleted!" };
+    }
     return user;
   } catch (error) {
     throw error;
@@ -31,6 +33,20 @@ export const getIdleEmployees = async (outletId: number, role: Role, station: Wo
     });
 
     return ids.map((item) => item.userId);
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const findOutletsOrderIds = async (outletId: number, orderStatus: OrderStatus | null = null) => {
+  try {
+    const filter: Prisma.OrderWhereInput = { outletId };
+    if (orderStatus != null) filter.orderStatus = orderStatus;
+    const ids = await prisma.order.findMany({
+      where: filter,
+      select: { id: true },
+    });
+    return ids.map((item) => item.id);
   } catch (error) {
     throw error;
   }

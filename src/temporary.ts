@@ -74,6 +74,8 @@ export const createOrder = async (req: Request, res: Response) => {
       distance: req.query.distance as string,
     };
 
+    console.log({ distance: +queries.distance });
+
     const outlet = await prisma.outlet.findFirst({
       where: { id: +queries.outletId },
     });
@@ -82,6 +84,8 @@ export const createOrder = async (req: Request, res: Response) => {
     if (!queries.distance) throw { message: "Invalid distance!" };
 
     const driverIds = await getIdleEmployees(+queries.outletId, "DRIVER");
+
+    const distance = +queries.distance * 1000;
     // if (driverIds.length == 0) throw { message: "No idle Driver present at the outlet!" };
 
     // const customerAddress = await findAddress(+queries.customerAddressId);
@@ -96,7 +100,7 @@ export const createOrder = async (req: Request, res: Response) => {
 
       const transportJobId = (
         await tx.transportJob.create({
-          data: { orderId: order.id, transportType: "PICKUP", distance: +queries.distance },
+          data: { orderId: order.id, transportType: "PICKUP", distance },
         })
       ).id;
 
@@ -106,7 +110,7 @@ export const createOrder = async (req: Request, res: Response) => {
             driverIds,
             "Pickup Job alert",
             " A new pickup job is available!",
-            `https://example.com/transport-job/${transportJobId}`
+            `${process.env.BASE_URL_FE!}/transport-job/${transportJobId}`
           ),
         });
       }
@@ -156,7 +160,7 @@ export const updateOrder = async (req: Request, res: Response) => {
     await prisma.$transaction(async (tx) => {
       await tx.order.update({
         where: { id: +id },
-        data: { laundryWeight: +body.weight, laundryPrice, OrderItem: { createMany: { data: orderItem } }, orderStatus: "READY_FOR_WASHING" },
+        data: { laundryWeight: +body.weight * 1000, laundryPrice, OrderItem: { createMany: { data: orderItem } }, orderStatus: "READY_FOR_WASHING" },
       });
 
       const laundryJobId = (
@@ -170,7 +174,7 @@ export const updateOrder = async (req: Request, res: Response) => {
           washerIds,
           "Washing Job alert",
           " A new washing job is available!",
-          `https://example.com/laundry-job/${laundryJobId}`
+          `${process.env.BASE_URL_FE!}/laundry-job/${laundryJobId}`
         ),
       });
     });
@@ -188,16 +192,23 @@ export const payOrder = async (req: Request, res: Response) => {
 
     const data = await prisma.transportJob.findFirst({
       where: { orderId: +id, transportType: "PICKUP" },
-      select: { distance: true, order: { select: { outletId: true, orderStatus: true, isPaid: true } } },
+      select: { distance: true, order: { select: { outletId: true, orderStatus: true, isPaid: true, laundryPrice: true } } },
     });
     const driverIds = await getIdleEmployees(data!.order.outletId, "DRIVER");
 
     if (data!.order!.isPaid) throw { message: "Order already paid!" };
+    if (!data!.order!.laundryPrice) throw { message: "Order hasn't weighed!" };
+
+    let fare = 5000;
+    if (data!.distance > 1000) fare = data!.distance * 5;
+    const totalPrice = data!.order.laundryPrice! + fare;
 
     const updateData: Prisma.OrderUncheckedUpdateInput = { isPaid: true };
     if (data!.order.orderStatus == "AWAITING_PAYMENT") updateData.orderStatus = "WAITING_FOR_DELIVERY_DRIVER";
 
     await prisma.$transaction(async (tx) => {
+      await tx.payment.create({ data: { totalPrice, orderId: +id, paymentStatus: "SUCCEEDED" } });
+
       await tx.order.update({ where: { id: +id }, data: updateData });
 
       if (data!.order.orderStatus == "AWAITING_PAYMENT") {
@@ -211,7 +222,7 @@ export const payOrder = async (req: Request, res: Response) => {
             driverIds,
             "Delivery Job alert",
             " A new delivery job is available!",
-            `https://example.com/transport-job/${transportJobId}`
+            `${process.env.BASE_URL_FE!}/transport-job/${transportJobId}`
           ),
         });
       }
@@ -245,3 +256,34 @@ export const payOrder = async (req: Request, res: Response) => {
 //     res.status(400).send(error);
 //   }
 // };
+
+export const updateDeliveredOrderStatus = async () => {
+  try {
+    (
+      await prisma.order.findMany({
+        where: { orderStatus: "RECEIVED_BY_CUSTOMER" },
+        include: { customerAddress: true },
+      })
+    ).map(async (item) => {
+      const expire = new Date(new Date(item.updatedAt).getTime() + 172800000);
+      const now = new Date();
+      const userId = item.customerAddress.customerId!;
+      if (now > expire) {
+        await prisma.$transaction(async (tx) => {
+          await tx.order.update({ where: { id: item.id }, data: { orderStatus: "COMPLETED" } });
+          await tx.notification.create({
+            data: {
+              userId,
+              title: "Order auto=completion alert",
+              description: "Your delivered order is automatically changed its status 2 days after it is delivered.",
+              url: `${process.env.BASE_URL_FE!}/order/${item.id}`,
+            },
+          });
+        });
+        console.log(`Completed order status updated on order #${item.id}!`);
+      }
+    });
+  } catch (error) {
+    throw error;
+  }
+};

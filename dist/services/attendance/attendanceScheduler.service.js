@@ -16,7 +16,7 @@ exports.forceAlterEmployeeAttendances = void 0;
 const prisma_1 = __importDefault(require("../../prisma"));
 const geo_tz_1 = require("geo-tz");
 const luxon_1 = require("luxon");
-const finder_service_1 = require("../helpers/finder.service");
+const temporary_1 = require("../../temporary");
 const shiftStartScheduler = (ids, workShift) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const getEmployeeIds = yield prisma_1.default.employee.findMany({
@@ -51,17 +51,22 @@ const shiftStartScheduler = (ids, workShift) => __awaiter(void 0, void 0, void 0
 });
 const shiftEndScheduler = (ids, workShift) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const employeeAttendenceIds = (yield prisma_1.default.employee.findMany({
+        const employeeAttendence = yield prisma_1.default.employee.findMany({
             where: { outletId: { in: ids }, isDeleted: false, workShift: workShift },
             select: { EmployeeAttendance: { select: { id: true }, orderBy: { id: "desc" }, take: 1 } },
-        })).map((item) => {
-            return item.EmployeeAttendance[0].id;
         });
-        yield prisma_1.default.employeeAttendance.updateMany({
-            where: { id: { in: employeeAttendenceIds } },
-            data: { canClockIn: false },
+        const employeeAttendenceIds = [];
+        employeeAttendence.map((item) => {
+            if (item.EmployeeAttendance.length > 0)
+                employeeAttendenceIds.push(item.EmployeeAttendance[0].id);
         });
-        console.log({ message: `Employee attendances updated on ${employeeAttendenceIds.length} Employee(s)` });
+        if (employeeAttendenceIds.length > 0) {
+            yield prisma_1.default.employeeAttendance.updateMany({
+                where: { id: { in: employeeAttendenceIds } },
+                data: { canClockIn: false },
+            });
+            console.log({ message: `Employee attendances updated on ${employeeAttendenceIds.length} Employee(s)` });
+        }
         return employeeAttendenceIds.length;
     }
     catch (error) {
@@ -118,6 +123,7 @@ const attendanceSchedule = () => __awaiter(void 0, void 0, void 0, function* () 
             if (currentHour == 22)
                 yield shiftEndScheduler(item.ids, "NOON");
         }
+        (0, temporary_1.updateDeliveredOrderStatus)();
         console.log(`running cron job at ${new Date().toLocaleString()}`);
     }
     catch (error) {
@@ -129,10 +135,9 @@ const forceAlterEmployeeAttendances = (req, res) => __awaiter(void 0, void 0, vo
     try {
         const workShift = req.query.workShift;
         const requestType = req.query.requestType;
-        const admin = yield (0, finder_service_1.findUser)(+req.user.id);
-        if (admin.role != "OUTLET_ADMIN")
-            throw { message: "This user can't access this feature" };
-        const outletId = admin.Employee.outletId;
+        const outletId = +req.query.outletId;
+        if (!outletId)
+            throw { message: "Invalid outlet Id!" };
         let length = 0;
         if (requestType == "start") {
             if (workShift == "MORNING")
@@ -156,6 +161,8 @@ const forceAlterEmployeeAttendances = (req, res) => __awaiter(void 0, void 0, vo
         }
         else
             throw { message: "Invalid request type!" };
+        if (length == 0)
+            throw { message: "No alteration(s) made!" };
         res.status(201).send({ message: `Employee Attendance(s) have forcibly altered on ${length} Employee(s)!` });
     }
     catch (error) {

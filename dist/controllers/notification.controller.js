@@ -25,14 +25,15 @@ class NotificationController {
                     else if (requestType == "read")
                         filter.isRead = true;
                 }
-                const total = yield prisma_1.default.notification.count({ where: filter });
                 const notifications = yield prisma_1.default.notification.findMany({
                     where: filter,
                     orderBy: { createdAt: "desc" },
                     skip: (+page - 1) * +limit,
                     take: +limit,
                 });
-                res.status(200).send({ data: notifications, meta: { page: +page, limit: +limit, total: +total } });
+                const total_data = yield prisma_1.default.notification.count({ where: filter });
+                const total_pages = Math.ceil(total_data / +limit);
+                res.status(200).send({ data: notifications, meta: { page: +page, limit: +limit, total_pages: +total_pages, total_data: +total_data } });
             }
             catch (error) {
                 console.log(error);
@@ -48,7 +49,18 @@ class NotificationController {
                 res.status(201).send({ message: "Notification(s) are marked read by the user!" });
             }
             catch (error) {
-                throw error;
+                console.log(error);
+                res.status(400).send(error);
+            }
+        });
+        this.markNotificationAsReadById = (req, res) => __awaiter(this, void 0, void 0, function* () {
+            try {
+                yield prisma_1.default.notification.update({ where: { id: +req.params.id }, data: { isRead: true } });
+                res.status(201).send({ message: "Notification is marked read by the user!" });
+            }
+            catch (error) {
+                console.log(error);
+                res.status(400).send(error);
             }
         });
     }

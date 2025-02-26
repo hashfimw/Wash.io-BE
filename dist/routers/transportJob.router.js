@@ -14,6 +14,7 @@ class TransportJobRouter {
     }
     initializeRoutes() {
         this.router.get("/", verifyToken_1.verifyToken, this.controller.getTransportJobs);
+        this.router.get("/ongoing", verifyToken_1.verifyToken, this.controller.getOngoingTransportJob);
         this.router.get("/:id", verifyToken_1.verifyToken, this.controller.getTransportJobById);
         this.router.patch("/:id", verifyToken_1.verifyToken, this.controller.updateTransportJobById);
     }
