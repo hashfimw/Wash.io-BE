@@ -7,6 +7,9 @@ import { SuperAdmEmployeeRouter } from "./routers/superAdmEmployee.router";
 import path from "path";
 import { AuthRouter } from "./routers/auth.router";
 import { UserRouter } from "./routers/user.router";
+import { AddressRouter } from "./routers/address.router";
+import { PickupOrderRouter } from "./routers/pickupOrder.router";
+import { PaymentRouter } from "./routers/payment.router";
 
 dotenv.config();
 
@@ -38,9 +41,15 @@ app.use("/api/public", express.static(path.join(__dirname, "../public")));
 
 const authRouter = new AuthRouter();
 const userRouter = new UserRouter();
+const addressRouter = new AddressRouter();
+const pickupOrderRouter = new PickupOrderRouter();
+const paymentRouter = new PaymentRouter();
 
 app.use("/api/auth", authRouter.getRouter());
 app.use("/api/users", userRouter.getRouter());
+app.use("/api/address", addressRouter.getRouter());
+app.use("/api/pickup-orders", pickupOrderRouter.getRouter());
+app.use("/api/payments", paymentRouter.getRouter());
 
 app.listen(PORT, () => {
   console.log(`server is running on => http://localhost:${PORT}/api`);

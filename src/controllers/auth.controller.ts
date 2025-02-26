@@ -6,13 +6,14 @@ import { loginService } from "../services/auth/login.service";
 import { getGoogleTokenService } from "../services/auth/getGoogleToken.service";
 import { forgotPasswordService } from "../services/auth/forgotPassword.service";
 import { resetPasswrodService } from "../services/auth/resetPassword.service";
+import { getSessionService } from "../services/auth/getSession.service";
 
 export class AuthController {
   async registerController(req: Request, res: Response) {
     try {
       const result = await registerService(req, res);
 
-      return res.status(200).send(result);
+      res.status(200).send(result);
     } catch (error) {
       console.log(error);
       res.status(400).send(error);
@@ -23,7 +24,7 @@ export class AuthController {
     try {
       const result = await verifEmailService(req, res);
 
-      return res.status(200).send(result);
+      res.status(200).send(result);
     } catch (error) {
       console.log(error);
       res.status(400).send(error);
@@ -34,7 +35,7 @@ export class AuthController {
     try {
       const result = await completeRegistService(req, res);
 
-      return res.status(200).send(result);
+      res.status(200).send(result);
     } catch (error) {
       console.log(error);
       res.status(400).send(error);
@@ -46,7 +47,7 @@ export class AuthController {
       const { code } = req.body;
       const result = await getGoogleTokenService(code);
 
-      return res.status(200).send(result);
+      res.status(200).send(result);
     } catch (error) {
       console.log(error);
       res.status(400).send(error);
@@ -57,7 +58,7 @@ export class AuthController {
     try {
       const result = await loginService(req, res);
 
-      return res.status(200).send(result);
+      res.status(200).send(result);
     } catch (error) {
       console.log(error);
       res.status(400).send(error);
@@ -68,7 +69,7 @@ export class AuthController {
     try {
       const result = await forgotPasswordService(req, res);
 
-      return res.status(200).send(result);
+      res.status(200).send(result);
     } catch (error) {
       console.log(error);
       res.status(400).send(error);
@@ -79,7 +80,18 @@ export class AuthController {
     try {
       const result = await resetPasswrodService(req, res);
 
-      return res.status(200).send(result);
+      res.status(200).send(result);
+    } catch (error) {
+      console.log(error);
+      res.status(400).send(error);
+    }
+  }
+
+  async getSessionController(req: Request, res: Response): Promise<void> {
+    try {
+      const result = await getSessionService(req, res);
+
+      res.status(200).send(result);
     } catch (error) {
       console.log(error);
       res.status(400).send(error);

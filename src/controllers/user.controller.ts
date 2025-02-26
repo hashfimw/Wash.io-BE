@@ -11,7 +11,7 @@ export class UserController {
     try {
       const result = await getUserService(req, res);
 
-      return res.status(200).send(result);
+      res.status(200).send(result);
     } catch (error) {
       console.log(error);
       res.status(400).send(error);
@@ -22,7 +22,7 @@ export class UserController {
     try {
       const result = await getUserIdService(req, res);
 
-      return res.status(200).send(result);
+      res.status(200).send(result);
     } catch (error) {
       console.log(error);
       res.status(400).send(error);
@@ -33,7 +33,7 @@ export class UserController {
     try {
       const result = await createUserservice(req, res);
 
-      return res.status(200).send(result);
+      res.status(200).send(result);
     } catch (error) {
       console.log(error);
       res.status(400).send(error);
@@ -44,7 +44,7 @@ export class UserController {
     try {
       const result = await editUserService(req, res);
 
-      return res.status(200).send(result);
+      res.status(200).send(result);
     } catch (error) {
       console.log(error);
       res.status(400).send(error);
@@ -55,7 +55,7 @@ export class UserController {
     try {
       const result = await deleteUserService(req, res);
 
-      return res.status(200).send(result);
+      res.status(200).send(result);
     } catch (error) {
       console.log(error);
       res.status(400).send(error);
@@ -66,7 +66,7 @@ export class UserController {
     try {
       const result = await editAvatarCloudService(req, res);
 
-      return res.status(200).send(result);
+      res.status(200).send(result);
     } catch (error) {
       console.log(error);
       res.status(400).send(error);
