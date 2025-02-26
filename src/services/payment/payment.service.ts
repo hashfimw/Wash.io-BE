@@ -88,7 +88,7 @@ export const createPaymentService = async (
     // If payment exists but not successful, we can reuse or update it
     // If it doesn't exist, create a new payment record
     let payment;
-
+    
     // Create transaction payload for Midtrans
     const transactionDetails = {
       order_id: `ORDER-${order.id}-${Date.now()}`,
@@ -102,11 +102,15 @@ export const createPaymentService = async (
     };
 
     const items = order.OrderItem.map((item) => ({
-      id: `ITEM-${item.id}`,
-      price: Math.round(totalPrice / order.OrderItem.length),
-      quantity: item.qty || 1,
-      name: item.orderItemName,
-    }));
+        id: `ITEM-${item.id}`,
+        price: item.qty ? item.qty * (order.laundryPrice! / order.OrderItem.reduce((acc, i) => acc + (i.qty || 1), 0)) : 0,
+        quantity: item.qty || 1,
+        name: item.orderItemName,
+      }));
+
+    console.log(items);
+    console.log(transactionDetails);
+    
 
     // Create Midtrans snap token
     const snapResponse = await snap.createTransaction({

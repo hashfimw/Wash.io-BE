@@ -22,7 +22,7 @@ export class UserRouter {
     this.router.patch(
       "/avatar-cloud",
       uploader("memoryStorage", "avatar").single("file"),
-      this.userController.getUsersId
+      this.userController.editAvatarCloud
     );
     this.router.get("/:id", this.userController.getUsersId);
     this.router.delete("/:id", this.userController.deleteUser);
