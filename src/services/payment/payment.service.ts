@@ -2,6 +2,9 @@
 import { Request, Response } from "express";
 import prisma from "../../prisma";
 import midtransClient from "midtrans-client";
+import { createMultipleNotificationDataService } from "../notification/notification.service";
+import { getIdleEmployees } from "../helpers/finder.service";
+import { Prisma } from "../../../prisma/generated/client";
 
 // Initialize Midtrans client
 const snap = new midtransClient.Snap({
@@ -10,10 +13,7 @@ const snap = new midtransClient.Snap({
   clientKey: process.env.MIDTRANS_CLIENT_KEY as string,
 });
 
-export const createPaymentService = async (
-  req: Request,
-  res: Response
-): Promise<void> => {
+export const createPaymentService = async (req: Request, res: Response): Promise<void> => {
   try {
     const userId = req.user?.id;
     const { orderId } = req.body;
@@ -76,7 +76,11 @@ export const createPaymentService = async (
     }
 
     // Calculate total price
-    const totalPrice = order.laundryPrice;
+    const pickupOrder = await prisma.transportJob.findFirst({ where: { orderId, transportType: "PICKUP" } });
+    const distance = pickupOrder!.distance / 1000;
+
+    const fare = distance * 10000;
+    const totalPrice = order.laundryPrice + fare;
 
     // Check if payment already exists
     const existingPayment = await prisma.payment.findUnique({
@@ -88,7 +92,6 @@ export const createPaymentService = async (
     // If payment exists but not successful, we can reuse or update it
     // If it doesn't exist, create a new payment record
     let payment;
-    
     // Create transaction payload for Midtrans
     const transactionDetails = {
       order_id: `ORDER-${order.id}-${Date.now()}`,
@@ -102,15 +105,16 @@ export const createPaymentService = async (
     };
 
     const items = order.OrderItem.map((item) => ({
-        id: `ITEM-${item.id}`,
-        price: item.qty ? item.qty * (order.laundryPrice! / order.OrderItem.reduce((acc, i) => acc + (i.qty || 1), 0)) : 0,
-        quantity: item.qty || 1,
-        name: item.orderItemName,
-      }));
+      id: `ITEM-${item.id}`,
+      price: Math.round((totalPrice - fare) / order.OrderItem.length / item.qty!),
+      quantity: item.qty || 1,
+      name: item.orderItemName,
+    }));
 
-    console.log(items);
-    console.log(transactionDetails);
-    
+    const itemsSum = items.map((item) => item.price * item.quantity).reduce((a, b) => a + b);
+
+    items.push({ id: "ITEM-FARE", price: fare, quantity: 1, name: "Fare" });
+    items.push({ id: "ITEM-DIFF", price: totalPrice - fare - itemsSum, quantity: 1, name: "Difference" });
 
     // Create Midtrans snap token
     const snapResponse = await snap.createTransaction({
@@ -150,7 +154,7 @@ export const createPaymentService = async (
     res.status(200).json({
       success: true,
       data: {
-        payment,
+        payment: { ...payment, fare },
         snapToken,
         snapRedirectURL,
       },
@@ -164,10 +168,7 @@ export const createPaymentService = async (
   }
 };
 
-export const handlePaymentNotificationService = async (
-  req: Request,
-  res: Response
-): Promise<void> => {
+export const handlePaymentNotificationService = async (req: Request, res: Response): Promise<void> => {
   try {
     const notification = req.body;
 
@@ -206,8 +207,7 @@ export const handlePaymentNotificationService = async (
       return;
     }
 
-    let paymentStatus: "PENDING" | "SUCCEEDED" | "CANCELLED" | "EXPIRED" =
-      "PENDING";
+    let paymentStatus: "PENDING" | "SUCCEEDED" | "CANCELLED" | "EXPIRED" = "PENDING";
 
     // Handle different transaction statuses
     if (transactionStatus === "capture" || transactionStatus === "settlement") {
@@ -216,11 +216,7 @@ export const handlePaymentNotificationService = async (
       } else if (fraudStatus === "accept") {
         paymentStatus = "SUCCEEDED";
       }
-    } else if (
-      transactionStatus === "cancel" ||
-      transactionStatus === "deny" ||
-      transactionStatus === "failure"
-    ) {
+    } else if (transactionStatus === "cancel" || transactionStatus === "deny" || transactionStatus === "failure") {
       paymentStatus = "CANCELLED";
     } else if (transactionStatus === "expire") {
       paymentStatus = "EXPIRED";
@@ -228,53 +224,73 @@ export const handlePaymentNotificationService = async (
       paymentStatus = "PENDING";
     }
 
-    // Update payment status
-    await prisma.payment.update({
+    const order = await prisma.order.findFirst({
       where: {
-        id: payment.id,
-      },
-      data: {
-        paymentStatus,
-        paymentMethod: statusResponse.payment_type,
+        id: payment.orderId,
       },
     });
 
-    // If payment succeeded, mark order as paid and update order status
-    if (paymentStatus === "SUCCEEDED") {
-      await prisma.order.update({
+    const updateData: Prisma.OrderUncheckedUpdateInput = { isPaid: true };
+    if (order!.orderStatus == "AWAITING_PAYMENT") updateData.orderStatus = "WAITING_FOR_DELIVERY_DRIVER";
+
+    await prisma.$transaction(async (tx) => {
+      // Update payment status
+      await tx.payment.update({
         where: {
-          id: payment.orderId,
+          id: payment.id,
         },
         data: {
-          isPaid: true,
-          orderStatus: "READY_FOR_DELIVERY",
+          paymentStatus,
+          paymentMethod: statusResponse.payment_type,
         },
       });
 
-      // Create notification for user
-      await prisma.notification.create({
-        data: {
-          userId: payment.order.customerAddressId,
-          title: "Pembayaran Berhasil",
-          description: `Pembayaran untuk order #${payment.orderId} telah berhasil. Pesanan Anda akan segera dikirim.`,
-          url: `/orders/${payment.orderId}`,
-        },
-      });
+      // If payment succeeded, mark order as paid and update order status
+      if (paymentStatus === "SUCCEEDED") {
+        await tx.order.update({ where: { id: payment.orderId }, data: updateData });
 
-      // Create delivery transport job automatically
-      await prisma.transportJob.create({
-        data: {
-          transportType: "DELIVERY",
-          distance: 0, // You may calculate this based on coordinates
-          orderId: payment.orderId,
-          isCompleted: false,
-        },
-      });
-    }
+        if (order!.orderStatus == "AWAITING_PAYMENT") {
+          const pickupOrder = await prisma.transportJob.findFirst({ where: { orderId: order!.id, transportType: "PICKUP" } });
+          const distance = pickupOrder!.distance / 1000;
+          // Create delivery transport job automatically
+          const deliveryJob = await tx.transportJob.create({
+            data: {
+              transportType: "DELIVERY",
+              distance, // You may calculate this based on coordinates
+              orderId: payment.orderId,
+              isCompleted: false,
+            },
+          });
 
-    res.status(200).json({
-      success: true,
-      message: "Notification processed successfully",
+          const driverIds = await getIdleEmployees(+orderId, "DRIVER");
+
+          await tx.notification.createMany({
+            data: createMultipleNotificationDataService(
+              driverIds,
+              "Delivery Job alert",
+              " A new delivery job is available!",
+              `${process.env.BASE_URL_FE!}/transport-job/${deliveryJob.id}`
+            ),
+          });
+        }
+
+        // Create notification for user
+        await tx.notification.create({
+          data: {
+            userId: payment.order.customerAddressId,
+            title: "Pembayaran Berhasil",
+            description: `Pembayaran untuk order #${payment.orderId} telah berhasil. ${
+              order?.orderStatus == "AWAITING_PAYMENT" ? "Pesanan Anda akan segera dikirim" : ""
+            }.`,
+            url: `/orders/${payment.orderId}`,
+          },
+        });
+      }
+
+      res.status(200).json({
+        success: true,
+        message: "Notification processed successfully",
+      });
     });
   } catch (error) {
     console.error(error);
@@ -285,10 +301,7 @@ export const handlePaymentNotificationService = async (
   }
 };
 
-export const getPaymentStatusService = async (
-  req: Request,
-  res: Response
-): Promise<void> => {
+export const getPaymentStatusService = async (req: Request, res: Response): Promise<void> => {
   try {
     const userId = req.user?.id;
     const { orderId } = req.params;

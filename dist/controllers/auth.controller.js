@@ -17,13 +17,13 @@ const login_service_1 = require("../services/auth/login.service");
 const getGoogleToken_service_1 = require("../services/auth/getGoogleToken.service");
 const forgotPassword_service_1 = require("../services/auth/forgotPassword.service");
 const resetPassword_service_1 = require("../services/auth/resetPassword.service");
+const getSession_service_1 = require("../services/auth/getSession.service");
 class AuthController {
-    // Controller to handle registration via email
     registerController(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const result = yield (0, register_service_1.registerService)(req, res);
-                return res.status(200).send(result);
+                res.status(200).send(result);
             }
             catch (error) {
                 console.log(error);
@@ -31,12 +31,11 @@ class AuthController {
             }
         });
     }
-    // Controller to handle email verification
     verifyEmailController(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const result = yield (0, verifyEmail_service_1.verifEmailService)(req, res);
-                return res.status(200).send(result);
+                res.status(200).send(result);
             }
             catch (error) {
                 console.log(error);
@@ -44,12 +43,11 @@ class AuthController {
             }
         });
     }
-    // Controller to complete registration (e.g. by providing full name and password)
     completeRegistController(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const result = yield (0, completeRegist_service_1.completeRegistService)(req, res);
-                return res.status(200).send(result);
+                res.status(200).send(result);
             }
             catch (error) {
                 console.log(error);
@@ -62,7 +60,7 @@ class AuthController {
             try {
                 const { code } = req.body;
                 const result = yield (0, getGoogleToken_service_1.getGoogleTokenService)(code);
-                return res.status(200).send(result);
+                res.status(200).send(result);
             }
             catch (error) {
                 console.log(error);
@@ -74,7 +72,7 @@ class AuthController {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const result = yield (0, login_service_1.loginService)(req, res);
-                return res.status(200).send(result);
+                res.status(200).send(result);
             }
             catch (error) {
                 console.log(error);
@@ -86,7 +84,7 @@ class AuthController {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const result = yield (0, forgotPassword_service_1.forgotPasswordService)(req, res);
-                return res.status(200).send(result);
+                res.status(200).send(result);
             }
             catch (error) {
                 console.log(error);
@@ -98,7 +96,19 @@ class AuthController {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const result = yield (0, resetPassword_service_1.resetPasswrodService)(req, res);
-                return res.status(200).send(result);
+                res.status(200).send(result);
+            }
+            catch (error) {
+                console.log(error);
+                res.status(400).send(error);
+            }
+        });
+    }
+    getSessionController(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const result = yield (0, getSession_service_1.getSessionService)(req, res);
+                res.status(200).send(result);
             }
             catch (error) {
                 console.log(error);

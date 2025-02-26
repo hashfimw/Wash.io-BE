@@ -1,4 +1,4 @@
-import { Role } from "@prisma/client"; 
+import { Role } from "../prisma/generated/client"; // ✅ Cukup import ini
 import "express";
 
 export type UserPayload = {

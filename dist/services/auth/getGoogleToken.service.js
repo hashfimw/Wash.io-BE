@@ -17,13 +17,16 @@ const google_auth_library_1 = require("google-auth-library");
 const prisma_1 = __importDefault(require("../../prisma"));
 const jsonwebtoken_1 = require("jsonwebtoken");
 const config_1 = require("../../utils/config");
-const oAuth2Client = new google_auth_library_1.OAuth2Client(process.env.CLIENT_ID, process.env.CLIENT_SECRET, 'urn:ietf:wg:oauth:2.0:oob' // Update this based on your frontend redirect
+const oAuth2Client = new google_auth_library_1.OAuth2Client(process.env.CLIENT_ID, process.env.CLIENT_SECRET, process.env.REDIRECT_URI // Update this based on your frontend redirect
 );
 const getGoogleTokenService = (code) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
     try {
         // Exchange authorization code for tokens
         const { tokens } = yield oAuth2Client.getToken(code);
+        console.log(code);
+        console.log("Client ID:", process.env.CLIENT_ID);
+        console.log("Client Secret:", process.env.CLIENT_SECRET);
         if (!tokens.id_token) {
             throw new Error("Failed to retrieve ID token from Google");
         }
@@ -47,7 +50,7 @@ const getGoogleTokenService = (code) => __awaiter(void 0, void 0, void 0, functi
         });
         if (existingUser &&
             ((_a = existingUser.avatar) === null || _a === void 0 ? void 0 : _a.includes("googleusercontent.com"))) {
-            const token = (0, jsonwebtoken_1.sign)({ id: existingUser.id }, config_1.appConfig.jwtSecretKey, {
+            const token = (0, jsonwebtoken_1.sign)({ id: existingUser.id }, config_1.appConfig.SecretKey, {
                 expiresIn: "2h",
             });
             return {
@@ -68,11 +71,11 @@ const getGoogleTokenService = (code) => __awaiter(void 0, void 0, void 0, functi
                 isVerified: true,
             },
         });
-        const token = (0, jsonwebtoken_1.sign)({ id: newUser.id }, config_1.appConfig.jwtSecretKey, {
+        const token = (0, jsonwebtoken_1.sign)({ id: newUser.id }, config_1.appConfig.SecretKey, {
             expiresIn: "2h",
         });
         return {
-            message: "Login by Google Success",
+            message: "Login by Google Success ! ✅",
             data: newUser,
             token: token,
         };

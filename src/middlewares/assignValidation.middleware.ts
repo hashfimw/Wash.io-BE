@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
-import { Role } from "@prisma/client";
 import prisma from "../prisma";
+import { Role } from "../../prisma/generated/client";
 
 export const validateAssignEmployee = async (
   req: Request,

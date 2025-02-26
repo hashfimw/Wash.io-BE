@@ -16,6 +16,7 @@ exports.resetPasswrodService = void 0;
 const jsonwebtoken_1 = require("jsonwebtoken");
 const prisma_1 = __importDefault(require("../../prisma"));
 const bcrypt_1 = require("bcrypt");
+const config_1 = require("../../utils/config");
 const resetPasswrodService = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { token, newPassword, confirmPassword } = req.body;
@@ -30,7 +31,7 @@ const resetPasswrodService = (req, res) => __awaiter(void 0, void 0, void 0, fun
         }
         let decoded;
         try {
-            decoded = (0, jsonwebtoken_1.verify)(token, process.env.JWT_KEY);
+            decoded = (0, jsonwebtoken_1.verify)(token, config_1.appConfig.SecretKey);
         }
         catch (error) {
             console.error("Token verification failed:", error);

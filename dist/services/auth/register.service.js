@@ -19,6 +19,7 @@ const path_1 = __importDefault(require("path"));
 const fs_1 = __importDefault(require("fs"));
 const mailer_1 = require("../mailer");
 const handlebars_1 = __importDefault(require("handlebars"));
+const config_1 = require("../../utils/config");
 const registerService = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { email } = req.body;
@@ -44,7 +45,7 @@ const registerService = (req, res) => __awaiter(void 0, void 0, void 0, function
         });
         // Generate a JWT token for the verification link
         const payload = { id: newUser.id };
-        const token = (0, jsonwebtoken_1.sign)(payload, process.env.JWT_KEY, { expiresIn: "60m" });
+        const token = (0, jsonwebtoken_1.sign)(payload, config_1.appConfig.SecretKey, { expiresIn: "60m" });
         const verificationLink = `${process.env.BASE_URL_FE}/verify/${token}`;
         // Load and compile the email template
         const templatePath = path_1.default.resolve(__dirname, "../../templates", "verifyEmail.hbs");
@@ -63,7 +64,7 @@ const registerService = (req, res) => __awaiter(void 0, void 0, void 0, function
         });
         res
             .status(201)
-            .send({ message: "Verification email sent successfully! ✅" });
+            .send({ message: "Verification email sent successfully ! ✅" });
     }
     catch (error) {
         throw error;
