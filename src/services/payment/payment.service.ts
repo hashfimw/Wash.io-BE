@@ -79,7 +79,7 @@ export const createPaymentService = async (req: Request, res: Response): Promise
     const pickupOrder = await prisma.transportJob.findFirst({ where: { orderId, transportType: "PICKUP" } });
     const distance = pickupOrder!.distance / 1000;
 
-    const fare = distance * 10000;
+    const fare = Math.round(distance * 10000);
     const totalPrice = order.laundryPrice + fare;
 
     // Check if payment already exists
@@ -116,6 +116,8 @@ export const createPaymentService = async (req: Request, res: Response): Promise
 
     items.push({ id: "ITEM-FARE", price: fare, quantity: 1, name: "Fare" });
     items.push({ id: "ITEM-DIFF", price: totalPrice - fare - itemsSum, quantity: 1, name: "Difference" });
+
+    console.log(items)
 
     // Create Midtrans snap token
     const snapResponse = await snap.createTransaction({

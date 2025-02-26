@@ -72,8 +72,10 @@ const createPickupOrderService = (req, res) => __awaiter(void 0, void 0, void 0,
                 },
             });
             const driverIds = yield (0, finder_service_1.getIdleEmployees)(nearestOutlet.id, "DRIVER");
+            const distance = Math.round(nearestOutlet.distance * 10) * 100;
+            console.log(distance);
             const transportJobId = (yield tx.transportJob.create({
-                data: { orderId: order.id, transportType: "PICKUP", distance: nearestOutlet.distance * 1000 },
+                data: { orderId: order.id, transportType: "PICKUP", distance: distance },
             })).id;
             if (driverIds.length > 0) {
                 yield tx.notification.createMany({
