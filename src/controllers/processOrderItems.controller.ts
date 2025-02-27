@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import {
   createOrderItemService,
   deleteOrderItemService,
+  getOrderItemService,
   processOrderService,
   updateOrderItemService,
 } from "../services/outlets/processOrderItems.service";
@@ -57,12 +58,12 @@ export class processOrderItemController {
     }
   };
 
-  getLaundryItemsByOutletController = async (
+  geOrdersItemsByOutletController = async (
     req: Request,
     res: Response
   ): Promise<void> => {
     try {
-      const result = await getAllOrdersService(req, res);
+      const result = await getOrderItemService(req, res);
       res.status(200).json(result);
     } catch (error) {
       console.log(error);

@@ -38,8 +38,8 @@ export class UserRouter {
 
     this.router.get(
       "/:id",
-      // verifyToken,
-      // checkUser,
+      verifyToken,
+      checkUser,
       asyncHandler(this.userController.getUsersId)
     );
 

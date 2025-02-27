@@ -9,7 +9,8 @@ import { AuthRouter } from "./routers/auth.router";
 import { UserRouter } from "./routers/user.router";
 import { showOrderRouter } from "./routers/showOrderOutlets.router";
 import { OrderItemsRouter } from "./routers/processOrder.routes";
-import { BypassProcessRouter } from "./routers/bypassProcess.router";
+import { BypassRequestRouter } from "./routers/bypassProcess.router";
+import { ReportRouter } from "./routers/report.router";
 
 dotenv.config();
 
@@ -30,20 +31,20 @@ app.get("/api", (req: Request, res: Response) => {
   res.status(200).send("Welcome to my API");
 });
 
-// Initialize routers
 const superAdmEmployee = new SuperAdmEmployeeRouter();
 const superAdmOutlets = new SuperAdmOutletRouter();
 const orderItemsRouter = new OrderItemsRouter();
 const showOrder = new showOrderRouter();
-const bypassProcess = new BypassProcessRouter();
+const bypassProcess = new BypassRequestRouter();
+const reportRouter = new ReportRouter();
 
-// Routes
 app.use("/api/adm-employees", superAdmEmployee.getRouter());
 app.use("/api/adm-outlets", superAdmOutlets.getRouter());
 app.use("/api/public", express.static(path.join(__dirname, "../public")));
 app.use("/api/orders", orderItemsRouter.getRouter());
 app.use("/api/orders/show-order", showOrder.getRouter());
 app.use("/api/bypass", bypassProcess.getRouter());
+app.use("/api/reports", reportRouter.getRouter());
 
 const authRouter = new AuthRouter();
 const userRouter = new UserRouter();

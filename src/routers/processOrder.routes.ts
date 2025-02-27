@@ -2,6 +2,8 @@
 import { Router } from "express";
 import { verifyToken } from "../middlewares/verifyToken";
 import { processOrderItemController } from "../controllers/processOrderItems.controller";
+import { AdminAuth } from "../middlewares/validation/AdminAuth.middleware";
+import { Role } from "@prisma/client";
 
 export class OrderItemsRouter {
   private router: Router;
@@ -17,30 +19,35 @@ export class OrderItemsRouter {
     this.router.post(
       "/process-order",
       verifyToken,
+      AdminAuth([Role.SUPER_ADMIN, Role.OUTLET_ADMIN]),
       this.controller.processOrders
     );
 
     this.router.post(
       "/items",
       verifyToken,
+      AdminAuth([Role.SUPER_ADMIN, Role.OUTLET_ADMIN]),
       this.controller.createLaundryItemController
     );
 
     this.router.get(
       "/items",
       verifyToken,
-      this.controller.getLaundryItemsByOutletController
+      AdminAuth([Role.SUPER_ADMIN, Role.OUTLET_ADMIN]),
+      this.controller.geOrdersItemsByOutletController
     );
 
     this.router.put(
       "/items/:id",
       verifyToken,
+      AdminAuth([Role.SUPER_ADMIN]),
       this.controller.updateLaundryItemController
     );
 
     this.router.delete(
       "/items/:id",
       verifyToken,
+      AdminAuth([Role.SUPER_ADMIN]),
       this.controller.deleteLaundryItemController
     );
   }

@@ -1,17 +1,61 @@
 // src/services/order.service.ts
 import { Request, Response } from "express";
 import prisma from "../../prisma";
-import { Role } from "@prisma/client";
+import { OrderStatus, Prisma, Role } from "@prisma/client";
 
-// Untuk Super Admin
 export const getAllOrdersService = async (req: Request, res: Response) => {
-  const { outletId } = req.query;
+  // Cek role pengguna
+  const user = await prisma.user.findUnique({
+    where: { id: Number(req.user?.id) },
+    include: { Employee: true },
+  });
 
-  const whereClause = {
+  const {
+    outletId,
+    page = 1,
+    limit = 20,
+    sortOrder = "desc",
+    orderStatus,
+    search,
+    startDate,
+    endDate,
+  } = req.query;
+
+  // Base where clause
+  const whereClause: Prisma.OrderWhereInput = {
     isDeleted: false,
-    ...(outletId ? { outletId: Number(outletId) } : {}),
   };
 
+  // Logika filter berbeda berdasarkan role
+  if (user?.role === Role.SUPER_ADMIN) {
+    // Super admin bisa filter berdasarkan outletId
+    if (outletId) {
+      whereClause.outletId = Number(outletId);
+    }
+  } else if (user?.role === Role.OUTLET_ADMIN) {
+    // Outlet admin hanya bisa lihat order di outlet miliknya
+    if (!user.Employee?.outletId) {
+      throw new Error("Outlet not found for this user");
+    }
+    whereClause.outletId = user.Employee.outletId;
+  } else {
+    throw new Error("Unauthorized to view orders");
+  }
+
+  // Filter tambahan
+  if (orderStatus && orderStatus !== "all status") {
+    whereClause.orderStatus = orderStatus as OrderStatus;
+  }
+
+  // Add date range filter
+  if (startDate && endDate) {
+    whereClause.createdAt = {
+      gte: new Date(startDate as string),
+      lte: new Date(endDate as string),
+    };
+  }
+
+  // Query dengan pagination
   const orders = await prisma.order.findMany({
     where: whereClause,
     include: {
@@ -38,86 +82,56 @@ export const getAllOrdersService = async (req: Request, res: Response) => {
       },
     },
     orderBy: {
-      createdAt: "desc",
+      createdAt: sortOrder as "asc" | "desc",
     },
+    skip: (+page - 1) * +limit,
+    take: +limit,
   });
+
+  // Hitung total orders untuk pagination dengan filter yang sama
+  const totalOrders = await prisma.order.count({
+    where: whereClause,
+  });
+
+  const totalPages = Math.ceil(totalOrders / +limit);
 
   return {
     message: "Orders fetched successfully",
     data: orders,
-  };
-};
-
-// Untuk Outlet Admin
-export const getOutletOrdersService = async (req: Request, res: Response) => {
-  const user = await prisma.user.findUnique({
-    where: { id: Number(req.user?.id) },
-    include: {
-      Employee: true,
+    meta: {
+      page: +page,
+      limit: +limit,
+      total: totalPages,
+      totalRecords: totalOrders,
     },
-  });
-
-  const orders = await prisma.order.findMany({
-    where: {
-      outletId: user?.Employee?.outletId,
-      isDeleted: false,
-    },
-    include: {
-      customerAddress: true,
-      OrderItem: true,
-      LaundryJob: {
-        include: {
-          worker: {
-            include: {
-              user: true,
-            },
-          },
-        },
-      },
-      TransportJob: {
-        include: {
-          driver: {
-            include: {
-              user: true,
-            },
-          },
-        },
-      },
-    },
-    orderBy: {
-      createdAt: "desc",
-    },
-  });
-
-  return {
-    message: "Orders fetched successfully",
-    data: orders,
   };
 };
 
 export const trackOrderService = async (req: Request, res: Response) => {
+  // Cek role pengguna
+  const user = await prisma.user.findUnique({
+    where: { id: Number(req.user?.id) },
+    include: { Employee: true },
+  });
+
   const { orderId } = req.params;
 
-  // sementara dikomen dlu karena di frontend belum bisa login
-  // const user = await prisma.user.findUnique({
-  //   where: { id: Number(req.user?.id) },
-  //   include: {
-  //     Employee: true,
-  //   },
-  // });
+  // Logika berbeda berdasarkan role
+  const whereClause: Prisma.OrderWhereInput = {
+    id: Number(orderId),
+    isDeleted: false,
+  };
 
-  // Query order dengan kondisi berbeda berdasarkan role
+  if (user?.role === Role.OUTLET_ADMIN) {
+    // Outlet admin hanya bisa track order di outlet miliknya
+    if (!user.Employee?.outletId) {
+      throw new Error("Outlet not found for this user");
+    }
+    whereClause.outletId = user.Employee.outletId;
+  }
+
   const order = await prisma.order.findFirst({
-    where: {
-      id: Number(orderId),
-      // Jika Outlet Admin, tambahkan filter outletId
-      // ...(user?.role === Role.OUTLET_ADMIN
-      //   ? {
-      //       outletId: user?.Employee?.outletId,
-      //     }
-      //   : {}),
-      isDeleted: false,
-    },
+    where: whereClause,
     include: {
       outlet: true,
       OrderItem: true,

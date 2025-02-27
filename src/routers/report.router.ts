@@ -1,34 +1,33 @@
-// src/routes/order.routes.ts
+// src/routes/report.routes.ts
 import { Router } from "express";
-import { showOrdersController } from "../controllers/showOrders.controller";
+import { ReportController } from "../controllers/report.controller";
 import { verifyToken } from "../middlewares/verifyToken";
 import { AdminAuth } from "../middlewares/validation/AdminAuth.middleware";
 import { Role } from "@prisma/client";
 
-export class showOrderRouter {
+export class ReportRouter {
   private router: Router;
-  private controller: showOrdersController;
+  private controller: ReportController;
 
   constructor() {
     this.router = Router();
-    this.controller = new showOrdersController();
+    this.controller = new ReportController();
     this.initializeRoutes();
   }
-  // validaton di matiin sementara buat testing doang
+
   private initializeRoutes() {
-    // Super Admin route
     this.router.get(
-      "/",
+      "/sales",
       verifyToken,
       AdminAuth([Role.SUPER_ADMIN, Role.OUTLET_ADMIN]),
-      this.controller.getAllOrdersController
+      this.controller.getSalesReportController
     );
 
     this.router.get(
-      "/track/:orderId",
+      "/employee-performance",
       verifyToken,
       AdminAuth([Role.SUPER_ADMIN, Role.OUTLET_ADMIN]),
-      this.controller.trackOrderController
+      this.controller.getEmployeePerformanceController
     );
   }
 

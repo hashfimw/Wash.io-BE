@@ -2,9 +2,18 @@
 import { Request, Response } from "express";
 import { genSalt, hash } from "bcrypt";
 import prisma from "../../prisma";
-import { Role } from "@prisma/client";
+import { Prisma, Role } from "@prisma/client";
 
 export const createEmployeeService = async (req: Request, res: Response) => {
+  // Pastikan hanya super admin yang bisa membuat employee
+  const user = await prisma.user.findUnique({
+    where: { id: Number(req.user?.id) },
+  });
+
+  if (!user || user.role !== Role.SUPER_ADMIN) {
+    throw new Error("Only Super Admin can create employees");
+  }
+
   const { fullName, email, password, role, workShift, station, outletId } =
     req.body;
 
@@ -34,25 +43,95 @@ export const createEmployeeService = async (req: Request, res: Response) => {
 };
 
 export const getAllEmployeesService = async (req: Request, res: Response) => {
+  // Pastikan hanya super admin yang bisa melihat semua employees
+  const user = await prisma.user.findUnique({
+    where: { id: Number(req.user?.id) },
+  });
+
+  if (!user || user.role !== Role.SUPER_ADMIN) {
+    throw new Error("Only Super Admin can view all employees");
+  }
+
+  const filter: Prisma.UserWhereInput = {
+    isDeleted: false,
+    role: { in: [Role.WORKER, Role.DRIVER, Role.OUTLET_ADMIN] },
+  };
+  const {
+    page = 1,
+    limit = 10,
+    sortOrder = "asc",
+    role,
+    outletName,
+  } = req.query;
+  const search = req.query.search as string | undefined;
+  let sortBy = req.query.sortBy as string;
+  if (!sortBy) sortBy = "fullName";
+
+  if (search) {
+    filter.OR = [
+      { fullName: { contains: search, mode: "insensitive" } },
+      { email: { contains: search, mode: "insensitive" } },
+    ];
+  }
+
+  if (role && role !== "ALL Role") {
+    filter.role = role as Role;
+  }
+
+  if (outletName) {
+    const outlet = await prisma.outlet.findFirst({
+      where: { outletName: outletName as string },
+    });
+
+    if (outlet) {
+      const employeeIds = (
+        await prisma.employee.findMany({
+          where: { outletId: outlet.id },
+        })
+      ).map((item) => item.userId);
+
+      filter.id = { in: employeeIds };
+    }
+  }
+
   const employees = await prisma.user.findMany({
-    where: {
-      isDeleted: false,
-      role: { in: [Role.WORKER, Role.DRIVER, Role.OUTLET_ADMIN] },
-    },
+    where: filter,
     include: {
       Employee: {
         include: { outlet: true },
       },
     },
+    take: +limit,
+    skip: (+page - 1) * +limit,
+    orderBy: { [sortBy]: sortOrder },
   });
+
+  const count = await prisma.user.count({
+    where: filter,
+  });
+  const total = Math.ceil(count / +limit);
 
   return {
     message: "Employees fetched successfully",
     data: employees,
+    meta: {
+      page,
+      limit,
+      total,
+    },
   };
 };
 
 export const updateEmployeeService = async (req: Request, res: Response) => {
+  // Pastikan hanya super admin yang bisa update employee
+  const user = await prisma.user.findUnique({
+    where: { id: Number(req.user?.id) },
+  });
+
+  if (!user || user.role !== Role.SUPER_ADMIN) {
+    throw new Error("Only Super Admin can update employees");
+  }
+
   const { id } = req.params;
   const { fullName, email, workShift, station, outletId } = req.body;
 
@@ -79,6 +158,15 @@ export const updateEmployeeService = async (req: Request, res: Response) => {
 };
 
 export const deleteEmployeeService = async (req: Request, res: Response) => {
+  // Pastikan hanya super admin yang bisa delete employee
+  const user = await prisma.user.findUnique({
+    where: { id: Number(req.user?.id) },
+  });
+
+  if (!user || user.role !== Role.SUPER_ADMIN) {
+    throw new Error("Only Super Admin can delete employees");
+  }
+
   const { id } = req.params;
 
   await prisma.$transaction([
@@ -98,6 +186,15 @@ export const deleteEmployeeService = async (req: Request, res: Response) => {
 };
 
 export const getAllUsersService = async (req: Request, res: Response) => {
+  // Pastikan hanya super admin yang bisa melihat semua users
+  const user = await prisma.user.findUnique({
+    where: { id: Number(req.user?.id) },
+  });
+
+  if (!user || user.role !== Role.SUPER_ADMIN) {
+    throw new Error("Only Super Admin can view all users");
+  }
+
   const users = await prisma.user.findMany({
     where: { isDeleted: false },
     include: { Employee: true },
