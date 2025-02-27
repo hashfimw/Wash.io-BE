@@ -3,13 +3,12 @@ import {
   validateCreateEmployee,
   validateDeleteEmployee,
   validateUpdateEmployee,
-} from "../middlewares/employeeValidation.middleware";
-import {
-  validateAssignEmployee,
-  validateMultipleAssignments,
-} from "../middlewares/assignValidation.middleware";
+} from "../middlewares/validation/employeeValidation.middleware";
 import { SuperAdmEmployeeController } from "../controllers/superAdmEmployee.controller";
-import { isSuperAdmin } from "../middlewares/superAdminAuth.middleware";
+import { verifyToken } from "../middlewares/verifyToken";
+import { isOutletAdmin } from "../middlewares/validation/outletAdminAuth.middleware";
+import { AdminAuth } from "../middlewares/validation/AdminAuth.middleware";
+import { Role } from "@prisma/client";
 
 export class SuperAdmEmployeeRouter {
   private router: Router;
@@ -20,48 +19,41 @@ export class SuperAdmEmployeeRouter {
     this.controller = new SuperAdmEmployeeController();
     this.initializeRoutes();
   }
-
+  // validaton di matiin sementara buat testing doang
   private initializeRoutes() {
     this.router.post(
       "/",
-      isSuperAdmin,
+      // isSuperAdmin,
+      verifyToken,
+      AdminAuth([Role.SUPER_ADMIN]),
       validateCreateEmployee,
       this.controller.createEmployeeController
-    ); //yang ini nambahin isSuperAdmin nunggu req.user dari fitur kemal
+    );
     this.router.get(
       "/",
-      isSuperAdmin,
+      verifyToken,
+      AdminAuth([Role.SUPER_ADMIN]),
       this.controller.getAllEmployeesController
     );
     this.router.put(
       "/:id",
-      isSuperAdmin,
+      verifyToken,
+      AdminAuth([Role.SUPER_ADMIN]),
       validateUpdateEmployee,
       this.controller.updateEmployeeController
-    ); //yang ini nambahin isSuperAdmin nunggu req.user dari fitur kemal
+    );
     this.router.delete(
       "/:id",
-      isSuperAdmin,
+      verifyToken,
+      AdminAuth([Role.SUPER_ADMIN]),
       validateDeleteEmployee,
       this.controller.deleteEmployeeController
-    ); //yang ini nambahin isSuperAdmin nunggu req.user dari fitur kemal
+    );
     this.router.get(
       "/allusers",
-      isSuperAdmin,
+      verifyToken,
+      AdminAuth([Role.SUPER_ADMIN]),
       this.controller.getAllUsersController
-    );
-    this.router.post(
-      "/assign",
-      isSuperAdmin,
-      validateAssignEmployee,
-      this.controller.assignEmployeeToOutletController
-    ); //yang ini nambahin isSuperAdmin nunggu req.user dari fitur kemal
-
-    this.router.post(
-      "/assign-multiple",
-      isSuperAdmin,
-      validateMultipleAssignments,
-      this.controller.reassignMultipleEmployeesController
     );
   }
 

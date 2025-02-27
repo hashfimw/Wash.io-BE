@@ -29,9 +29,9 @@ export const getUserService = async (req: Request, res: Response) => {
       skip: limit * (page - 1),
     });
 
-    res.status(200).json({ total_page, page, limit, users });
+    return { total_page, page, limit, users };
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: "Something went wrong !" });
+    throw error;
   }
 };
