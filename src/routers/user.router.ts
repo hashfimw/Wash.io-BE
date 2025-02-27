@@ -1,8 +1,7 @@
 import { Router } from "express";
-import { UserController } from "../controllers/user.controller";
 import { checkUser, verifyToken } from "../middlewares/verifyToken";
-import { asyncHandler } from "../middlewares/asyncHandler";
 import { uploader } from "../services/uploader";
+import { UserController } from "../controllers/user.controller";
 
 export class UserRouter {
   private userController: UserController;
@@ -14,48 +13,20 @@ export class UserRouter {
     this.initializeRoutes();
   }
 
-  private initializeRoutes() {
-    this.router.get(
-      "/",
-      // verifyToken,
-      // checkUser,
-      asyncHandler(this.userController.getUsers)
-    );
+  private initializeRoutes(): void {
+    this.router.use(verifyToken);
+    this.router.use(checkUser);
 
-    this.router.post(
-      "/",
-      verifyToken,
-      checkUser,
-      asyncHandler(this.userController.createUser)
-    );
-
+    this.router.get("/", this.userController.getUsers);
+    this.router.post("/", this.userController.createUser);
     this.router.patch(
       "/avatar-cloud",
-      verifyToken,
       uploader("memoryStorage", "avatar").single("file"),
-      asyncHandler(this.userController.getUsersId)
+      this.userController.getUsersId
     );
-
-    this.router.get(
-      "/:id",
-      verifyToken,
-      checkUser,
-      asyncHandler(this.userController.getUsersId)
-    );
-
-    this.router.delete(
-      "/:id",
-      verifyToken,
-      checkUser,
-      asyncHandler(this.userController.deleteUser)
-    );
-
-    this.router.patch(
-      "/:id",
-      verifyToken,
-      checkUser,
-      asyncHandler(this.userController.editUser)
-    );
+    this.router.get("/:id", this.userController.getUsersId);
+    this.router.delete("/:id", this.userController.deleteUser);
+    this.router.patch("/:id", this.userController.editUser);
   }
 
   getRouter(): Router {

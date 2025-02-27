@@ -11,6 +11,9 @@ import { showOrderRouter } from "./routers/showOrderOutlets.router";
 import { OrderItemsRouter } from "./routers/processOrder.routes";
 import { BypassRequestRouter } from "./routers/bypassProcess.router";
 import { ReportRouter } from "./routers/report.router";
+import { AddressRouter } from "./routers/address.router";
+import { PickupOrderRouter } from "./routers/pickupOrder.router";
+import { PaymentRouter } from "./routers/payment.router";
 
 dotenv.config();
 
@@ -48,9 +51,15 @@ app.use("/api/reports", reportRouter.getRouter());
 
 const authRouter = new AuthRouter();
 const userRouter = new UserRouter();
+const addressRouter = new AddressRouter();
+const pickupOrderRouter = new PickupOrderRouter();
+const paymentRouter = new PaymentRouter();
 
 app.use("/api/auth", authRouter.getRouter());
 app.use("/api/users", userRouter.getRouter());
+app.use("/api/address", addressRouter.getRouter());
+app.use("/api/pickup-orders", pickupOrderRouter.getRouter());
+app.use("/api/payments", paymentRouter.getRouter());
 
 app.listen(PORT, () => {
   console.log(`server is running on => http://localhost:${PORT}/api`);

@@ -176,7 +176,7 @@ model Payment {
 model EmployeeAttendance {
   id               Int                @id @default(autoincrement())
   createdAt        DateTime           @default(now())
-  updatedAt        DateTime           @updatedAt
+  updatedAt        DateTime
   isDeleted        Boolean            @default(false)
   deletedAt        DateTime?
   employeeId       Int

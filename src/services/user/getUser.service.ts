@@ -9,7 +9,7 @@ export const getUserService = async (req: Request, res: Response) => {
     const limit = parseInt(req.query.limit as string) || 5;
 
     const filter: Prisma.UserWhereInput = {
-      role: "CUSTOMER", // nambahin filter by role
+      role: "CUSTOMER",
     };
 
     if (search) {
