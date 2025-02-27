@@ -117,7 +117,7 @@ export const createPaymentService = async (req: Request, res: Response): Promise
     items.push({ id: "ITEM-FARE", price: fare, quantity: 1, name: "Fare" });
     items.push({ id: "ITEM-DIFF", price: totalPrice - fare - itemsSum, quantity: 1, name: "Difference" });
 
-    console.log(items)
+    console.log(items);
 
     // Create Midtrans snap token
     const snapResponse = await snap.createTransaction({
@@ -198,7 +198,7 @@ export const handlePaymentNotificationService = async (req: Request, res: Respon
         orderId: Number(extractedOrderId),
       },
       include: {
-        order: true,
+        order: { include: { customerAddress: true } },
       },
     });
 
@@ -280,7 +280,7 @@ export const handlePaymentNotificationService = async (req: Request, res: Respon
         // Create notification for user
         await tx.notification.create({
           data: {
-            userId: payment.order.customerAddressId,
+            userId: payment.order.customerAddress.customerId!,
             title: "Pembayaran Berhasil",
             description: `Pembayaran untuk order #${payment.orderId} telah berhasil. ${
               order?.orderStatus == "AWAITING_PAYMENT" ? "Pesanan Anda akan segera dikirim" : ""

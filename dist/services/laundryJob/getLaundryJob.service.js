@@ -53,12 +53,17 @@ const getLaundryJobs = (filter, meta) => __awaiter(void 0, void 0, void 0, funct
             skip: (meta.page - 1) * meta.limit,
             take: meta.limit,
             orderBy: { [meta.sortBy]: meta.sortOrder },
+            select: { id: true, orderId: true, createdAt: true },
         });
         const total_data = yield prisma_1.default.laundryJob.count({ where: filter });
         const total_pages = Math.ceil(total_data / meta.limit);
         if (total_pages > 0 && +meta.page > total_pages)
             throw { message: "Invalid page!" };
-        return { data: laundryJobs, meta: { page: meta.page, limit: meta.limit, total_pages: total_pages, total_data: total_data } };
+        const data = laundryJobs.map((item) => {
+            const { createdAt } = item, details = __rest(item, ["createdAt"]);
+            return Object.assign(Object.assign({}, details), { date: createdAt });
+        });
+        return { data, meta: { page: meta.page, limit: meta.limit, total_pages: total_pages, total_data: total_data } };
     }
     catch (error) {
         throw error;
@@ -92,30 +97,41 @@ const getLaundryJobsService = (queries) => __awaiter(void 0, void 0, void 0, fun
     }
 });
 exports.getLaundryJobsService = getLaundryJobsService;
-const getLaundryJobByIdService = (userId, laundryJobId) => __awaiter(void 0, void 0, void 0, function* () {
+const getLaundryJobById = (laundryJobId) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const accessor = yield (0, finder_service_1.findUser)(userId);
         const laundryJob = yield prisma_1.default.laundryJob.findUnique({
             where: { id: laundryJobId },
             include: { worker: { include: { user: true } }, order: { include: { customerAddress: { include: { customer: true } }, OrderItem: true } } },
         });
-        if (!laundryJob)
+        if (laundryJob) {
+            const { workerId, worker, order } = laundryJob, jobDetails = __rest(laundryJob, ["workerId", "worker", "order"]);
+            const address = __rest(order.customerAddress, []);
+            return Object.assign(Object.assign({}, jobDetails), { orderStatus: order.orderStatus, isPaid: order.isPaid, employeeId: workerId, employeeName: worker === null || worker === void 0 ? void 0 : worker.user.fullName, outletId: order.outletId, customerName: address.customer.fullName, laundryWeight: order.laundryWeight, orderItem: order.OrderItem });
+        }
+        else
             throw { message: "Invalid Laundry Job id!" };
+    }
+    catch (error) {
+        throw error;
+    }
+});
+const getLaundryJobByIdService = (userId, laundryJobId) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const accessor = yield (0, finder_service_1.findUser)(userId);
+        const laundryJob = yield getLaundryJobById(laundryJobId);
         if (!accessor.Employee)
             throw { message: "User is not an employee!" };
         if (accessor.role == "DRIVER")
             throw { message: "Driver cannot access this page!" };
-        if (accessor.role != "SUPER_ADMIN" && accessor.Employee.outletId != laundryJob.order.outletId)
+        if (accessor.role != "SUPER_ADMIN" && accessor.Employee.outletId != laundryJob.outletId)
             throw { message: "Invalid Outlet Id!" };
         if (accessor.role == "WORKER") {
             if (laundryJob.station != accessor.Employee.station)
                 throw { message: "Invalid station!" };
-            if (laundryJob.isCompleted && laundryJob.workerId != accessor.Employee.id)
+            if (laundryJob.isCompleted && laundryJob.employeeId != accessor.Employee.id)
                 throw { message: "Invalid Employee Id!" };
         }
-        const { worker, order } = laundryJob, jobDetails = __rest(laundryJob, ["worker", "order"]);
-        const _a = order.customerAddress, { customer } = _a, address = __rest(_a, ["customer"]);
-        return Object.assign(Object.assign({}, jobDetails), { orderStatus: order.orderStatus, isPaid: order.isPaid, workerId: worker === null || worker === void 0 ? void 0 : worker.id, workerName: worker === null || worker === void 0 ? void 0 : worker.user.fullName, outletId: order.outletId, orderItem: order.OrderItem, customerName: customer.fullName, address });
+        return laundryJob;
     }
     catch (error) {
         throw error;
@@ -129,12 +145,10 @@ const getOngoingLaundryJobService = (userId) => __awaiter(void 0, void 0, void 0
             throw { message: "Invalid role!" };
         const laundryJob = yield prisma_1.default.laundryJob.findFirst({
             where: { workerId: worker.Employee.id, isCompleted: false },
-            include: { worker: { include: { user: true } }, order: { include: { customerAddress: { include: { customer: true } }, OrderItem: true } } },
+            select: { id: true },
         });
         if (laundryJob) {
-            const { worker, order } = laundryJob, jobDetails = __rest(laundryJob, ["worker", "order"]);
-            const _a = order.customerAddress, { customer } = _a, address = __rest(_a, ["customer"]);
-            return Object.assign(Object.assign({}, jobDetails), { orderStatus: order.orderStatus, isPaid: order.isPaid, workerId: worker === null || worker === void 0 ? void 0 : worker.id, workerName: worker === null || worker === void 0 ? void 0 : worker.user.fullName, outletId: order.outletId, orderItem: order.OrderItem, customerName: customer.fullName, address });
+            return yield getLaundryJobById(laundryJob.id);
         }
         else
             throw { message: "You aren't assigned to a job right now!" };

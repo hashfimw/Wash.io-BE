@@ -9,7 +9,6 @@ export default class LaundryJobController {
         userId: +req.user!.id,
         tzo: +(req.query.tzo as string),
         requestType: req.query.requestType as "request" | "history",
-        isCompleted: (req.query.isCompleted as string) || "true",
         startDate: req.query.startDate as string,
         endDate: req.query.endDate as string,
         limit: +(req.query.limit as string) || 10,

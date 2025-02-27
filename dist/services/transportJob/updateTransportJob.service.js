@@ -51,13 +51,13 @@ const updateTransportJobByIdService = (transportJobId, userId, tzo) => __awaiter
             driverData.data.isWorking = true;
         }
         else if (currentOrderStatus == "ON_THE_WAY_TO_CUSTOMER") {
-            if (transportJob.driverId != driver.Employee.id)
+            if (transportJob.employeeId != driver.Employee.id)
                 throw { message: "Invalid Driver Id!" };
             newOrderStatus = "ON_THE_WAY_TO_OUTLET";
             driverData.data.isWorking = true;
         }
         else if (currentOrderStatus == "ON_THE_WAY_TO_OUTLET" || currentOrderStatus == "BEING_DELIVERED_TO_CUSTOMER") {
-            if (transportJob.driverId != driver.Employee.id)
+            if (transportJob.employeeId != driver.Employee.id)
                 throw { message: "Invalid Driver Id!" };
             if (transportType == "PICKUP")
                 newOrderStatus = "ARRIVED_AT_OUTLET";

@@ -47,7 +47,7 @@ export const updateLaundryJobByIdService = async (laundryJobId: number, userId: 
       laundryJobData.data.workerId = worker.Employee!.id;
       workerData.data.isWorking = true;
     } else if (currentOrderStatus == "BEING_WASHED" || currentOrderStatus == "BEING_IRONED" || currentOrderStatus == "BEING_PACKED") {
-      if (laundryJob.workerId != worker.Employee!.id) throw { message: "Invalid Worker Id!" };
+      if (laundryJob.employeeId != worker.Employee!.id) throw { message: "Invalid Worker Id!" };
       const outletId = worker.Employee!.outletId;
 
       if (station == "WASHING") {

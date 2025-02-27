@@ -188,7 +188,7 @@ const handlePaymentNotificationService = (req, res) => __awaiter(void 0, void 0,
                 orderId: Number(extractedOrderId),
             },
             include: {
-                order: true,
+                order: { include: { customerAddress: true } },
             },
         });
         if (!payment) {
@@ -259,7 +259,7 @@ const handlePaymentNotificationService = (req, res) => __awaiter(void 0, void 0,
                 // Create notification for user
                 yield tx.notification.create({
                     data: {
-                        userId: payment.order.customerAddressId,
+                        userId: payment.order.customerAddress.customerId,
                         title: "Pembayaran Berhasil",
                         description: `Pembayaran untuk order #${payment.orderId} telah berhasil. ${(order === null || order === void 0 ? void 0 : order.orderStatus) == "AWAITING_PAYMENT" ? "Pesanan Anda akan segera dikirim" : ""}.`,
                         url: `/orders/${payment.orderId}`,
