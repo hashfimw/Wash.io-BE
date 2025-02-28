@@ -1,7 +1,7 @@
 // src/services/superAdmOutlet.service.ts
 import { Request, Response } from "express";
 import prisma from "../../prisma";
-import { Prisma, Role } from "@prisma/client";
+import { Prisma, Role } from "../../../prisma/generated/client";
 
 export const createOutletService = async (req: Request, res: Response) => {
   // Pastikan hanya super admin yang bisa membuat outlet

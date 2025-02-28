@@ -6,9 +6,8 @@ import {
 } from "../middlewares/validation/employeeValidation.middleware";
 import { SuperAdmEmployeeController } from "../controllers/superAdmEmployee.controller";
 import { verifyToken } from "../middlewares/verifyToken";
-import { isOutletAdmin } from "../middlewares/validation/outletAdminAuth.middleware";
 import { AdminAuth } from "../middlewares/validation/AdminAuth.middleware";
-import { Role } from "@prisma/client";
+import { Role } from "../../prisma/generated/client";
 
 export class SuperAdmEmployeeRouter {
   private router: Router;

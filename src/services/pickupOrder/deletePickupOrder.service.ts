@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import prisma from "../../prisma";
-import { OrderStatus, Role } from "@prisma/client";
+import { OrderStatus, Role } from "../../../prisma/generated/client";
 
 export const deletePickupOrderService = async (
   req: Request,

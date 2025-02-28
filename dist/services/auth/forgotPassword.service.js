@@ -19,6 +19,7 @@ const path_1 = __importDefault(require("path"));
 const fs_1 = __importDefault(require("fs"));
 const handlebars_1 = __importDefault(require("handlebars")); // Import Handlebars
 const mailer_1 = require("../mailer");
+const config_1 = require("../../utils/config");
 const forgotPasswordService = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { email } = req.body;
@@ -33,7 +34,7 @@ const forgotPasswordService = (req, res) => __awaiter(void 0, void 0, void 0, fu
         }
         // Generate reset token
         const payload = { id: user.id, email: user.email };
-        const resetToken = (0, jsonwebtoken_1.sign)(payload, process.env.JWT_KEY, { expiresIn: "1h" });
+        const resetToken = (0, jsonwebtoken_1.sign)(payload, config_1.appConfig.SecretKey, { expiresIn: "1h" });
         const resetLink = `${process.env.BASE_URL_FE}/resetPassword/${resetToken}`;
         // Read email template
         const templatePath = path_1.default.join(__dirname, "../../templates", "forgotPassword.hbs");

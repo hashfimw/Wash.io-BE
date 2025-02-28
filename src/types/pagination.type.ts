@@ -1,15 +1,15 @@
 export interface PaginationQueries {
-  limit: string;
-  page: string;
-  sortBy: string | number;
-  sortOrder: string | number;
+  limit: number;
+  page: number;
+  sortBy: string;
+  sortOrder: "asc" | "desc";
 }
 
 export interface PaginationQuerieswithDate {
   startDate: string;
   endDate: string;
-  limit: string;
-  page: string;
-  sortBy: string | number;
-  sortOrder: string | number;
+  limit: number;
+  page: number;
+  sortBy: string;
+  sortOrder: "asc" | "desc";
 }

@@ -16,6 +16,7 @@ exports.completeRegistService = void 0;
 const jsonwebtoken_1 = require("jsonwebtoken");
 const prisma_1 = __importDefault(require("../../prisma"));
 const bcrypt_1 = require("bcrypt");
+const config_1 = require("../../utils/config");
 const completeRegistService = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { token, fullName, password } = req.body;
@@ -24,7 +25,7 @@ const completeRegistService = (req, res) => __awaiter(void 0, void 0, void 0, fu
             res.status(400).send({ message: "Missing required fields!" });
         }
         // Verify the token
-        const decoded = (0, jsonwebtoken_1.verify)(token, process.env.JWT_KEY);
+        const decoded = (0, jsonwebtoken_1.verify)(token, config_1.appConfig.SecretKey);
         // Find the user and check if the email is already verified
         const user = yield prisma_1.default.user.findUnique({
             where: { id: decoded.id },
@@ -46,7 +47,7 @@ const completeRegistService = (req, res) => __awaiter(void 0, void 0, void 0, fu
         });
         res
             .status(200)
-            .send({ message: "Registration completed successfully! ✅" });
+            .send({ message: "Registration is completed successfully! ✅" });
     }
     catch (error) {
         throw error;

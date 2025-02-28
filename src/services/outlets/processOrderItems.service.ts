@@ -1,8 +1,9 @@
 // src/services/createOrder.service.ts
 import { Request, Response } from "express";
 import prisma from "../../prisma";
-import { WorkerStation, Role, Prisma, PrismaClient } from "@prisma/client";
-import { DefaultArgs } from "@prisma/client/runtime/library";
+import { WorkerStation, Role,  PrismaClient } from "../../../prisma/generated/client";
+import { getIdleEmployees } from "../helpers/finder.service";
+import { createMultipleNotificationDataService } from "../notification/notification.service";
 
 export const processOrderService = async (req: Request, res: Response) => {
   // Cek role pengguna
@@ -25,7 +26,7 @@ export const processOrderService = async (req: Request, res: Response) => {
   const createOrderTemplateItems = async (
     items: any[],
     prismaInstance: Omit<
-      PrismaClient<Prisma.PrismaClientOptions, never, DefaultArgs>,
+      PrismaClient,
       "$connect" | "$disconnect" | "$on" | "$transaction" | "$use" | "$extends"
     >
   ) => {
@@ -73,10 +74,11 @@ export const processOrderService = async (req: Request, res: Response) => {
             },
           },
         },
+        include: {customerAddress: true}
       });
 
       // Buat laundry job
-      await prisma.laundryJob.create({
+      const laundryJob = await prisma.laundryJob.create({
         data: {
           orderId: updatedOrder.id,
           station: WorkerStation.WASHING,
@@ -86,13 +88,24 @@ export const processOrderService = async (req: Request, res: Response) => {
         },
       });
 
-      return prisma.order.findUnique({
-        where: { id: updatedOrder.id },
-        include: {
-          OrderItem: true,
-          LaundryJob: true,
-          outlet: true,
-          customerAddress: true,
+      
+      const washerIds = await getIdleEmployees(updatedOrder.outletId, "WORKER", "WASHING");
+
+      await prisma.notification.createMany({
+        data: createMultipleNotificationDataService(
+          washerIds,
+          "Washing Job alert",
+          " A new washing job is available!",
+          `/employee-dashboard/worker/${laundryJob.id}`
+        ),
+      });
+
+      await prisma.notification.create({
+        data: {
+          userId: updatedOrder.customerAddress.customerId!,
+          title: "Order Payment Alert",
+          description: `Your order no #${updatedOrder.id} is now ready to be paid`,
+          url: `/order/${updatedOrder.id}`,
         },
       });
     });

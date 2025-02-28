@@ -1,30 +1,32 @@
-// import { Request, Response } from "express";
-// import prisma from "../../prisma";
+import prisma from "../../prisma";
 
-// export const updatePickupOrderService = async (
-//   req: Request,
-//   res: Response
-// ): Promise<void> => {
-//   try {
-//     const userId = req.user?.id;
-//     const { id } = req.params;
-//     const { orderStatus } = req.body;
-
-//     if (!userId) {
-//       res.status(401).json({ message: "Unauthorized: Please login first" });
-//       return;
-//     }
-
-//     const order = await prisma.order.update({
-//       where: { id: Number(id) },
-//       data: { orderStatus },
-//     });
-
-//     res
-//       .status(200)
-//       .json({ message: "Pickup order berhasil diperbarui.", order });
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).json({ message: "Terjadi kesalahan pada server." });
-//   }
-// };
+export const updateDeliveredOrderStatus = async () => {
+  try {
+    (
+      await prisma.order.findMany({
+        where: { orderStatus: "RECEIVED_BY_CUSTOMER" },
+        include: { customerAddress: true },
+      })
+    ).map(async (item) => {
+      const expire = new Date(new Date(item.updatedAt).getTime() + 172800000);
+      const now = new Date();
+      const userId = item.customerAddress.customerId!;
+      if (now > expire) {
+        await prisma.$transaction(async (tx) => {
+          await tx.order.update({ where: { id: item.id }, data: { orderStatus: "COMPLETED" } });
+          await tx.notification.create({
+            data: {
+              userId,
+              title: "Order auto=completion alert",
+              description: "Your delivered order is automatically changed its status 2 days after it is delivered.",
+              url: `/order/${item.id}`,
+            },
+          });
+        });
+        console.log(`Completed order status updated on order #${item.id}!`);
+      }
+    });
+  } catch (error) {
+    throw error;
+  }
+};

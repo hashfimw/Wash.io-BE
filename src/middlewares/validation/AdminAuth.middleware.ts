@@ -1,6 +1,6 @@
 // src/middleware/multiRoleAuth.middleware.ts
 import { Request, Response, NextFunction } from "express";
-import { Role } from "@prisma/client";
+import { Role } from "../../../prisma/generated/client";
 import prisma from "../../prisma";
 
 export const AdminAuth = (allowedRoles: Role[]) => {

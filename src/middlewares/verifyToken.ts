@@ -3,19 +3,15 @@ import { verify } from "jsonwebtoken";
 import { UserPayload } from "../custom";
 import { appConfig } from "../utils/config";
 
-export const verifyToken = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+export const verifyToken = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const token = req.header("Authorization")?.replace("Bearer ", "");
     // const token = req.cookies?.token; // kalo sudah pakai cookies
-    if (!token) throw "Unauthorize!";
+    if (!token) throw { message: "Unauthorize!" };
 
     const verifiedUser = verify(token, appConfig.SecretKey);
     req.user = verifiedUser as UserPayload;
-    console.log(verifiedUser);
+    // console.log(verifiedUser);
 
     next();
   } catch (err) {
