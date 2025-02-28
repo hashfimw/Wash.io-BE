@@ -63,26 +63,6 @@ class SuperAdmEmployeeController {
                 res.status(500).json({ message: "Internal server error" });
             }
         });
-        this.assignEmployeeToOutletController = (req, res) => __awaiter(this, void 0, void 0, function* () {
-            try {
-                const result = yield (0, superAdmEmployee_service_1.assignEmployeeToOutletService)(req, res);
-                res.status(200).json(result);
-            }
-            catch (error) {
-                console.log(error);
-                res.status(500).json({ message: "Internal server error" });
-            }
-        });
-        this.reassignMultipleEmployeesController = (req, res) => __awaiter(this, void 0, void 0, function* () {
-            try {
-                const result = yield (0, superAdmEmployee_service_1.reassignMultipleEmployeesService)(req, res);
-                res.status(200).json(result);
-            }
-            catch (error) {
-                console.log(error);
-                res.status(500).json({ message: "Internal server error" });
-            }
-        });
     }
 }
 exports.SuperAdmEmployeeController = SuperAdmEmployeeController;

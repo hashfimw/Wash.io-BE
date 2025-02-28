@@ -82,8 +82,8 @@ const createPaymentService = (req, res) => __awaiter(void 0, void 0, void 0, fun
         }
         // Calculate total price
         const pickupOrder = yield prisma_1.default.transportJob.findFirst({ where: { orderId, transportType: "PICKUP" } });
-        const distance = pickupOrder.distance / 1000;
-        const fare = Math.round(distance * 10000);
+        const distance = pickupOrder.distance;
+        const fare = Math.round(distance * 8000);
         const totalPrice = order.laundryPrice + fare;
         // Check if payment already exists
         const existingPayment = yield prisma_1.default.payment.findUnique({
@@ -104,16 +104,20 @@ const createPaymentService = (req, res) => __awaiter(void 0, void 0, void 0, fun
             email: ((_c = order.customerAddress.customer) === null || _c === void 0 ? void 0 : _c.email) || "",
             phone: "", // Add phone if available in your schema
         };
-        const items = order.OrderItem.map((item) => ({
-            id: `ITEM-${item.id}`,
-            price: Math.round((totalPrice - fare) / order.OrderItem.length / item.qty),
-            quantity: item.qty || 1,
-            name: item.orderItemName,
-        }));
-        const itemsSum = items.map((item) => item.price * item.quantity).reduce((a, b) => a + b);
-        items.push({ id: "ITEM-FARE", price: fare, quantity: 1, name: "Fare" });
-        items.push({ id: "ITEM-DIFF", price: totalPrice - fare - itemsSum, quantity: 1, name: "Difference" });
-        console.log(items);
+        const items = [
+            {
+                id: "LAUNDRY",
+                price: order.laundryPrice,
+                quantity: 1,
+                name: "Laundry price",
+            },
+            {
+                id: "FARE",
+                price: fare,
+                quantity: 1,
+                name: "Transport fare",
+            },
+        ];
         // Create Midtrans snap token
         const snapResponse = yield snap.createTransaction({
             transaction_details: transactionDetails,
@@ -188,7 +192,7 @@ const handlePaymentNotificationService = (req, res) => __awaiter(void 0, void 0,
                 orderId: Number(extractedOrderId),
             },
             include: {
-                order: true,
+                order: { include: { customerAddress: true } },
             },
         });
         if (!payment) {
@@ -253,16 +257,16 @@ const handlePaymentNotificationService = (req, res) => __awaiter(void 0, void 0,
                     });
                     const driverIds = yield (0, finder_service_1.getIdleEmployees)(+orderId, "DRIVER");
                     yield tx.notification.createMany({
-                        data: (0, notification_service_1.createMultipleNotificationDataService)(driverIds, "Delivery Job alert", " A new delivery job is available!", `${process.env.BASE_URL_FE}/transport-job/${deliveryJob.id}`),
+                        data: (0, notification_service_1.createMultipleNotificationDataService)(driverIds, "Delivery Job alert", " A new delivery job is available!", `/employee-dashboard/driver/${deliveryJob.id}`),
                     });
                 }
                 // Create notification for user
                 yield tx.notification.create({
                     data: {
-                        userId: payment.order.customerAddressId,
+                        userId: payment.order.customerAddress.customerId,
                         title: "Pembayaran Berhasil",
                         description: `Pembayaran untuk order #${payment.orderId} telah berhasil. ${(order === null || order === void 0 ? void 0 : order.orderStatus) == "AWAITING_PAYMENT" ? "Pesanan Anda akan segera dikirim" : ""}.`,
-                        url: `/orders/${payment.orderId}`,
+                        url: `/order/${payment.orderId}`,
                     },
                 });
             }

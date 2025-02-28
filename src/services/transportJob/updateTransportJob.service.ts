@@ -35,12 +35,12 @@ export const updateTransportJobByIdService = async (transportJobId: number, user
       transportJobData.data.driverId = driver.Employee!.id;
       driverData.data.isWorking = true;
     } else if (currentOrderStatus == "ON_THE_WAY_TO_CUSTOMER") {
-      if (transportJob.driverId != driver.Employee!.id) throw { message: "Invalid Driver Id!" };
+      if (transportJob.employeeId != driver.Employee!.id) throw { message: "Invalid Driver Id!" };
 
       newOrderStatus = "ON_THE_WAY_TO_OUTLET";
       driverData.data.isWorking = true;
     } else if (currentOrderStatus == "ON_THE_WAY_TO_OUTLET" || currentOrderStatus == "BEING_DELIVERED_TO_CUSTOMER") {
-      if (transportJob.driverId != driver.Employee!.id) throw { message: "Invalid Driver Id!" };
+      if (transportJob.employeeId != driver.Employee!.id) throw { message: "Invalid Driver Id!" };
 
       if (transportType == "PICKUP") newOrderStatus = "ARRIVED_AT_OUTLET";
       if (transportType == "DELIVERY") newOrderStatus = "RECEIVED_BY_CUSTOMER";
@@ -53,17 +53,31 @@ export const updateTransportJobByIdService = async (transportJobId: number, user
       await tx.employee.update(driverData);
       await tx.order.update({ where: { id: orderId }, data: { orderStatus: newOrderStatus } });
       if (newOrderStatus == "ARRIVED_AT_OUTLET") {
-        const outletAdminId = (await tx.user.findFirst({
-          where: { Employee: { outletId: driver.Employee!.outletId }, role: "OUTLET_ADMIN" },
-        }))!.id;
-        const superAdminIds = (await tx.user.findMany({ where: { role: "SUPER_ADMIN" } })).map((item) => item.id);
+        const outletAdminIds = (
+          await tx.user.findMany({
+            where: { Employee: { outletId: driver.Employee!.outletId, isDeleted: false }, role: "OUTLET_ADMIN", isDeleted: false },
+            select: { id: true },
+          })
+        ).map((item) => item.id);
+        const superAdminIds = (await tx.user.findMany({ where: { role: "SUPER_ADMIN", isDeleted: false }, select: { id: true } })).map(
+          (item) => item.id
+        );
 
         await tx.notification.createMany({
           data: createMultipleNotificationDataService(
-            [...superAdminIds, outletAdminId],
+            superAdminIds,
             "New order alert",
             "A new order arrived at the outlet!",
-            `${process.env.BASE_URL_FE!}/order/${orderId}`
+            `/dashboard/super-admin/${orderId}`
+          ),
+        });
+
+        await tx.notification.createMany({
+          data: createMultipleNotificationDataService(
+            outletAdminIds,
+            "New order alert",
+            "A new order arrived at the outlet!",
+            `/dashboard/outlet-admin/${orderId}`
           ),
         });
       }
@@ -75,7 +89,7 @@ export const updateTransportJobByIdService = async (transportJobId: number, user
             userId: customerId,
             title: "Laundry arrival alert",
             description: "Your fresh laundry has been succesfully delivered to you by our driver. Confirm to finalize your order now!",
-            url: `${process.env.BASE_URL_FE!}/order/${orderId}`,
+            url: `/order/${orderId}`,
           },
         });
       }

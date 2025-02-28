@@ -36,11 +36,11 @@ const getUserService = (req, res) => __awaiter(void 0, void 0, void 0, function*
             take: limit,
             skip: limit * (page - 1),
         });
-        res.status(200).json({ total_page, page, limit, users });
+        return { total_page, page, limit, users };
     }
     catch (error) {
         console.error(error);
-        res.status(500).json({ error: "Something went wrong !" });
+        throw error;
     }
 });
 exports.getUserService = getUserService;

@@ -72,14 +72,13 @@ const createPickupOrderService = (req, res) => __awaiter(void 0, void 0, void 0,
                 },
             });
             const driverIds = yield (0, finder_service_1.getIdleEmployees)(nearestOutlet.id, "DRIVER");
-            const distance = Math.round(nearestOutlet.distance * 10) * 100;
-            console.log(distance);
+            const distance = Math.round(nearestOutlet.distance);
             const transportJobId = (yield tx.transportJob.create({
                 data: { orderId: order.id, transportType: "PICKUP", distance: distance },
             })).id;
             if (driverIds.length > 0) {
                 yield tx.notification.createMany({
-                    data: (0, notification_service_1.createMultipleNotificationDataService)(driverIds, "Pickup Job alert", " A new pickup job is available!", `${process.env.BASE_URL_FE}/transport-job/${transportJobId}`),
+                    data: (0, notification_service_1.createMultipleNotificationDataService)(driverIds, "Pickup Job alert", " A new pickup job is available!", `${process.env.BASE_URL_FE}/employee-dashboard/driver/${transportJobId}`),
                 });
             }
             res.status(201).json({ message: "Pickup order berhasil dibuat.", order });

@@ -51,13 +51,13 @@ const updateTransportJobByIdService = (transportJobId, userId, tzo) => __awaiter
             driverData.data.isWorking = true;
         }
         else if (currentOrderStatus == "ON_THE_WAY_TO_CUSTOMER") {
-            if (transportJob.driverId != driver.Employee.id)
+            if (transportJob.employeeId != driver.Employee.id)
                 throw { message: "Invalid Driver Id!" };
             newOrderStatus = "ON_THE_WAY_TO_OUTLET";
             driverData.data.isWorking = true;
         }
         else if (currentOrderStatus == "ON_THE_WAY_TO_OUTLET" || currentOrderStatus == "BEING_DELIVERED_TO_CUSTOMER") {
-            if (transportJob.driverId != driver.Employee.id)
+            if (transportJob.employeeId != driver.Employee.id)
                 throw { message: "Invalid Driver Id!" };
             if (transportType == "PICKUP")
                 newOrderStatus = "ARRIVED_AT_OUTLET";
@@ -74,12 +74,16 @@ const updateTransportJobByIdService = (transportJobId, userId, tzo) => __awaiter
             yield tx.employee.update(driverData);
             yield tx.order.update({ where: { id: orderId }, data: { orderStatus: newOrderStatus } });
             if (newOrderStatus == "ARRIVED_AT_OUTLET") {
-                const outletAdminId = (yield tx.user.findFirst({
-                    where: { Employee: { outletId: driver.Employee.outletId }, role: "OUTLET_ADMIN" },
-                })).id;
-                const superAdminIds = (yield tx.user.findMany({ where: { role: "SUPER_ADMIN" } })).map((item) => item.id);
+                const outletAdminIds = (yield tx.user.findMany({
+                    where: { Employee: { outletId: driver.Employee.outletId, isDeleted: false }, role: "OUTLET_ADMIN", isDeleted: false },
+                    select: { id: true },
+                })).map((item) => item.id);
+                const superAdminIds = (yield tx.user.findMany({ where: { role: "SUPER_ADMIN", isDeleted: false }, select: { id: true } })).map((item) => item.id);
                 yield tx.notification.createMany({
-                    data: (0, notification_service_1.createMultipleNotificationDataService)([...superAdminIds, outletAdminId], "New order alert", "A new order arrived at the outlet!", `${process.env.BASE_URL_FE}/order/${orderId}`),
+                    data: (0, notification_service_1.createMultipleNotificationDataService)(superAdminIds, "New order alert", "A new order arrived at the outlet!", `/dashboard/super-admin/${orderId}`),
+                });
+                yield tx.notification.createMany({
+                    data: (0, notification_service_1.createMultipleNotificationDataService)(outletAdminIds, "New order alert", "A new order arrived at the outlet!", `/dashboard/outlet-admin/${orderId}`),
                 });
             }
             if (newOrderStatus == "RECEIVED_BY_CUSTOMER") {
@@ -89,7 +93,7 @@ const updateTransportJobByIdService = (transportJobId, userId, tzo) => __awaiter
                         userId: customerId,
                         title: "Laundry arrival alert",
                         description: "Your fresh laundry has been succesfully delivered to you by our driver. Confirm to finalize your order now!",
-                        url: `${process.env.BASE_URL_FE}/order/${orderId}`,
+                        url: `/order/${orderId}`,
                     },
                 });
             }

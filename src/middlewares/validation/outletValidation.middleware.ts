@@ -1,6 +1,6 @@
 // src/middleware/outletValidation.middleware.ts
 import { Request, Response, NextFunction } from "express";
-import prisma from "../prisma";
+import prisma from "../../prisma";
 
 export const validateCreateOutlet = async (
   req: Request,

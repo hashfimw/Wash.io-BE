@@ -2,52 +2,149 @@
 import { Request, Response } from "express";
 import { genSalt, hash } from "bcrypt";
 import prisma from "../../prisma";
+import { Prisma, Role } from "../../../prisma/generated/client";
+import { getOutletTzo } from "../attendance/attendanceScheduler.service";
+import { shiftChecker } from "../helpers/dateTime.service";
 
 export const createEmployeeService = async (req: Request, res: Response) => {
-  const { fullName, email, password, role, workShift, station, outletId } = req.body;
+  // Pastikan hanya super admin yang bisa membuat employee
+  const user = await prisma.user.findUnique({
+    where: { id: Number(req.user?.id) },
+  });
 
-  // Hash password
+  if (!user || user.role !== Role.SUPER_ADMIN) {
+    throw new Error("Only Super Admin can create employees");
+  }
+
+  const { fullName, email, password, role, workShift, station, outletId } =
+    req.body;
+
   const salt = await genSalt(10);
   const hashedPassword = await hash(password, salt);
 
-  const employee = await prisma.user.create({
-    data: {
-      fullName,
-      email,
-      password: hashedPassword,
-      role,
-      Employee: {
-        create: { workShift, station, outletId },
+  const outletTzo = await getOutletTzo(outletId); 
+  const localWorkShift = shiftChecker(outletTzo);
+
+  await prisma.$transaction(async (tx) => {
+    const employee = await tx.user.create({
+      data: {
+        fullName,
+        email,
+        password: hashedPassword,
+        role,
+        Employee: {
+          create: { workShift, station, outletId },
+        },
+        isVerified: true,
       },
-    },
-    include: { Employee: true },
+      include: { Employee: true },
+    });
+
+    if (localWorkShift === workShift) {
+      await tx.employeeAttendance.create({
+        data: { canClockIn: true, employeeId: employee.id },
+      });
+    }
+
+    const { password: _, ...employeeWithoutPassword } = employee;
+
+    return {
+      message: "Employee created successfully! ✅",
+      data: employeeWithoutPassword,
+    };
   });
-
-  // Hapus password dari response
-  const { password: _, ...employeeWithoutPassword } = employee;
-
-  return {
-    message: "Employee created successfully! ✅",
-    data: employeeWithoutPassword,
-  };
 };
 
 export const getAllEmployeesService = async (req: Request, res: Response) => {
-  const employees = await prisma.user.findMany({
-    where: {
-      isDeleted: false,
-      role: { in: ["WORKER", "DRIVER", "OUTLET_ADMIN"] },
-    },
-    include: { Employee: true },
+  // Pastikan hanya super admin yang bisa melihat semua employees
+  const user = await prisma.user.findUnique({
+    where: { id: Number(req.user?.id) },
   });
+
+  if (!user || user.role !== Role.SUPER_ADMIN) {
+    throw new Error("Only Super Admin can view all employees");
+  }
+
+  const filter: Prisma.UserWhereInput = {
+    isDeleted: false,
+    role: { in: [Role.WORKER, Role.DRIVER, Role.OUTLET_ADMIN] },
+  };
+  const {
+    page = 1,
+    limit = 10,
+    sortOrder = "asc",
+    role,
+    outletName,
+  } = req.query;
+  const search = req.query.search as string | undefined;
+  let sortBy = req.query.sortBy as string;
+  if (!sortBy) sortBy = "fullName";
+
+  if (search) {
+    filter.OR = [
+      { fullName: { contains: search, mode: "insensitive" } },
+      { email: { contains: search, mode: "insensitive" } },
+    ];
+  }
+
+  if (role && role !== "ALL Role") {
+    filter.role = role as Role;
+  }
+
+  if (outletName) {
+    const outlet = await prisma.outlet.findFirst({
+      where: { outletName: outletName as string },
+    });
+
+    if (outlet) {
+      const employeeIds = (
+        await prisma.employee.findMany({
+          where: { outletId: outlet.id },
+        })
+      ).map((item) => item.userId);
+
+      filter.id = { in: employeeIds };
+    }
+  }
+
+  const employees = await prisma.user.findMany({
+    where: filter,
+    include: {
+      Employee: {
+        include: { outlet: true },
+      },
+    },
+    take: +limit,
+    skip: (+page - 1) * +limit,
+    orderBy: { [sortBy]: sortOrder },
+  });
+
+  const count = await prisma.user.count({
+    where: filter,
+  });
+  const total = Math.ceil(count / +limit);
 
   return {
     message: "Employees fetched successfully",
     data: employees,
+    meta: {
+      page,
+      limit,
+      total,
+    },
   };
 };
 
 export const updateEmployeeService = async (req: Request, res: Response) => {
+  // Pastikan hanya super admin yang bisa update employee
+  const user = await prisma.user.findUnique({
+    where: { id: Number(req.user?.id) },
+  });
+
+  if (!user || user.role !== Role.SUPER_ADMIN) {
+    throw new Error("Only Super Admin can update employees");
+  }
+
   const { id } = req.params;
   const { fullName, email, workShift, station, outletId } = req.body;
 
@@ -74,6 +171,15 @@ export const updateEmployeeService = async (req: Request, res: Response) => {
 };
 
 export const deleteEmployeeService = async (req: Request, res: Response) => {
+  // Pastikan hanya super admin yang bisa delete employee
+  const user = await prisma.user.findUnique({
+    where: { id: Number(req.user?.id) },
+  });
+
+  if (!user || user.role !== Role.SUPER_ADMIN) {
+    throw new Error("Only Super Admin can delete employees");
+  }
+
   const { id } = req.params;
 
   await prisma.$transaction([
@@ -93,6 +199,15 @@ export const deleteEmployeeService = async (req: Request, res: Response) => {
 };
 
 export const getAllUsersService = async (req: Request, res: Response) => {
+  // Pastikan hanya super admin yang bisa melihat semua users
+  const user = await prisma.user.findUnique({
+    where: { id: Number(req.user?.id) },
+  });
+
+  if (!user || user.role !== Role.SUPER_ADMIN) {
+    throw new Error("Only Super Admin can view all users");
+  }
+
   const users = await prisma.user.findMany({
     where: { isDeleted: false },
     include: { Employee: true },
@@ -101,45 +216,5 @@ export const getAllUsersService = async (req: Request, res: Response) => {
   return {
     message: "Users fetched successfully",
     data: users,
-  };
-};
-
-export const assignEmployeeToOutletService = async (req: Request, res: Response) => {
-  const { id, outletId } = req.body;
-
-  const employee = await prisma.employee.update({
-    where: {
-      id: Number(id),
-    },
-    data: {
-      outletId: Number(outletId),
-    },
-    include: {
-      user: true,
-      outlet: true,
-    },
-  });
-
-  return {
-    message: "Employee assigned to outlet successfully",
-    data: employee,
-  };
-};
-
-export const reassignMultipleEmployeesService = async (req: Request, res: Response) => {
-  const { assignments } = req.body;
-
-  const results = await prisma.$transaction(
-    assignments.map((assign: { id: number; outletId: number }) =>
-      prisma.employee.update({
-        where: { id: assign.id },
-        data: { outletId: assign.outletId },
-      })
-    )
-  );
-
-  return {
-    message: "Multiple employees reassigned successfully",
-    data: results,
   };
 };

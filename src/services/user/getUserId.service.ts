@@ -18,7 +18,7 @@ export const getUserIdService = async (req: Request, res: Response) => {
       return;
     }
 
-    res.status(200).send({ user });
+    return { user };
   } catch (error) {
     throw error;
   }

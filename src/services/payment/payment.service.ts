@@ -78,12 +78,10 @@ export const createPaymentService = async (
     }
 
     // Calculate total price
-    const pickupOrder = await prisma.transportJob.findFirst({
-      where: { orderId, transportType: "PICKUP" },
-    });
-    const distance = pickupOrder!.distance / 1000;
+    const pickupOrder = await prisma.transportJob.findFirst({ where: { orderId, transportType: "PICKUP" } });
+    const distance = pickupOrder!.distance;
 
-    const fare = Math.round(distance * 10000);
+    const fare = Math.round(distance * 8000);
     const totalPrice = order.laundryPrice + fare;
 
     // Check if payment already exists
@@ -109,28 +107,20 @@ export const createPaymentService = async (
       phone: "", // Add phone if available in your schema
     };
 
-    const items = order.OrderItem.map((item) => ({
-      id: `ITEM-${item.id}`,
-      price: Math.round(
-        (totalPrice - fare) / order.OrderItem.length / item.qty!
-      ),
-      quantity: item.qty || 1,
-      name: item.orderItemName,
-    }));
-
-    const itemsSum = items
-      .map((item) => item.price * item.quantity)
-      .reduce((a, b) => a + b);
-
-    items.push({ id: "ITEM-FARE", price: fare, quantity: 1, name: "Fare" });
-    items.push({
-      id: "ITEM-DIFF",
-      price: totalPrice - fare - itemsSum,
-      quantity: 1,
-      name: "Difference",
-    });
-
-    console.log(items);
+    const items = [
+      {
+        id: "LAUNDRY",
+        price: order.laundryPrice,
+        quantity: 1,
+        name: "Laundry price",
+      },
+      {
+        id: "FARE",
+        price: fare,
+        quantity: 1,
+        name: "Transport fare",
+      },
+    ];
 
     // Create Midtrans snap token
     const snapResponse = await snap.createTransaction({
@@ -214,9 +204,7 @@ export const handlePaymentNotificationService = async (
         orderId: Number(extractedOrderId),
       },
       include: {
-        order: {
-          include: { customerAddress: { include: { customer: true } } },
-        },
+        order: { include: { customerAddress: true } },
       },
     });
 
@@ -301,7 +289,7 @@ export const handlePaymentNotificationService = async (
               driverIds,
               "Delivery Job alert",
               " A new delivery job is available!",
-              `${process.env.BASE_URL_FE!}/transport-job/${deliveryJob.id}`
+              `/employee-dashboard/driver/${deliveryJob.id}`
             ),
           });
         }
@@ -318,7 +306,7 @@ export const handlePaymentNotificationService = async (
                 ? "Pesanan Anda akan segera dikirim"
                 : ""
             }.`,
-            url: `/orders/${payment.orderId}`,
+            url: `/order/${payment.orderId}`,
           },
         });
       }

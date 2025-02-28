@@ -28,13 +28,22 @@ const getTransportJobs = async (filter: Prisma.TransportJobWhereInput, meta: Pag
       skip: (meta.page - 1) * meta.limit,
       take: meta.limit,
       orderBy: { [meta.sortBy]: meta.sortOrder },
+      select: { id: true, orderId: true, createdAt: true },
     });
     const total_data = await prisma.transportJob.count({ where: filter });
     const total_pages = Math.ceil(total_data / meta.limit);
 
     if (total_pages > 0 && +meta.page > total_pages) throw { message: "Invalid page!" };
 
-    return { data: transportJobs, meta: { page: meta.page, limit: meta.limit, total_pages: total_pages, total_data: total_data } };
+    const data = transportJobs.map((item) => {
+      const { createdAt, ...details } = item;
+      return {
+        ...details,
+        date: createdAt,
+      };
+    });
+
+    return { data, meta: { page: meta.page, limit: meta.limit, total_pages: total_pages, total_data: total_data } };
   } catch (error) {
     throw error;
   }
@@ -52,9 +61,8 @@ export const getTransportJobsService = async (queries: TransportJobQueries) => {
     const dates = dateValidator(queries.startDate, queries.endDate);
 
     const filter: Prisma.TransportJobWhereInput = {};
-    if (queries.transportType != "all") {
-      filter.transportType = queries.transportType as TransportType;
-    }
+    if (queries.transportType) filter.transportType = queries.transportType as TransportType;
+
     if (queries.requestType == "request") {
       const outletId = (await getIdleDriver(queries.userId, queries.tzo!)).Employee!.outletId;
       const orderIds = await findOutletsOrderIds(outletId);
@@ -76,35 +84,46 @@ export const getTransportJobsService = async (queries: TransportJobQueries) => {
   }
 };
 
-export const getTransportJobByIdService = async (userId: number, transportJobId: number) => {
+const getTransportJobById = async (transportJobId: number) => {
   try {
-    const accessor = await findUser(userId);
-
     const transportJob = await prisma.transportJob.findUnique({
       where: { id: transportJobId },
       include: { driver: { include: { user: true } }, order: { include: { customerAddress: { include: { customer: true } } } } },
     });
 
-    if (!transportJob) throw { message: "Invalid Transport Job id!" };
+    if (transportJob) {
+      const { driverId, driver, order, ...jobDetails } = transportJob;
+      const { customer, ...address } = order.customerAddress;
+
+      return {
+        ...jobDetails,
+        orderStatus: order.orderStatus,
+        isPaid: order.isPaid,
+        employeeId: driverId,
+        employeeName: driver?.user!.fullName,
+        outletId: order.outletId,
+        customerName: customer!.fullName,
+        address,
+      };
+    } else throw { message: "Invalid Transport Job id!" };
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const getTransportJobByIdService = async (userId: number, transportJobId: number) => {
+  try {
+    const accessor = await findUser(userId);
+
+    const transportJob = await getTransportJobById(transportJobId);
+
     if (!accessor.Employee) throw { message: "User is not an employee!" };
     if (accessor.role == "WORKER") throw { message: "Worker cannot access this page!" };
-    if (accessor.role != "SUPER_ADMIN" && accessor.Employee.outletId != transportJob.order.outletId) throw { message: "Invalid Outlet Id!" };
-    if (accessor.role == "DRIVER" && transportJob.isCompleted && transportJob.driverId != accessor.Employee.id)
+    if (accessor.role != "SUPER_ADMIN" && accessor.Employee.outletId != transportJob.outletId) throw { message: "Invalid Outlet Id!" };
+    if (accessor.role == "DRIVER" && transportJob.isCompleted && transportJob.employeeId != accessor.Employee.id)
       throw { message: "Invalid Employee Id!" };
 
-    const { driver, order, ...jobDetails } = transportJob;
-    const { customer, ...address } = order.customerAddress;
-
-    return {
-      ...jobDetails,
-      orderStatus: order.orderStatus,
-      isPaid: order.isPaid,
-      driverId: driver?.id,
-      driverName: driver?.user!.fullName,
-      outletId: order.outletId,
-      customerName: customer!.fullName,
-      address,
-    };
+    return transportJob;
   } catch (error) {
     throw error;
   }
@@ -117,22 +136,10 @@ export const getOngoingTransportJobService = async (userId: number) => {
 
     const transportJob = await prisma.transportJob.findFirst({
       where: { driverId: driver.Employee!.id, isCompleted: false },
-      include: { driver: { include: { user: true } }, order: { include: { customerAddress: { include: { customer: true } }, OrderItem: true } } },
+      select: { id: true },
     });
     if (transportJob) {
-      const { driver, order, ...jobDetails } = transportJob;
-      const { customer, ...address } = order.customerAddress;
-
-      return {
-        ...jobDetails,
-        orderStatus: order.orderStatus,
-        isPaid: order.isPaid,
-        driverId: driver?.id,
-        driverName: driver?.user!.fullName,
-        outletId: order.outletId,
-        customerName: customer!.fullName,
-        address,
-      };
+      return await getTransportJobById(transportJob.id);
     } else throw { message: "You aren't assigned to a job right now!" };
   } catch (error) {
     throw error;

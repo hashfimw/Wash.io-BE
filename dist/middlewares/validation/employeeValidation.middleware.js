@@ -13,8 +13,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.validateDeleteEmployee = exports.validateUpdateEmployee = exports.validateCreateEmployee = void 0;
-const prisma_1 = __importDefault(require("../prisma"));
-const client_1 = require("../../prisma/generated/client");
+const client_1 = require("../../../prisma/generated/client");
+const prisma_1 = __importDefault(require("../../prisma"));
 const validateCreateEmployee = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { fullName, email, password, role, workShift, station, outletId } = req.body;

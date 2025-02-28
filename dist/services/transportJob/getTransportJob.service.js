@@ -55,12 +55,17 @@ const getTransportJobs = (filter, meta) => __awaiter(void 0, void 0, void 0, fun
             skip: (meta.page - 1) * meta.limit,
             take: meta.limit,
             orderBy: { [meta.sortBy]: meta.sortOrder },
+            select: { id: true, orderId: true, createdAt: true },
         });
         const total_data = yield prisma_1.default.transportJob.count({ where: filter });
         const total_pages = Math.ceil(total_data / meta.limit);
         if (total_pages > 0 && +meta.page > total_pages)
             throw { message: "Invalid page!" };
-        return { data: transportJobs, meta: { page: meta.page, limit: meta.limit, total_pages: total_pages, total_data: total_data } };
+        const data = transportJobs.map((item) => {
+            const { createdAt } = item, details = __rest(item, ["createdAt"]);
+            return Object.assign(Object.assign({}, details), { date: createdAt });
+        });
+        return { data, meta: { page: meta.page, limit: meta.limit, total_pages: total_pages, total_data: total_data } };
     }
     catch (error) {
         throw error;
@@ -70,9 +75,8 @@ const getTransportJobsService = (queries) => __awaiter(void 0, void 0, void 0, f
     try {
         const dates = (0, dateTime_service_1.dateValidator)(queries.startDate, queries.endDate);
         const filter = {};
-        if (queries.transportType != "all") {
+        if (queries.transportType)
             filter.transportType = queries.transportType;
-        }
         if (queries.requestType == "request") {
             const outletId = (yield (0, exports.getIdleDriver)(queries.userId, queries.tzo)).Employee.outletId;
             const orderIds = yield (0, finder_service_1.findOutletsOrderIds)(outletId);
@@ -96,26 +100,37 @@ const getTransportJobsService = (queries) => __awaiter(void 0, void 0, void 0, f
     }
 });
 exports.getTransportJobsService = getTransportJobsService;
-const getTransportJobByIdService = (userId, transportJobId) => __awaiter(void 0, void 0, void 0, function* () {
+const getTransportJobById = (transportJobId) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const accessor = yield (0, finder_service_1.findUser)(userId);
         const transportJob = yield prisma_1.default.transportJob.findUnique({
             where: { id: transportJobId },
             include: { driver: { include: { user: true } }, order: { include: { customerAddress: { include: { customer: true } } } } },
         });
-        if (!transportJob)
+        if (transportJob) {
+            const { driverId, driver, order } = transportJob, jobDetails = __rest(transportJob, ["driverId", "driver", "order"]);
+            const _a = order.customerAddress, { customer } = _a, address = __rest(_a, ["customer"]);
+            return Object.assign(Object.assign({}, jobDetails), { orderStatus: order.orderStatus, isPaid: order.isPaid, employeeId: driverId, employeeName: driver === null || driver === void 0 ? void 0 : driver.user.fullName, outletId: order.outletId, customerName: customer.fullName, address });
+        }
+        else
             throw { message: "Invalid Transport Job id!" };
+    }
+    catch (error) {
+        throw error;
+    }
+});
+const getTransportJobByIdService = (userId, transportJobId) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const accessor = yield (0, finder_service_1.findUser)(userId);
+        const transportJob = yield getTransportJobById(transportJobId);
         if (!accessor.Employee)
             throw { message: "User is not an employee!" };
         if (accessor.role == "WORKER")
             throw { message: "Worker cannot access this page!" };
-        if (accessor.role != "SUPER_ADMIN" && accessor.Employee.outletId != transportJob.order.outletId)
+        if (accessor.role != "SUPER_ADMIN" && accessor.Employee.outletId != transportJob.outletId)
             throw { message: "Invalid Outlet Id!" };
-        if (accessor.role == "DRIVER" && transportJob.isCompleted && transportJob.driverId != accessor.Employee.id)
+        if (accessor.role == "DRIVER" && transportJob.isCompleted && transportJob.employeeId != accessor.Employee.id)
             throw { message: "Invalid Employee Id!" };
-        const { driver, order } = transportJob, jobDetails = __rest(transportJob, ["driver", "order"]);
-        const _a = order.customerAddress, { customer } = _a, address = __rest(_a, ["customer"]);
-        return Object.assign(Object.assign({}, jobDetails), { orderStatus: order.orderStatus, isPaid: order.isPaid, driverId: driver === null || driver === void 0 ? void 0 : driver.id, driverName: driver === null || driver === void 0 ? void 0 : driver.user.fullName, outletId: order.outletId, customerName: customer.fullName, address });
+        return transportJob;
     }
     catch (error) {
         throw error;
@@ -129,12 +144,10 @@ const getOngoingTransportJobService = (userId) => __awaiter(void 0, void 0, void
             throw { message: "Invalid role!" };
         const transportJob = yield prisma_1.default.transportJob.findFirst({
             where: { driverId: driver.Employee.id, isCompleted: false },
-            include: { driver: { include: { user: true } }, order: { include: { customerAddress: { include: { customer: true } }, OrderItem: true } } },
+            select: { id: true },
         });
         if (transportJob) {
-            const { driver, order } = transportJob, jobDetails = __rest(transportJob, ["driver", "order"]);
-            const _a = order.customerAddress, { customer } = _a, address = __rest(_a, ["customer"]);
-            return Object.assign(Object.assign({}, jobDetails), { orderStatus: order.orderStatus, isPaid: order.isPaid, driverId: driver === null || driver === void 0 ? void 0 : driver.id, driverName: driver === null || driver === void 0 ? void 0 : driver.user.fullName, outletId: order.outletId, customerName: customer.fullName, address });
+            return yield getTransportJobById(transportJob.id);
         }
         else
             throw { message: "You aren't assigned to a job right now!" };

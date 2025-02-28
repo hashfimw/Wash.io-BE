@@ -19,7 +19,6 @@ class LaundryJobController {
                     userId: +req.user.id,
                     tzo: +req.query.tzo,
                     requestType: req.query.requestType,
-                    isCompleted: req.query.isCompleted || "true",
                     startDate: req.query.startDate,
                     endDate: req.query.endDate,
                     limit: +req.query.limit || 10,

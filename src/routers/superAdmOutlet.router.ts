@@ -4,9 +4,11 @@ import {
   validateCreateOutlet,
   validateDeleteOutlet,
   validateUpdateOutlet,
-} from "../middlewares/outletValidation.middleware";
+} from "../middlewares/validation/outletValidation.middleware";
 import { SuperAdmOutletController } from "../controllers/superAdmOutlets.controller";
-import { isSuperAdmin } from "../middlewares/superAdminAuth.middleware";
+import { verifyToken } from "../middlewares/verifyToken";
+import { AdminAuth } from "../middlewares/validation/AdminAuth.middleware";
+import { Role } from "../../prisma/generated/client";
 
 export class SuperAdmOutletRouter {
   private router: Router;
@@ -17,33 +19,42 @@ export class SuperAdmOutletRouter {
     this.controller = new SuperAdmOutletController();
     this.initializeRoutes();
   }
-
+  // validaton di matiin sementara buat testing doang
   private initializeRoutes() {
     this.router.post(
       "/",
-      isSuperAdmin,
+      verifyToken,
+      AdminAuth([Role.SUPER_ADMIN]),
       validateCreateOutlet,
       this.controller.createOutletController
     );
 
-    this.router.get("/", isSuperAdmin, this.controller.getAllOutletsController);
+    this.router.get(
+      "/",
+      verifyToken,
+      AdminAuth([Role.SUPER_ADMIN, Role.OUTLET_ADMIN]),
+      this.controller.getAllOutletsController
+    );
 
     this.router.get(
       "/:id",
-      isSuperAdmin,
+      verifyToken,
+      AdminAuth([Role.SUPER_ADMIN, Role.OUTLET_ADMIN]),
       this.controller.getOutletByIdController
     );
 
     this.router.put(
       "/:id",
-      isSuperAdmin,
+      verifyToken,
+      AdminAuth([Role.SUPER_ADMIN]),
       validateUpdateOutlet,
       this.controller.updateOutletController
     );
 
     this.router.delete(
       "/:id",
-      isSuperAdmin,
+      verifyToken,
+      AdminAuth([Role.SUPER_ADMIN]),
       validateDeleteOutlet,
       this.controller.deleteOutletController
     );

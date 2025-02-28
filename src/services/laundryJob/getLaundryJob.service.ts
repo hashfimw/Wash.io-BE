@@ -27,13 +27,22 @@ const getLaundryJobs = async (filter: Prisma.LaundryJobWhereInput, meta: Paginat
       skip: (meta.page - 1) * meta.limit,
       take: meta.limit,
       orderBy: { [meta.sortBy]: meta.sortOrder },
+      select: { id: true, orderId: true, createdAt: true },
     });
     const total_data = await prisma.laundryJob.count({ where: filter });
     const total_pages = Math.ceil(total_data / meta.limit);
 
     if (total_pages > 0 && +meta.page > total_pages) throw { message: "Invalid page!" };
 
-    return { data: laundryJobs, meta: { page: meta.page, limit: meta.limit, total_pages: total_pages, total_data: total_data } };
+    const data = laundryJobs.map((item) => {
+      const { createdAt, ...details } = item;
+      return {
+        ...details,
+        date: createdAt,
+      };
+    });
+
+    return { data, meta: { page: meta.page, limit: meta.limit, total_pages: total_pages, total_data: total_data } };
   } catch (error) {
     throw error;
   }
@@ -71,38 +80,49 @@ export const getLaundryJobsService = async (queries: LaundryJobQueries) => {
   }
 };
 
-export const getLaundryJobByIdService = async (userId: number, laundryJobId: number) => {
+const getLaundryJobById = async (laundryJobId: number) => {
   try {
-    const accessor = await findUser(userId);
-
     const laundryJob = await prisma.laundryJob.findUnique({
       where: { id: laundryJobId },
       include: { worker: { include: { user: true } }, order: { include: { customerAddress: { include: { customer: true } }, OrderItem: true } } },
     });
 
-    if (!laundryJob) throw { message: "Invalid Laundry Job id!" };
+    if (laundryJob) {
+      const { workerId, worker, order, ...jobDetails } = laundryJob;
+      const { ...address } = order.customerAddress;
+
+      return {
+        ...jobDetails,
+        orderStatus: order.orderStatus,
+        isPaid: order.isPaid,
+        employeeId: workerId,
+        employeeName: worker?.user!.fullName,
+        outletId: order.outletId,
+        customerName: address.customer!.fullName,
+        laundryWeight: order.laundryWeight,
+        orderItem: order.OrderItem,
+      };
+    } else throw { message: "Invalid Laundry Job id!" };
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const getLaundryJobByIdService = async (userId: number, laundryJobId: number) => {
+  try {
+    const accessor = await findUser(userId);
+
+    const laundryJob = await getLaundryJobById(laundryJobId);
+
     if (!accessor.Employee) throw { message: "User is not an employee!" };
     if (accessor.role == "DRIVER") throw { message: "Driver cannot access this page!" };
-    if (accessor.role != "SUPER_ADMIN" && accessor.Employee.outletId != laundryJob.order.outletId) throw { message: "Invalid Outlet Id!" };
+    if (accessor.role != "SUPER_ADMIN" && accessor.Employee.outletId != laundryJob.outletId) throw { message: "Invalid Outlet Id!" };
     if (accessor.role == "WORKER") {
       if (laundryJob.station != accessor.Employee.station) throw { message: "Invalid station!" };
-      if (laundryJob.isCompleted && laundryJob.workerId != accessor.Employee.id) throw { message: "Invalid Employee Id!" };
+      if (laundryJob.isCompleted && laundryJob.employeeId != accessor.Employee.id) throw { message: "Invalid Employee Id!" };
     }
 
-    const { worker, order, ...jobDetails } = laundryJob;
-    const { customer, ...address } = order.customerAddress;
-
-    return {
-      ...jobDetails,
-      orderStatus: order.orderStatus,
-      isPaid: order.isPaid,
-      workerId: worker?.id,
-      workerName: worker?.user!.fullName,
-      outletId: order.outletId,
-      orderItem: order.OrderItem,
-      customerName: customer!.fullName,
-      address,
-    };
+    return laundryJob;
   } catch (error) {
     throw error;
   }
@@ -115,23 +135,10 @@ export const getOngoingLaundryJobService = async (userId: number) => {
 
     const laundryJob = await prisma.laundryJob.findFirst({
       where: { workerId: worker.Employee!.id, isCompleted: false },
-      include: { worker: { include: { user: true } }, order: { include: { customerAddress: { include: { customer: true } }, OrderItem: true } } },
+      select: { id: true },
     });
     if (laundryJob) {
-      const { worker, order, ...jobDetails } = laundryJob;
-      const { customer, ...address } = order.customerAddress;
-
-      return {
-        ...jobDetails,
-        orderStatus: order.orderStatus,
-        isPaid: order.isPaid,
-        workerId: worker?.id,
-        workerName: worker?.user!.fullName,
-        outletId: order.outletId,
-        orderItem: order.OrderItem,
-        customerName: customer!.fullName,
-        address,
-      };
+      return await getLaundryJobById(laundryJob.id);
     } else throw { message: "You aren't assigned to a job right now!" };
   } catch (error) {
     throw error;
