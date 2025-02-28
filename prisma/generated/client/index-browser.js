@@ -136,16 +136,16 @@ exports.Prisma.UserScalarFieldEnum = {
 exports.Prisma.EmployeeScalarFieldEnum = {
   id: 'id',
   workShift: 'workShift',
-  station: 'station',
-  isPresent: 'isPresent',
-  isWorking: 'isWorking',
-  employmentStatus: 'employmentStatus',
   userId: 'userId',
-  outletId: 'outletId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   isDeleted: 'isDeleted',
-  deletedAt: 'deletedAt'
+  deletedAt: 'deletedAt',
+  station: 'station',
+  isWorking: 'isWorking',
+  employmentStatus: 'employmentStatus',
+  outletId: 'outletId',
+  isPresent: 'isPresent'
 };
 
 exports.Prisma.AddressScalarFieldEnum = {
@@ -158,61 +158,61 @@ exports.Prisma.AddressScalarFieldEnum = {
   village: 'village',
   latitude: 'latitude',
   longitude: 'longitude',
-  customerId: 'customerId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   isDeleted: 'isDeleted',
-  deletedAt: 'deletedAt'
+  deletedAt: 'deletedAt',
+  customerId: 'customerId'
 };
 
 exports.Prisma.OutletScalarFieldEnum = {
   id: 'id',
   outletName: 'outletName',
-  outletAddressId: 'outletAddressId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   isDeleted: 'isDeleted',
-  deletedAt: 'deletedAt'
+  deletedAt: 'deletedAt',
+  outletAddressId: 'outletAddressId'
 };
 
 exports.Prisma.OrderScalarFieldEnum = {
   id: 'id',
   orderStatus: 'orderStatus',
-  customerAddressId: 'customerAddressId',
-  outletId: 'outletId',
-  laundryWeight: 'laundryWeight',
-  laundryPrice: 'laundryPrice',
   isPaid: 'isPaid',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   isDeleted: 'isDeleted',
-  deletedAt: 'deletedAt'
+  deletedAt: 'deletedAt',
+  customerAddressId: 'customerAddressId',
+  laundryPrice: 'laundryPrice',
+  laundryWeight: 'laundryWeight',
+  outletId: 'outletId'
 };
 
 exports.Prisma.OrderItemScalarFieldEnum = {
   id: 'id',
   qty: 'qty',
-  orderItemName: 'orderItemName',
-  orderId: 'orderId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   isDeleted: 'isDeleted',
-  deletedAt: 'deletedAt'
+  deletedAt: 'deletedAt',
+  orderId: 'orderId',
+  orderItemName: 'orderItemName'
 };
 
 exports.Prisma.LaundryJobScalarFieldEnum = {
   id: 'id',
-  station: 'station',
-  isByPassRequested: 'isByPassRequested',
   isCompleted: 'isCompleted',
   byPassNote: 'byPassNote',
-  byPassStatus: 'byPassStatus',
-  orderId: 'orderId',
-  workerId: 'workerId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   isDeleted: 'isDeleted',
-  deletedAt: 'deletedAt'
+  deletedAt: 'deletedAt',
+  orderId: 'orderId',
+  workerId: 'workerId',
+  byPassStatus: 'byPassStatus',
+  isByPassRequested: 'isByPassRequested',
+  station: 'station'
 };
 
 exports.Prisma.TransportJobScalarFieldEnum = {
@@ -230,15 +230,15 @@ exports.Prisma.TransportJobScalarFieldEnum = {
 
 exports.Prisma.NotificationScalarFieldEnum = {
   id: 'id',
+  isRead: 'isRead',
   title: 'title',
   description: 'description',
-  isRead: 'isRead',
-  url: 'url',
   userId: 'userId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   isDeleted: 'isDeleted',
-  deletedAt: 'deletedAt'
+  deletedAt: 'deletedAt',
+  url: 'url'
 };
 
 exports.Prisma.PaymentScalarFieldEnum = {
@@ -248,22 +248,22 @@ exports.Prisma.PaymentScalarFieldEnum = {
   paymentMethod: 'paymentMethod',
   snapToken: 'snapToken',
   snapRedirectURL: 'snapRedirectURL',
-  orderId: 'orderId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   isDeleted: 'isDeleted',
-  deletedAt: 'deletedAt'
+  deletedAt: 'deletedAt',
+  orderId: 'orderId'
 };
 
 exports.Prisma.EmployeeAttendanceScalarFieldEnum = {
   id: 'id',
-  isAttended: 'isAttended',
-  canClockIn: 'canClockIn',
-  employeeId: 'employeeId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   isDeleted: 'isDeleted',
-  deletedAt: 'deletedAt'
+  deletedAt: 'deletedAt',
+  employeeId: 'employeeId',
+  isAttended: 'isAttended',
+  canClockIn: 'canClockIn'
 };
 
 exports.Prisma.AttendanceRecordScalarFieldEnum = {
@@ -317,9 +317,6 @@ exports.EmploymentStatus = exports.$Enums.EmploymentStatus = {
 };
 
 exports.OrderStatus = exports.$Enums.OrderStatus = {
-  WAITING_FOR_PICKUP_DRIVER: 'WAITING_FOR_PICKUP_DRIVER',
-  ON_THE_WAY_TO_CUSTOMER: 'ON_THE_WAY_TO_CUSTOMER',
-  ON_THE_WAY_TO_OUTLET: 'ON_THE_WAY_TO_OUTLET',
   ARRIVED_AT_OUTLET: 'ARRIVED_AT_OUTLET',
   READY_FOR_WASHING: 'READY_FOR_WASHING',
   BEING_WASHED: 'BEING_WASHED',
@@ -334,7 +331,10 @@ exports.OrderStatus = exports.$Enums.OrderStatus = {
   RECEIVED_BY_CUSTOMER: 'RECEIVED_BY_CUSTOMER',
   COMPLETED: 'COMPLETED',
   CANCELLED_BY_CUSTOMER: 'CANCELLED_BY_CUSTOMER',
-  CANCELLED_BY_OUTLET: 'CANCELLED_BY_OUTLET'
+  CANCELLED_BY_OUTLET: 'CANCELLED_BY_OUTLET',
+  WAITING_FOR_PICKUP_DRIVER: 'WAITING_FOR_PICKUP_DRIVER',
+  ON_THE_WAY_TO_CUSTOMER: 'ON_THE_WAY_TO_CUSTOMER',
+  ON_THE_WAY_TO_OUTLET: 'ON_THE_WAY_TO_OUTLET'
 };
 
 exports.ByPassStatus = exports.$Enums.ByPassStatus = {

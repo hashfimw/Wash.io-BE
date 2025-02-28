@@ -117,9 +117,6 @@ export type WorkerStation = (typeof WorkerStation)[keyof typeof WorkerStation]
 
 
 export const OrderStatus: {
-  WAITING_FOR_PICKUP_DRIVER: 'WAITING_FOR_PICKUP_DRIVER',
-  ON_THE_WAY_TO_CUSTOMER: 'ON_THE_WAY_TO_CUSTOMER',
-  ON_THE_WAY_TO_OUTLET: 'ON_THE_WAY_TO_OUTLET',
   ARRIVED_AT_OUTLET: 'ARRIVED_AT_OUTLET',
   READY_FOR_WASHING: 'READY_FOR_WASHING',
   BEING_WASHED: 'BEING_WASHED',
@@ -134,7 +131,10 @@ export const OrderStatus: {
   RECEIVED_BY_CUSTOMER: 'RECEIVED_BY_CUSTOMER',
   COMPLETED: 'COMPLETED',
   CANCELLED_BY_CUSTOMER: 'CANCELLED_BY_CUSTOMER',
-  CANCELLED_BY_OUTLET: 'CANCELLED_BY_OUTLET'
+  CANCELLED_BY_OUTLET: 'CANCELLED_BY_OUTLET',
+  WAITING_FOR_PICKUP_DRIVER: 'WAITING_FOR_PICKUP_DRIVER',
+  ON_THE_WAY_TO_CUSTOMER: 'ON_THE_WAY_TO_CUSTOMER',
+  ON_THE_WAY_TO_OUTLET: 'ON_THE_WAY_TO_OUTLET'
 };
 
 export type OrderStatus = (typeof OrderStatus)[keyof typeof OrderStatus]
@@ -2044,15 +2044,15 @@ export namespace Prisma {
    */
 
   export type EmployeeCountOutputType = {
+    EmployeeAttendance: number
     LaundryJob: number
     TransportJob: number
-    EmployeeAttendance: number
   }
 
   export type EmployeeCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    EmployeeAttendance?: boolean | EmployeeCountOutputTypeCountEmployeeAttendanceArgs
     LaundryJob?: boolean | EmployeeCountOutputTypeCountLaundryJobArgs
     TransportJob?: boolean | EmployeeCountOutputTypeCountTransportJobArgs
-    EmployeeAttendance?: boolean | EmployeeCountOutputTypeCountEmployeeAttendanceArgs
   }
 
   // Custom InputTypes
@@ -2069,6 +2069,13 @@ export namespace Prisma {
   /**
    * EmployeeCountOutputType without action
    */
+  export type EmployeeCountOutputTypeCountEmployeeAttendanceArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: EmployeeAttendanceWhereInput
+  }
+
+  /**
+   * EmployeeCountOutputType without action
+   */
   export type EmployeeCountOutputTypeCountLaundryJobArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: LaundryJobWhereInput
   }
@@ -2078,13 +2085,6 @@ export namespace Prisma {
    */
   export type EmployeeCountOutputTypeCountTransportJobArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: TransportJobWhereInput
-  }
-
-  /**
-   * EmployeeCountOutputType without action
-   */
-  export type EmployeeCountOutputTypeCountEmployeeAttendanceArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: EmployeeAttendanceWhereInput
   }
 
 
@@ -2124,13 +2124,13 @@ export namespace Prisma {
    */
 
   export type OutletCountOutputType = {
-    Order: number
     Employee: number
+    Order: number
   }
 
   export type OutletCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    Order?: boolean | OutletCountOutputTypeCountOrderArgs
     Employee?: boolean | OutletCountOutputTypeCountEmployeeArgs
+    Order?: boolean | OutletCountOutputTypeCountOrderArgs
   }
 
   // Custom InputTypes
@@ -2147,15 +2147,15 @@ export namespace Prisma {
   /**
    * OutletCountOutputType without action
    */
-  export type OutletCountOutputTypeCountOrderArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: OrderWhereInput
+  export type OutletCountOutputTypeCountEmployeeArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: EmployeeWhereInput
   }
 
   /**
    * OutletCountOutputType without action
    */
-  export type OutletCountOutputTypeCountEmployeeArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: EmployeeWhereInput
+  export type OutletCountOutputTypeCountOrderArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: OrderWhereInput
   }
 
 
@@ -2164,17 +2164,15 @@ export namespace Prisma {
    */
 
   export type OrderCountOutputType = {
-    OrderItem: number
     LaundryJob: number
+    OrderItem: number
     TransportJob: number
-    Payment: number
   }
 
   export type OrderCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    OrderItem?: boolean | OrderCountOutputTypeCountOrderItemArgs
     LaundryJob?: boolean | OrderCountOutputTypeCountLaundryJobArgs
+    OrderItem?: boolean | OrderCountOutputTypeCountOrderItemArgs
     TransportJob?: boolean | OrderCountOutputTypeCountTransportJobArgs
-    Payment?: boolean | OrderCountOutputTypeCountPaymentArgs
   }
 
   // Custom InputTypes
@@ -2191,13 +2189,6 @@ export namespace Prisma {
   /**
    * OrderCountOutputType without action
    */
-  export type OrderCountOutputTypeCountOrderItemArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: OrderItemWhereInput
-  }
-
-  /**
-   * OrderCountOutputType without action
-   */
   export type OrderCountOutputTypeCountLaundryJobArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: LaundryJobWhereInput
   }
@@ -2205,15 +2196,15 @@ export namespace Prisma {
   /**
    * OrderCountOutputType without action
    */
-  export type OrderCountOutputTypeCountTransportJobArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: TransportJobWhereInput
+  export type OrderCountOutputTypeCountOrderItemArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: OrderItemWhereInput
   }
 
   /**
    * OrderCountOutputType without action
    */
-  export type OrderCountOutputTypeCountPaymentArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: PaymentWhereInput
+  export type OrderCountOutputTypeCountTransportJobArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: TransportJobWhereInput
   }
 
 
@@ -2514,8 +2505,8 @@ export namespace Prisma {
     updatedAt?: boolean
     isDeleted?: boolean
     deletedAt?: boolean
-    Employee?: boolean | User$EmployeeArgs<ExtArgs>
     Address?: boolean | User$AddressArgs<ExtArgs>
+    Employee?: boolean | User$EmployeeArgs<ExtArgs>
     Notification?: boolean | User$NotificationArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
@@ -2570,8 +2561,8 @@ export namespace Prisma {
 
   export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "fullName" | "email" | "password" | "avatar" | "isVerified" | "role" | "token" | "tokenExpiresIn" | "createdAt" | "updatedAt" | "isDeleted" | "deletedAt", ExtArgs["result"]["user"]>
   export type UserInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    Employee?: boolean | User$EmployeeArgs<ExtArgs>
     Address?: boolean | User$AddressArgs<ExtArgs>
+    Employee?: boolean | User$EmployeeArgs<ExtArgs>
     Notification?: boolean | User$NotificationArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }
@@ -2581,8 +2572,8 @@ export namespace Prisma {
   export type $UserPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "User"
     objects: {
-      Employee: Prisma.$EmployeePayload<ExtArgs> | null
       Address: Prisma.$AddressPayload<ExtArgs>[]
+      Employee: Prisma.$EmployeePayload<ExtArgs> | null
       Notification: Prisma.$NotificationPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
@@ -2993,8 +2984,8 @@ export namespace Prisma {
    */
   export interface Prisma__UserClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, ClientOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    Employee<T extends User$EmployeeArgs<ExtArgs> = {}>(args?: Subset<T, User$EmployeeArgs<ExtArgs>>): Prisma__EmployeeClient<$Result.GetResult<Prisma.$EmployeePayload<ExtArgs>, T, "findUniqueOrThrow", ClientOptions> | null, null, ExtArgs, ClientOptions>
     Address<T extends User$AddressArgs<ExtArgs> = {}>(args?: Subset<T, User$AddressArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AddressPayload<ExtArgs>, T, "findMany", ClientOptions> | Null>
+    Employee<T extends User$EmployeeArgs<ExtArgs> = {}>(args?: Subset<T, User$EmployeeArgs<ExtArgs>>): Prisma__EmployeeClient<$Result.GetResult<Prisma.$EmployeePayload<ExtArgs>, T, "findUniqueOrThrow", ClientOptions> | null, null, ExtArgs, ClientOptions>
     Notification<T extends User$NotificationArgs<ExtArgs> = {}>(args?: Subset<T, User$NotificationArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$NotificationPayload<ExtArgs>, T, "findMany", ClientOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -3414,25 +3405,6 @@ export namespace Prisma {
   }
 
   /**
-   * User.Employee
-   */
-  export type User$EmployeeArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Employee
-     */
-    select?: EmployeeSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Employee
-     */
-    omit?: EmployeeOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: EmployeeInclude<ExtArgs> | null
-    where?: EmployeeWhereInput
-  }
-
-  /**
    * User.Address
    */
   export type User$AddressArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -3454,6 +3426,25 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: AddressScalarFieldEnum | AddressScalarFieldEnum[]
+  }
+
+  /**
+   * User.Employee
+   */
+  export type User$EmployeeArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Employee
+     */
+    select?: EmployeeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Employee
+     */
+    omit?: EmployeeOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: EmployeeInclude<ExtArgs> | null
+    where?: EmployeeWhereInput
   }
 
   /**
@@ -3526,46 +3517,46 @@ export namespace Prisma {
   export type EmployeeMinAggregateOutputType = {
     id: number | null
     workShift: $Enums.EmployeeWorkShift | null
-    station: $Enums.WorkerStation | null
-    isPresent: boolean | null
-    isWorking: boolean | null
-    employmentStatus: $Enums.EmploymentStatus | null
     userId: number | null
-    outletId: number | null
     createdAt: Date | null
     updatedAt: Date | null
     isDeleted: boolean | null
     deletedAt: Date | null
+    station: $Enums.WorkerStation | null
+    isWorking: boolean | null
+    employmentStatus: $Enums.EmploymentStatus | null
+    outletId: number | null
+    isPresent: boolean | null
   }
 
   export type EmployeeMaxAggregateOutputType = {
     id: number | null
     workShift: $Enums.EmployeeWorkShift | null
-    station: $Enums.WorkerStation | null
-    isPresent: boolean | null
-    isWorking: boolean | null
-    employmentStatus: $Enums.EmploymentStatus | null
     userId: number | null
-    outletId: number | null
     createdAt: Date | null
     updatedAt: Date | null
     isDeleted: boolean | null
     deletedAt: Date | null
+    station: $Enums.WorkerStation | null
+    isWorking: boolean | null
+    employmentStatus: $Enums.EmploymentStatus | null
+    outletId: number | null
+    isPresent: boolean | null
   }
 
   export type EmployeeCountAggregateOutputType = {
     id: number
     workShift: number
-    station: number
-    isPresent: number
-    isWorking: number
-    employmentStatus: number
     userId: number
-    outletId: number
     createdAt: number
     updatedAt: number
     isDeleted: number
     deletedAt: number
+    station: number
+    isWorking: number
+    employmentStatus: number
+    outletId: number
+    isPresent: number
     _all: number
   }
 
@@ -3585,46 +3576,46 @@ export namespace Prisma {
   export type EmployeeMinAggregateInputType = {
     id?: true
     workShift?: true
-    station?: true
-    isPresent?: true
-    isWorking?: true
-    employmentStatus?: true
     userId?: true
-    outletId?: true
     createdAt?: true
     updatedAt?: true
     isDeleted?: true
     deletedAt?: true
+    station?: true
+    isWorking?: true
+    employmentStatus?: true
+    outletId?: true
+    isPresent?: true
   }
 
   export type EmployeeMaxAggregateInputType = {
     id?: true
     workShift?: true
-    station?: true
-    isPresent?: true
-    isWorking?: true
-    employmentStatus?: true
     userId?: true
-    outletId?: true
     createdAt?: true
     updatedAt?: true
     isDeleted?: true
     deletedAt?: true
+    station?: true
+    isWorking?: true
+    employmentStatus?: true
+    outletId?: true
+    isPresent?: true
   }
 
   export type EmployeeCountAggregateInputType = {
     id?: true
     workShift?: true
-    station?: true
-    isPresent?: true
-    isWorking?: true
-    employmentStatus?: true
     userId?: true
-    outletId?: true
     createdAt?: true
     updatedAt?: true
     isDeleted?: true
     deletedAt?: true
+    station?: true
+    isWorking?: true
+    employmentStatus?: true
+    outletId?: true
+    isPresent?: true
     _all?: true
   }
 
@@ -3717,16 +3708,16 @@ export namespace Prisma {
   export type EmployeeGroupByOutputType = {
     id: number
     workShift: $Enums.EmployeeWorkShift | null
-    station: $Enums.WorkerStation | null
-    isPresent: boolean
-    isWorking: boolean
-    employmentStatus: $Enums.EmploymentStatus
     userId: number
-    outletId: number
     createdAt: Date
     updatedAt: Date
     isDeleted: boolean
     deletedAt: Date | null
+    station: $Enums.WorkerStation | null
+    isWorking: boolean
+    employmentStatus: $Enums.EmploymentStatus
+    outletId: number
+    isPresent: boolean
     _count: EmployeeCountAggregateOutputType | null
     _avg: EmployeeAvgAggregateOutputType | null
     _sum: EmployeeSumAggregateOutputType | null
@@ -3751,113 +3742,113 @@ export namespace Prisma {
   export type EmployeeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     workShift?: boolean
-    station?: boolean
-    isPresent?: boolean
-    isWorking?: boolean
-    employmentStatus?: boolean
     userId?: boolean
-    outletId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     isDeleted?: boolean
     deletedAt?: boolean
-    user?: boolean | UserDefaultArgs<ExtArgs>
+    station?: boolean
+    isWorking?: boolean
+    employmentStatus?: boolean
+    outletId?: boolean
+    isPresent?: boolean
     outlet?: boolean | OutletDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    EmployeeAttendance?: boolean | Employee$EmployeeAttendanceArgs<ExtArgs>
     LaundryJob?: boolean | Employee$LaundryJobArgs<ExtArgs>
     TransportJob?: boolean | Employee$TransportJobArgs<ExtArgs>
-    EmployeeAttendance?: boolean | Employee$EmployeeAttendanceArgs<ExtArgs>
     _count?: boolean | EmployeeCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["employee"]>
 
   export type EmployeeSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     workShift?: boolean
-    station?: boolean
-    isPresent?: boolean
-    isWorking?: boolean
-    employmentStatus?: boolean
     userId?: boolean
-    outletId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     isDeleted?: boolean
     deletedAt?: boolean
-    user?: boolean | UserDefaultArgs<ExtArgs>
+    station?: boolean
+    isWorking?: boolean
+    employmentStatus?: boolean
+    outletId?: boolean
+    isPresent?: boolean
     outlet?: boolean | OutletDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["employee"]>
 
   export type EmployeeSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     workShift?: boolean
-    station?: boolean
-    isPresent?: boolean
-    isWorking?: boolean
-    employmentStatus?: boolean
     userId?: boolean
-    outletId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     isDeleted?: boolean
     deletedAt?: boolean
-    user?: boolean | UserDefaultArgs<ExtArgs>
+    station?: boolean
+    isWorking?: boolean
+    employmentStatus?: boolean
+    outletId?: boolean
+    isPresent?: boolean
     outlet?: boolean | OutletDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["employee"]>
 
   export type EmployeeSelectScalar = {
     id?: boolean
     workShift?: boolean
-    station?: boolean
-    isPresent?: boolean
-    isWorking?: boolean
-    employmentStatus?: boolean
     userId?: boolean
-    outletId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     isDeleted?: boolean
     deletedAt?: boolean
+    station?: boolean
+    isWorking?: boolean
+    employmentStatus?: boolean
+    outletId?: boolean
+    isPresent?: boolean
   }
 
-  export type EmployeeOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "workShift" | "station" | "isPresent" | "isWorking" | "employmentStatus" | "userId" | "outletId" | "createdAt" | "updatedAt" | "isDeleted" | "deletedAt", ExtArgs["result"]["employee"]>
+  export type EmployeeOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "workShift" | "userId" | "createdAt" | "updatedAt" | "isDeleted" | "deletedAt" | "station" | "isWorking" | "employmentStatus" | "outletId" | "isPresent", ExtArgs["result"]["employee"]>
   export type EmployeeInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    user?: boolean | UserDefaultArgs<ExtArgs>
     outlet?: boolean | OutletDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    EmployeeAttendance?: boolean | Employee$EmployeeAttendanceArgs<ExtArgs>
     LaundryJob?: boolean | Employee$LaundryJobArgs<ExtArgs>
     TransportJob?: boolean | Employee$TransportJobArgs<ExtArgs>
-    EmployeeAttendance?: boolean | Employee$EmployeeAttendanceArgs<ExtArgs>
     _count?: boolean | EmployeeCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type EmployeeIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    user?: boolean | UserDefaultArgs<ExtArgs>
     outlet?: boolean | OutletDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
   }
   export type EmployeeIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    user?: boolean | UserDefaultArgs<ExtArgs>
     outlet?: boolean | OutletDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
   }
 
   export type $EmployeePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Employee"
     objects: {
-      user: Prisma.$UserPayload<ExtArgs>
       outlet: Prisma.$OutletPayload<ExtArgs>
+      user: Prisma.$UserPayload<ExtArgs>
+      EmployeeAttendance: Prisma.$EmployeeAttendancePayload<ExtArgs>[]
       LaundryJob: Prisma.$LaundryJobPayload<ExtArgs>[]
       TransportJob: Prisma.$TransportJobPayload<ExtArgs>[]
-      EmployeeAttendance: Prisma.$EmployeeAttendancePayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: number
       workShift: $Enums.EmployeeWorkShift | null
-      station: $Enums.WorkerStation | null
-      isPresent: boolean
-      isWorking: boolean
-      employmentStatus: $Enums.EmploymentStatus
       userId: number
-      outletId: number
       createdAt: Date
       updatedAt: Date
       isDeleted: boolean
       deletedAt: Date | null
+      station: $Enums.WorkerStation | null
+      isWorking: boolean
+      employmentStatus: $Enums.EmploymentStatus
+      outletId: number
+      isPresent: boolean
     }, ExtArgs["result"]["employee"]>
     composites: {}
   }
@@ -4252,11 +4243,11 @@ export namespace Prisma {
    */
   export interface Prisma__EmployeeClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, ClientOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", ClientOptions> | Null, Null, ExtArgs, ClientOptions>
     outlet<T extends OutletDefaultArgs<ExtArgs> = {}>(args?: Subset<T, OutletDefaultArgs<ExtArgs>>): Prisma__OutletClient<$Result.GetResult<Prisma.$OutletPayload<ExtArgs>, T, "findUniqueOrThrow", ClientOptions> | Null, Null, ExtArgs, ClientOptions>
+    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", ClientOptions> | Null, Null, ExtArgs, ClientOptions>
+    EmployeeAttendance<T extends Employee$EmployeeAttendanceArgs<ExtArgs> = {}>(args?: Subset<T, Employee$EmployeeAttendanceArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$EmployeeAttendancePayload<ExtArgs>, T, "findMany", ClientOptions> | Null>
     LaundryJob<T extends Employee$LaundryJobArgs<ExtArgs> = {}>(args?: Subset<T, Employee$LaundryJobArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$LaundryJobPayload<ExtArgs>, T, "findMany", ClientOptions> | Null>
     TransportJob<T extends Employee$TransportJobArgs<ExtArgs> = {}>(args?: Subset<T, Employee$TransportJobArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TransportJobPayload<ExtArgs>, T, "findMany", ClientOptions> | Null>
-    EmployeeAttendance<T extends Employee$EmployeeAttendanceArgs<ExtArgs> = {}>(args?: Subset<T, Employee$EmployeeAttendanceArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$EmployeeAttendancePayload<ExtArgs>, T, "findMany", ClientOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -4288,16 +4279,16 @@ export namespace Prisma {
   interface EmployeeFieldRefs {
     readonly id: FieldRef<"Employee", 'Int'>
     readonly workShift: FieldRef<"Employee", 'EmployeeWorkShift'>
-    readonly station: FieldRef<"Employee", 'WorkerStation'>
-    readonly isPresent: FieldRef<"Employee", 'Boolean'>
-    readonly isWorking: FieldRef<"Employee", 'Boolean'>
-    readonly employmentStatus: FieldRef<"Employee", 'EmploymentStatus'>
     readonly userId: FieldRef<"Employee", 'Int'>
-    readonly outletId: FieldRef<"Employee", 'Int'>
     readonly createdAt: FieldRef<"Employee", 'DateTime'>
     readonly updatedAt: FieldRef<"Employee", 'DateTime'>
     readonly isDeleted: FieldRef<"Employee", 'Boolean'>
     readonly deletedAt: FieldRef<"Employee", 'DateTime'>
+    readonly station: FieldRef<"Employee", 'WorkerStation'>
+    readonly isWorking: FieldRef<"Employee", 'Boolean'>
+    readonly employmentStatus: FieldRef<"Employee", 'EmploymentStatus'>
+    readonly outletId: FieldRef<"Employee", 'Int'>
+    readonly isPresent: FieldRef<"Employee", 'Boolean'>
   }
     
 
@@ -4682,6 +4673,30 @@ export namespace Prisma {
   }
 
   /**
+   * Employee.EmployeeAttendance
+   */
+  export type Employee$EmployeeAttendanceArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EmployeeAttendance
+     */
+    select?: EmployeeAttendanceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the EmployeeAttendance
+     */
+    omit?: EmployeeAttendanceOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: EmployeeAttendanceInclude<ExtArgs> | null
+    where?: EmployeeAttendanceWhereInput
+    orderBy?: EmployeeAttendanceOrderByWithRelationInput | EmployeeAttendanceOrderByWithRelationInput[]
+    cursor?: EmployeeAttendanceWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: EmployeeAttendanceScalarFieldEnum | EmployeeAttendanceScalarFieldEnum[]
+  }
+
+  /**
    * Employee.LaundryJob
    */
   export type Employee$LaundryJobArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -4727,30 +4742,6 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: TransportJobScalarFieldEnum | TransportJobScalarFieldEnum[]
-  }
-
-  /**
-   * Employee.EmployeeAttendance
-   */
-  export type Employee$EmployeeAttendanceArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the EmployeeAttendance
-     */
-    select?: EmployeeAttendanceSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the EmployeeAttendance
-     */
-    omit?: EmployeeAttendanceOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: EmployeeAttendanceInclude<ExtArgs> | null
-    where?: EmployeeAttendanceWhereInput
-    orderBy?: EmployeeAttendanceOrderByWithRelationInput | EmployeeAttendanceOrderByWithRelationInput[]
-    cursor?: EmployeeAttendanceWhereUniqueInput
-    take?: number
-    skip?: number
-    distinct?: EmployeeAttendanceScalarFieldEnum | EmployeeAttendanceScalarFieldEnum[]
   }
 
   /**
@@ -4804,11 +4795,11 @@ export namespace Prisma {
     village: string | null
     latitude: string | null
     longitude: string | null
-    customerId: number | null
     createdAt: Date | null
     updatedAt: Date | null
     isDeleted: boolean | null
     deletedAt: Date | null
+    customerId: number | null
   }
 
   export type AddressMaxAggregateOutputType = {
@@ -4821,11 +4812,11 @@ export namespace Prisma {
     village: string | null
     latitude: string | null
     longitude: string | null
-    customerId: number | null
     createdAt: Date | null
     updatedAt: Date | null
     isDeleted: boolean | null
     deletedAt: Date | null
+    customerId: number | null
   }
 
   export type AddressCountAggregateOutputType = {
@@ -4838,11 +4829,11 @@ export namespace Prisma {
     village: number
     latitude: number
     longitude: number
-    customerId: number
     createdAt: number
     updatedAt: number
     isDeleted: number
     deletedAt: number
+    customerId: number
     _all: number
   }
 
@@ -4867,11 +4858,11 @@ export namespace Prisma {
     village?: true
     latitude?: true
     longitude?: true
-    customerId?: true
     createdAt?: true
     updatedAt?: true
     isDeleted?: true
     deletedAt?: true
+    customerId?: true
   }
 
   export type AddressMaxAggregateInputType = {
@@ -4884,11 +4875,11 @@ export namespace Prisma {
     village?: true
     latitude?: true
     longitude?: true
-    customerId?: true
     createdAt?: true
     updatedAt?: true
     isDeleted?: true
     deletedAt?: true
+    customerId?: true
   }
 
   export type AddressCountAggregateInputType = {
@@ -4901,11 +4892,11 @@ export namespace Prisma {
     village?: true
     latitude?: true
     longitude?: true
-    customerId?: true
     createdAt?: true
     updatedAt?: true
     isDeleted?: true
     deletedAt?: true
+    customerId?: true
     _all?: true
   }
 
@@ -5005,11 +4996,11 @@ export namespace Prisma {
     village: string
     latitude: string
     longitude: string
-    customerId: number | null
     createdAt: Date
     updatedAt: Date
     isDeleted: boolean
     deletedAt: Date | null
+    customerId: number | null
     _count: AddressCountAggregateOutputType | null
     _avg: AddressAvgAggregateOutputType | null
     _sum: AddressSumAggregateOutputType | null
@@ -5041,14 +5032,14 @@ export namespace Prisma {
     village?: boolean
     latitude?: boolean
     longitude?: boolean
-    customerId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     isDeleted?: boolean
     deletedAt?: boolean
+    customerId?: boolean
     customer?: boolean | Address$customerArgs<ExtArgs>
-    Outlet?: boolean | Address$OutletArgs<ExtArgs>
     Order?: boolean | Address$OrderArgs<ExtArgs>
+    Outlet?: boolean | Address$OutletArgs<ExtArgs>
     _count?: boolean | AddressCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["address"]>
 
@@ -5062,11 +5053,11 @@ export namespace Prisma {
     village?: boolean
     latitude?: boolean
     longitude?: boolean
-    customerId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     isDeleted?: boolean
     deletedAt?: boolean
+    customerId?: boolean
     customer?: boolean | Address$customerArgs<ExtArgs>
   }, ExtArgs["result"]["address"]>
 
@@ -5080,11 +5071,11 @@ export namespace Prisma {
     village?: boolean
     latitude?: boolean
     longitude?: boolean
-    customerId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     isDeleted?: boolean
     deletedAt?: boolean
+    customerId?: boolean
     customer?: boolean | Address$customerArgs<ExtArgs>
   }, ExtArgs["result"]["address"]>
 
@@ -5098,18 +5089,18 @@ export namespace Prisma {
     village?: boolean
     latitude?: boolean
     longitude?: boolean
-    customerId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     isDeleted?: boolean
     deletedAt?: boolean
+    customerId?: boolean
   }
 
-  export type AddressOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "isPrimary" | "addressLine" | "province" | "regency" | "district" | "village" | "latitude" | "longitude" | "customerId" | "createdAt" | "updatedAt" | "isDeleted" | "deletedAt", ExtArgs["result"]["address"]>
+  export type AddressOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "isPrimary" | "addressLine" | "province" | "regency" | "district" | "village" | "latitude" | "longitude" | "createdAt" | "updatedAt" | "isDeleted" | "deletedAt" | "customerId", ExtArgs["result"]["address"]>
   export type AddressInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     customer?: boolean | Address$customerArgs<ExtArgs>
-    Outlet?: boolean | Address$OutletArgs<ExtArgs>
     Order?: boolean | Address$OrderArgs<ExtArgs>
+    Outlet?: boolean | Address$OutletArgs<ExtArgs>
     _count?: boolean | AddressCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type AddressIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -5123,8 +5114,8 @@ export namespace Prisma {
     name: "Address"
     objects: {
       customer: Prisma.$UserPayload<ExtArgs> | null
-      Outlet: Prisma.$OutletPayload<ExtArgs> | null
       Order: Prisma.$OrderPayload<ExtArgs>[]
+      Outlet: Prisma.$OutletPayload<ExtArgs> | null
     }
     scalars: $Extensions.GetPayloadResult<{
       id: number
@@ -5136,11 +5127,11 @@ export namespace Prisma {
       village: string
       latitude: string
       longitude: string
-      customerId: number | null
       createdAt: Date
       updatedAt: Date
       isDeleted: boolean
       deletedAt: Date | null
+      customerId: number | null
     }, ExtArgs["result"]["address"]>
     composites: {}
   }
@@ -5536,8 +5527,8 @@ export namespace Prisma {
   export interface Prisma__AddressClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, ClientOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     customer<T extends Address$customerArgs<ExtArgs> = {}>(args?: Subset<T, Address$customerArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", ClientOptions> | null, null, ExtArgs, ClientOptions>
-    Outlet<T extends Address$OutletArgs<ExtArgs> = {}>(args?: Subset<T, Address$OutletArgs<ExtArgs>>): Prisma__OutletClient<$Result.GetResult<Prisma.$OutletPayload<ExtArgs>, T, "findUniqueOrThrow", ClientOptions> | null, null, ExtArgs, ClientOptions>
     Order<T extends Address$OrderArgs<ExtArgs> = {}>(args?: Subset<T, Address$OrderArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$OrderPayload<ExtArgs>, T, "findMany", ClientOptions> | Null>
+    Outlet<T extends Address$OutletArgs<ExtArgs> = {}>(args?: Subset<T, Address$OutletArgs<ExtArgs>>): Prisma__OutletClient<$Result.GetResult<Prisma.$OutletPayload<ExtArgs>, T, "findUniqueOrThrow", ClientOptions> | null, null, ExtArgs, ClientOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -5576,11 +5567,11 @@ export namespace Prisma {
     readonly village: FieldRef<"Address", 'String'>
     readonly latitude: FieldRef<"Address", 'String'>
     readonly longitude: FieldRef<"Address", 'String'>
-    readonly customerId: FieldRef<"Address", 'Int'>
     readonly createdAt: FieldRef<"Address", 'DateTime'>
     readonly updatedAt: FieldRef<"Address", 'DateTime'>
     readonly isDeleted: FieldRef<"Address", 'Boolean'>
     readonly deletedAt: FieldRef<"Address", 'DateTime'>
+    readonly customerId: FieldRef<"Address", 'Int'>
   }
     
 
@@ -5984,25 +5975,6 @@ export namespace Prisma {
   }
 
   /**
-   * Address.Outlet
-   */
-  export type Address$OutletArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Outlet
-     */
-    select?: OutletSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Outlet
-     */
-    omit?: OutletOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: OutletInclude<ExtArgs> | null
-    where?: OutletWhereInput
-  }
-
-  /**
    * Address.Order
    */
   export type Address$OrderArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -6024,6 +5996,25 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: OrderScalarFieldEnum | OrderScalarFieldEnum[]
+  }
+
+  /**
+   * Address.Outlet
+   */
+  export type Address$OutletArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Outlet
+     */
+    select?: OutletSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Outlet
+     */
+    omit?: OutletOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OutletInclude<ExtArgs> | null
+    where?: OutletWhereInput
   }
 
   /**
@@ -6070,31 +6061,31 @@ export namespace Prisma {
   export type OutletMinAggregateOutputType = {
     id: number | null
     outletName: string | null
-    outletAddressId: number | null
     createdAt: Date | null
     updatedAt: Date | null
     isDeleted: boolean | null
     deletedAt: Date | null
+    outletAddressId: number | null
   }
 
   export type OutletMaxAggregateOutputType = {
     id: number | null
     outletName: string | null
-    outletAddressId: number | null
     createdAt: Date | null
     updatedAt: Date | null
     isDeleted: boolean | null
     deletedAt: Date | null
+    outletAddressId: number | null
   }
 
   export type OutletCountAggregateOutputType = {
     id: number
     outletName: number
-    outletAddressId: number
     createdAt: number
     updatedAt: number
     isDeleted: number
     deletedAt: number
+    outletAddressId: number
     _all: number
   }
 
@@ -6112,31 +6103,31 @@ export namespace Prisma {
   export type OutletMinAggregateInputType = {
     id?: true
     outletName?: true
-    outletAddressId?: true
     createdAt?: true
     updatedAt?: true
     isDeleted?: true
     deletedAt?: true
+    outletAddressId?: true
   }
 
   export type OutletMaxAggregateInputType = {
     id?: true
     outletName?: true
-    outletAddressId?: true
     createdAt?: true
     updatedAt?: true
     isDeleted?: true
     deletedAt?: true
+    outletAddressId?: true
   }
 
   export type OutletCountAggregateInputType = {
     id?: true
     outletName?: true
-    outletAddressId?: true
     createdAt?: true
     updatedAt?: true
     isDeleted?: true
     deletedAt?: true
+    outletAddressId?: true
     _all?: true
   }
 
@@ -6229,11 +6220,11 @@ export namespace Prisma {
   export type OutletGroupByOutputType = {
     id: number
     outletName: string
-    outletAddressId: number
     createdAt: Date
     updatedAt: Date
     isDeleted: boolean
     deletedAt: Date | null
+    outletAddressId: number
     _count: OutletCountAggregateOutputType | null
     _avg: OutletAvgAggregateOutputType | null
     _sum: OutletSumAggregateOutputType | null
@@ -6258,54 +6249,54 @@ export namespace Prisma {
   export type OutletSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     outletName?: boolean
-    outletAddressId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     isDeleted?: boolean
     deletedAt?: boolean
-    outletAddress?: boolean | AddressDefaultArgs<ExtArgs>
-    Order?: boolean | Outlet$OrderArgs<ExtArgs>
+    outletAddressId?: boolean
     Employee?: boolean | Outlet$EmployeeArgs<ExtArgs>
+    Order?: boolean | Outlet$OrderArgs<ExtArgs>
+    outletAddress?: boolean | AddressDefaultArgs<ExtArgs>
     _count?: boolean | OutletCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["outlet"]>
 
   export type OutletSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     outletName?: boolean
-    outletAddressId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     isDeleted?: boolean
     deletedAt?: boolean
+    outletAddressId?: boolean
     outletAddress?: boolean | AddressDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["outlet"]>
 
   export type OutletSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     outletName?: boolean
-    outletAddressId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     isDeleted?: boolean
     deletedAt?: boolean
+    outletAddressId?: boolean
     outletAddress?: boolean | AddressDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["outlet"]>
 
   export type OutletSelectScalar = {
     id?: boolean
     outletName?: boolean
-    outletAddressId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     isDeleted?: boolean
     deletedAt?: boolean
+    outletAddressId?: boolean
   }
 
-  export type OutletOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "outletName" | "outletAddressId" | "createdAt" | "updatedAt" | "isDeleted" | "deletedAt", ExtArgs["result"]["outlet"]>
+  export type OutletOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "outletName" | "createdAt" | "updatedAt" | "isDeleted" | "deletedAt" | "outletAddressId", ExtArgs["result"]["outlet"]>
   export type OutletInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    outletAddress?: boolean | AddressDefaultArgs<ExtArgs>
-    Order?: boolean | Outlet$OrderArgs<ExtArgs>
     Employee?: boolean | Outlet$EmployeeArgs<ExtArgs>
+    Order?: boolean | Outlet$OrderArgs<ExtArgs>
+    outletAddress?: boolean | AddressDefaultArgs<ExtArgs>
     _count?: boolean | OutletCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type OutletIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -6318,18 +6309,18 @@ export namespace Prisma {
   export type $OutletPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Outlet"
     objects: {
-      outletAddress: Prisma.$AddressPayload<ExtArgs>
-      Order: Prisma.$OrderPayload<ExtArgs>[]
       Employee: Prisma.$EmployeePayload<ExtArgs>[]
+      Order: Prisma.$OrderPayload<ExtArgs>[]
+      outletAddress: Prisma.$AddressPayload<ExtArgs>
     }
     scalars: $Extensions.GetPayloadResult<{
       id: number
       outletName: string
-      outletAddressId: number
       createdAt: Date
       updatedAt: Date
       isDeleted: boolean
       deletedAt: Date | null
+      outletAddressId: number
     }, ExtArgs["result"]["outlet"]>
     composites: {}
   }
@@ -6724,9 +6715,9 @@ export namespace Prisma {
    */
   export interface Prisma__OutletClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, ClientOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    outletAddress<T extends AddressDefaultArgs<ExtArgs> = {}>(args?: Subset<T, AddressDefaultArgs<ExtArgs>>): Prisma__AddressClient<$Result.GetResult<Prisma.$AddressPayload<ExtArgs>, T, "findUniqueOrThrow", ClientOptions> | Null, Null, ExtArgs, ClientOptions>
-    Order<T extends Outlet$OrderArgs<ExtArgs> = {}>(args?: Subset<T, Outlet$OrderArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$OrderPayload<ExtArgs>, T, "findMany", ClientOptions> | Null>
     Employee<T extends Outlet$EmployeeArgs<ExtArgs> = {}>(args?: Subset<T, Outlet$EmployeeArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$EmployeePayload<ExtArgs>, T, "findMany", ClientOptions> | Null>
+    Order<T extends Outlet$OrderArgs<ExtArgs> = {}>(args?: Subset<T, Outlet$OrderArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$OrderPayload<ExtArgs>, T, "findMany", ClientOptions> | Null>
+    outletAddress<T extends AddressDefaultArgs<ExtArgs> = {}>(args?: Subset<T, AddressDefaultArgs<ExtArgs>>): Prisma__AddressClient<$Result.GetResult<Prisma.$AddressPayload<ExtArgs>, T, "findUniqueOrThrow", ClientOptions> | Null, Null, ExtArgs, ClientOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -6758,11 +6749,11 @@ export namespace Prisma {
   interface OutletFieldRefs {
     readonly id: FieldRef<"Outlet", 'Int'>
     readonly outletName: FieldRef<"Outlet", 'String'>
-    readonly outletAddressId: FieldRef<"Outlet", 'Int'>
     readonly createdAt: FieldRef<"Outlet", 'DateTime'>
     readonly updatedAt: FieldRef<"Outlet", 'DateTime'>
     readonly isDeleted: FieldRef<"Outlet", 'Boolean'>
     readonly deletedAt: FieldRef<"Outlet", 'DateTime'>
+    readonly outletAddressId: FieldRef<"Outlet", 'Int'>
   }
     
 
@@ -7147,30 +7138,6 @@ export namespace Prisma {
   }
 
   /**
-   * Outlet.Order
-   */
-  export type Outlet$OrderArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Order
-     */
-    select?: OrderSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Order
-     */
-    omit?: OrderOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: OrderInclude<ExtArgs> | null
-    where?: OrderWhereInput
-    orderBy?: OrderOrderByWithRelationInput | OrderOrderByWithRelationInput[]
-    cursor?: OrderWhereUniqueInput
-    take?: number
-    skip?: number
-    distinct?: OrderScalarFieldEnum | OrderScalarFieldEnum[]
-  }
-
-  /**
    * Outlet.Employee
    */
   export type Outlet$EmployeeArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -7192,6 +7159,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: EmployeeScalarFieldEnum | EmployeeScalarFieldEnum[]
+  }
+
+  /**
+   * Outlet.Order
+   */
+  export type Outlet$OrderArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Order
+     */
+    select?: OrderSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Order
+     */
+    omit?: OrderOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrderInclude<ExtArgs> | null
+    where?: OrderWhereInput
+    orderBy?: OrderOrderByWithRelationInput | OrderOrderByWithRelationInput[]
+    cursor?: OrderWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: OrderScalarFieldEnum | OrderScalarFieldEnum[]
   }
 
   /**
@@ -7228,59 +7219,59 @@ export namespace Prisma {
   export type OrderAvgAggregateOutputType = {
     id: number | null
     customerAddressId: number | null
-    outletId: number | null
-    laundryWeight: number | null
     laundryPrice: number | null
+    laundryWeight: number | null
+    outletId: number | null
   }
 
   export type OrderSumAggregateOutputType = {
     id: number | null
     customerAddressId: number | null
-    outletId: number | null
-    laundryWeight: number | null
     laundryPrice: number | null
+    laundryWeight: number | null
+    outletId: number | null
   }
 
   export type OrderMinAggregateOutputType = {
     id: number | null
     orderStatus: $Enums.OrderStatus | null
-    customerAddressId: number | null
-    outletId: number | null
-    laundryWeight: number | null
-    laundryPrice: number | null
     isPaid: boolean | null
     createdAt: Date | null
     updatedAt: Date | null
     isDeleted: boolean | null
     deletedAt: Date | null
+    customerAddressId: number | null
+    laundryPrice: number | null
+    laundryWeight: number | null
+    outletId: number | null
   }
 
   export type OrderMaxAggregateOutputType = {
     id: number | null
     orderStatus: $Enums.OrderStatus | null
-    customerAddressId: number | null
-    outletId: number | null
-    laundryWeight: number | null
-    laundryPrice: number | null
     isPaid: boolean | null
     createdAt: Date | null
     updatedAt: Date | null
     isDeleted: boolean | null
     deletedAt: Date | null
+    customerAddressId: number | null
+    laundryPrice: number | null
+    laundryWeight: number | null
+    outletId: number | null
   }
 
   export type OrderCountAggregateOutputType = {
     id: number
     orderStatus: number
-    customerAddressId: number
-    outletId: number
-    laundryWeight: number
-    laundryPrice: number
     isPaid: number
     createdAt: number
     updatedAt: number
     isDeleted: number
     deletedAt: number
+    customerAddressId: number
+    laundryPrice: number
+    laundryWeight: number
+    outletId: number
     _all: number
   }
 
@@ -7288,59 +7279,59 @@ export namespace Prisma {
   export type OrderAvgAggregateInputType = {
     id?: true
     customerAddressId?: true
-    outletId?: true
-    laundryWeight?: true
     laundryPrice?: true
+    laundryWeight?: true
+    outletId?: true
   }
 
   export type OrderSumAggregateInputType = {
     id?: true
     customerAddressId?: true
-    outletId?: true
-    laundryWeight?: true
     laundryPrice?: true
+    laundryWeight?: true
+    outletId?: true
   }
 
   export type OrderMinAggregateInputType = {
     id?: true
     orderStatus?: true
-    customerAddressId?: true
-    outletId?: true
-    laundryWeight?: true
-    laundryPrice?: true
     isPaid?: true
     createdAt?: true
     updatedAt?: true
     isDeleted?: true
     deletedAt?: true
+    customerAddressId?: true
+    laundryPrice?: true
+    laundryWeight?: true
+    outletId?: true
   }
 
   export type OrderMaxAggregateInputType = {
     id?: true
     orderStatus?: true
-    customerAddressId?: true
-    outletId?: true
-    laundryWeight?: true
-    laundryPrice?: true
     isPaid?: true
     createdAt?: true
     updatedAt?: true
     isDeleted?: true
     deletedAt?: true
+    customerAddressId?: true
+    laundryPrice?: true
+    laundryWeight?: true
+    outletId?: true
   }
 
   export type OrderCountAggregateInputType = {
     id?: true
     orderStatus?: true
-    customerAddressId?: true
-    outletId?: true
-    laundryWeight?: true
-    laundryPrice?: true
     isPaid?: true
     createdAt?: true
     updatedAt?: true
     isDeleted?: true
     deletedAt?: true
+    customerAddressId?: true
+    laundryPrice?: true
+    laundryWeight?: true
+    outletId?: true
     _all?: true
   }
 
@@ -7433,15 +7424,15 @@ export namespace Prisma {
   export type OrderGroupByOutputType = {
     id: number
     orderStatus: $Enums.OrderStatus
-    customerAddressId: number
-    outletId: number
-    laundryWeight: number | null
-    laundryPrice: number | null
     isPaid: boolean
     createdAt: Date
     updatedAt: Date
     isDeleted: boolean
     deletedAt: Date | null
+    customerAddressId: number
+    laundryPrice: number | null
+    laundryWeight: number | null
+    outletId: number
     _count: OrderCountAggregateOutputType | null
     _avg: OrderAvgAggregateOutputType | null
     _sum: OrderSumAggregateOutputType | null
@@ -7466,36 +7457,36 @@ export namespace Prisma {
   export type OrderSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     orderStatus?: boolean
-    customerAddressId?: boolean
-    outletId?: boolean
-    laundryWeight?: boolean
-    laundryPrice?: boolean
     isPaid?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     isDeleted?: boolean
     deletedAt?: boolean
+    customerAddressId?: boolean
+    laundryPrice?: boolean
+    laundryWeight?: boolean
+    outletId?: boolean
+    LaundryJob?: boolean | Order$LaundryJobArgs<ExtArgs>
     customerAddress?: boolean | AddressDefaultArgs<ExtArgs>
     outlet?: boolean | OutletDefaultArgs<ExtArgs>
     OrderItem?: boolean | Order$OrderItemArgs<ExtArgs>
-    LaundryJob?: boolean | Order$LaundryJobArgs<ExtArgs>
-    TransportJob?: boolean | Order$TransportJobArgs<ExtArgs>
     Payment?: boolean | Order$PaymentArgs<ExtArgs>
+    TransportJob?: boolean | Order$TransportJobArgs<ExtArgs>
     _count?: boolean | OrderCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["order"]>
 
   export type OrderSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     orderStatus?: boolean
-    customerAddressId?: boolean
-    outletId?: boolean
-    laundryWeight?: boolean
-    laundryPrice?: boolean
     isPaid?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     isDeleted?: boolean
     deletedAt?: boolean
+    customerAddressId?: boolean
+    laundryPrice?: boolean
+    laundryWeight?: boolean
+    outletId?: boolean
     customerAddress?: boolean | AddressDefaultArgs<ExtArgs>
     outlet?: boolean | OutletDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["order"]>
@@ -7503,15 +7494,15 @@ export namespace Prisma {
   export type OrderSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     orderStatus?: boolean
-    customerAddressId?: boolean
-    outletId?: boolean
-    laundryWeight?: boolean
-    laundryPrice?: boolean
     isPaid?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     isDeleted?: boolean
     deletedAt?: boolean
+    customerAddressId?: boolean
+    laundryPrice?: boolean
+    laundryWeight?: boolean
+    outletId?: boolean
     customerAddress?: boolean | AddressDefaultArgs<ExtArgs>
     outlet?: boolean | OutletDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["order"]>
@@ -7519,25 +7510,25 @@ export namespace Prisma {
   export type OrderSelectScalar = {
     id?: boolean
     orderStatus?: boolean
-    customerAddressId?: boolean
-    outletId?: boolean
-    laundryWeight?: boolean
-    laundryPrice?: boolean
     isPaid?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     isDeleted?: boolean
     deletedAt?: boolean
+    customerAddressId?: boolean
+    laundryPrice?: boolean
+    laundryWeight?: boolean
+    outletId?: boolean
   }
 
-  export type OrderOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "orderStatus" | "customerAddressId" | "outletId" | "laundryWeight" | "laundryPrice" | "isPaid" | "createdAt" | "updatedAt" | "isDeleted" | "deletedAt", ExtArgs["result"]["order"]>
+  export type OrderOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "orderStatus" | "isPaid" | "createdAt" | "updatedAt" | "isDeleted" | "deletedAt" | "customerAddressId" | "laundryPrice" | "laundryWeight" | "outletId", ExtArgs["result"]["order"]>
   export type OrderInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    LaundryJob?: boolean | Order$LaundryJobArgs<ExtArgs>
     customerAddress?: boolean | AddressDefaultArgs<ExtArgs>
     outlet?: boolean | OutletDefaultArgs<ExtArgs>
     OrderItem?: boolean | Order$OrderItemArgs<ExtArgs>
-    LaundryJob?: boolean | Order$LaundryJobArgs<ExtArgs>
-    TransportJob?: boolean | Order$TransportJobArgs<ExtArgs>
     Payment?: boolean | Order$PaymentArgs<ExtArgs>
+    TransportJob?: boolean | Order$TransportJobArgs<ExtArgs>
     _count?: boolean | OrderCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type OrderIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -7552,25 +7543,25 @@ export namespace Prisma {
   export type $OrderPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Order"
     objects: {
+      LaundryJob: Prisma.$LaundryJobPayload<ExtArgs>[]
       customerAddress: Prisma.$AddressPayload<ExtArgs>
       outlet: Prisma.$OutletPayload<ExtArgs>
       OrderItem: Prisma.$OrderItemPayload<ExtArgs>[]
-      LaundryJob: Prisma.$LaundryJobPayload<ExtArgs>[]
+      Payment: Prisma.$PaymentPayload<ExtArgs> | null
       TransportJob: Prisma.$TransportJobPayload<ExtArgs>[]
-      Payment: Prisma.$PaymentPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: number
       orderStatus: $Enums.OrderStatus
-      customerAddressId: number
-      outletId: number
-      laundryWeight: number | null
-      laundryPrice: number | null
       isPaid: boolean
       createdAt: Date
       updatedAt: Date
       isDeleted: boolean
       deletedAt: Date | null
+      customerAddressId: number
+      laundryPrice: number | null
+      laundryWeight: number | null
+      outletId: number
     }, ExtArgs["result"]["order"]>
     composites: {}
   }
@@ -7965,12 +7956,12 @@ export namespace Prisma {
    */
   export interface Prisma__OrderClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, ClientOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
+    LaundryJob<T extends Order$LaundryJobArgs<ExtArgs> = {}>(args?: Subset<T, Order$LaundryJobArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$LaundryJobPayload<ExtArgs>, T, "findMany", ClientOptions> | Null>
     customerAddress<T extends AddressDefaultArgs<ExtArgs> = {}>(args?: Subset<T, AddressDefaultArgs<ExtArgs>>): Prisma__AddressClient<$Result.GetResult<Prisma.$AddressPayload<ExtArgs>, T, "findUniqueOrThrow", ClientOptions> | Null, Null, ExtArgs, ClientOptions>
     outlet<T extends OutletDefaultArgs<ExtArgs> = {}>(args?: Subset<T, OutletDefaultArgs<ExtArgs>>): Prisma__OutletClient<$Result.GetResult<Prisma.$OutletPayload<ExtArgs>, T, "findUniqueOrThrow", ClientOptions> | Null, Null, ExtArgs, ClientOptions>
     OrderItem<T extends Order$OrderItemArgs<ExtArgs> = {}>(args?: Subset<T, Order$OrderItemArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$OrderItemPayload<ExtArgs>, T, "findMany", ClientOptions> | Null>
-    LaundryJob<T extends Order$LaundryJobArgs<ExtArgs> = {}>(args?: Subset<T, Order$LaundryJobArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$LaundryJobPayload<ExtArgs>, T, "findMany", ClientOptions> | Null>
+    Payment<T extends Order$PaymentArgs<ExtArgs> = {}>(args?: Subset<T, Order$PaymentArgs<ExtArgs>>): Prisma__PaymentClient<$Result.GetResult<Prisma.$PaymentPayload<ExtArgs>, T, "findUniqueOrThrow", ClientOptions> | null, null, ExtArgs, ClientOptions>
     TransportJob<T extends Order$TransportJobArgs<ExtArgs> = {}>(args?: Subset<T, Order$TransportJobArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TransportJobPayload<ExtArgs>, T, "findMany", ClientOptions> | Null>
-    Payment<T extends Order$PaymentArgs<ExtArgs> = {}>(args?: Subset<T, Order$PaymentArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PaymentPayload<ExtArgs>, T, "findMany", ClientOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -8002,15 +7993,15 @@ export namespace Prisma {
   interface OrderFieldRefs {
     readonly id: FieldRef<"Order", 'Int'>
     readonly orderStatus: FieldRef<"Order", 'OrderStatus'>
-    readonly customerAddressId: FieldRef<"Order", 'Int'>
-    readonly outletId: FieldRef<"Order", 'Int'>
-    readonly laundryWeight: FieldRef<"Order", 'Int'>
-    readonly laundryPrice: FieldRef<"Order", 'Int'>
     readonly isPaid: FieldRef<"Order", 'Boolean'>
     readonly createdAt: FieldRef<"Order", 'DateTime'>
     readonly updatedAt: FieldRef<"Order", 'DateTime'>
     readonly isDeleted: FieldRef<"Order", 'Boolean'>
     readonly deletedAt: FieldRef<"Order", 'DateTime'>
+    readonly customerAddressId: FieldRef<"Order", 'Int'>
+    readonly laundryPrice: FieldRef<"Order", 'Int'>
+    readonly laundryWeight: FieldRef<"Order", 'Int'>
+    readonly outletId: FieldRef<"Order", 'Int'>
   }
     
 
@@ -8395,30 +8386,6 @@ export namespace Prisma {
   }
 
   /**
-   * Order.OrderItem
-   */
-  export type Order$OrderItemArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the OrderItem
-     */
-    select?: OrderItemSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the OrderItem
-     */
-    omit?: OrderItemOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: OrderItemInclude<ExtArgs> | null
-    where?: OrderItemWhereInput
-    orderBy?: OrderItemOrderByWithRelationInput | OrderItemOrderByWithRelationInput[]
-    cursor?: OrderItemWhereUniqueInput
-    take?: number
-    skip?: number
-    distinct?: OrderItemScalarFieldEnum | OrderItemScalarFieldEnum[]
-  }
-
-  /**
    * Order.LaundryJob
    */
   export type Order$LaundryJobArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -8443,6 +8410,49 @@ export namespace Prisma {
   }
 
   /**
+   * Order.OrderItem
+   */
+  export type Order$OrderItemArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OrderItem
+     */
+    select?: OrderItemSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the OrderItem
+     */
+    omit?: OrderItemOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrderItemInclude<ExtArgs> | null
+    where?: OrderItemWhereInput
+    orderBy?: OrderItemOrderByWithRelationInput | OrderItemOrderByWithRelationInput[]
+    cursor?: OrderItemWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: OrderItemScalarFieldEnum | OrderItemScalarFieldEnum[]
+  }
+
+  /**
+   * Order.Payment
+   */
+  export type Order$PaymentArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Payment
+     */
+    select?: PaymentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Payment
+     */
+    omit?: PaymentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PaymentInclude<ExtArgs> | null
+    where?: PaymentWhereInput
+  }
+
+  /**
    * Order.TransportJob
    */
   export type Order$TransportJobArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -8464,30 +8474,6 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: TransportJobScalarFieldEnum | TransportJobScalarFieldEnum[]
-  }
-
-  /**
-   * Order.Payment
-   */
-  export type Order$PaymentArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Payment
-     */
-    select?: PaymentSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Payment
-     */
-    omit?: PaymentOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: PaymentInclude<ExtArgs> | null
-    where?: PaymentWhereInput
-    orderBy?: PaymentOrderByWithRelationInput | PaymentOrderByWithRelationInput[]
-    cursor?: PaymentWhereUniqueInput
-    take?: number
-    skip?: number
-    distinct?: PaymentScalarFieldEnum | PaymentScalarFieldEnum[]
   }
 
   /**
@@ -8536,34 +8522,34 @@ export namespace Prisma {
   export type OrderItemMinAggregateOutputType = {
     id: number | null
     qty: number | null
-    orderItemName: string | null
-    orderId: number | null
     createdAt: Date | null
     updatedAt: Date | null
     isDeleted: boolean | null
     deletedAt: Date | null
+    orderId: number | null
+    orderItemName: string | null
   }
 
   export type OrderItemMaxAggregateOutputType = {
     id: number | null
     qty: number | null
-    orderItemName: string | null
-    orderId: number | null
     createdAt: Date | null
     updatedAt: Date | null
     isDeleted: boolean | null
     deletedAt: Date | null
+    orderId: number | null
+    orderItemName: string | null
   }
 
   export type OrderItemCountAggregateOutputType = {
     id: number
     qty: number
-    orderItemName: number
-    orderId: number
     createdAt: number
     updatedAt: number
     isDeleted: number
     deletedAt: number
+    orderId: number
+    orderItemName: number
     _all: number
   }
 
@@ -8583,34 +8569,34 @@ export namespace Prisma {
   export type OrderItemMinAggregateInputType = {
     id?: true
     qty?: true
-    orderItemName?: true
-    orderId?: true
     createdAt?: true
     updatedAt?: true
     isDeleted?: true
     deletedAt?: true
+    orderId?: true
+    orderItemName?: true
   }
 
   export type OrderItemMaxAggregateInputType = {
     id?: true
     qty?: true
-    orderItemName?: true
-    orderId?: true
     createdAt?: true
     updatedAt?: true
     isDeleted?: true
     deletedAt?: true
+    orderId?: true
+    orderItemName?: true
   }
 
   export type OrderItemCountAggregateInputType = {
     id?: true
     qty?: true
-    orderItemName?: true
-    orderId?: true
     createdAt?: true
     updatedAt?: true
     isDeleted?: true
     deletedAt?: true
+    orderId?: true
+    orderItemName?: true
     _all?: true
   }
 
@@ -8703,12 +8689,12 @@ export namespace Prisma {
   export type OrderItemGroupByOutputType = {
     id: number
     qty: number | null
-    orderItemName: string
-    orderId: number | null
     createdAt: Date
     updatedAt: Date
     isDeleted: boolean
     deletedAt: Date | null
+    orderId: number | null
+    orderItemName: string
     _count: OrderItemCountAggregateOutputType | null
     _avg: OrderItemAvgAggregateOutputType | null
     _sum: OrderItemSumAggregateOutputType | null
@@ -8733,51 +8719,51 @@ export namespace Prisma {
   export type OrderItemSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     qty?: boolean
-    orderItemName?: boolean
-    orderId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     isDeleted?: boolean
     deletedAt?: boolean
+    orderId?: boolean
+    orderItemName?: boolean
     order?: boolean | OrderItem$orderArgs<ExtArgs>
   }, ExtArgs["result"]["orderItem"]>
 
   export type OrderItemSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     qty?: boolean
-    orderItemName?: boolean
-    orderId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     isDeleted?: boolean
     deletedAt?: boolean
+    orderId?: boolean
+    orderItemName?: boolean
     order?: boolean | OrderItem$orderArgs<ExtArgs>
   }, ExtArgs["result"]["orderItem"]>
 
   export type OrderItemSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     qty?: boolean
-    orderItemName?: boolean
-    orderId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     isDeleted?: boolean
     deletedAt?: boolean
+    orderId?: boolean
+    orderItemName?: boolean
     order?: boolean | OrderItem$orderArgs<ExtArgs>
   }, ExtArgs["result"]["orderItem"]>
 
   export type OrderItemSelectScalar = {
     id?: boolean
     qty?: boolean
-    orderItemName?: boolean
-    orderId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     isDeleted?: boolean
     deletedAt?: boolean
+    orderId?: boolean
+    orderItemName?: boolean
   }
 
-  export type OrderItemOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "qty" | "orderItemName" | "orderId" | "createdAt" | "updatedAt" | "isDeleted" | "deletedAt", ExtArgs["result"]["orderItem"]>
+  export type OrderItemOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "qty" | "createdAt" | "updatedAt" | "isDeleted" | "deletedAt" | "orderId" | "orderItemName", ExtArgs["result"]["orderItem"]>
   export type OrderItemInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     order?: boolean | OrderItem$orderArgs<ExtArgs>
   }
@@ -8796,12 +8782,12 @@ export namespace Prisma {
     scalars: $Extensions.GetPayloadResult<{
       id: number
       qty: number | null
-      orderItemName: string
-      orderId: number | null
       createdAt: Date
       updatedAt: Date
       isDeleted: boolean
       deletedAt: Date | null
+      orderId: number | null
+      orderItemName: string
     }, ExtArgs["result"]["orderItem"]>
     composites: {}
   }
@@ -9228,12 +9214,12 @@ export namespace Prisma {
   interface OrderItemFieldRefs {
     readonly id: FieldRef<"OrderItem", 'Int'>
     readonly qty: FieldRef<"OrderItem", 'Int'>
-    readonly orderItemName: FieldRef<"OrderItem", 'String'>
-    readonly orderId: FieldRef<"OrderItem", 'Int'>
     readonly createdAt: FieldRef<"OrderItem", 'DateTime'>
     readonly updatedAt: FieldRef<"OrderItem", 'DateTime'>
     readonly isDeleted: FieldRef<"OrderItem", 'Boolean'>
     readonly deletedAt: FieldRef<"OrderItem", 'DateTime'>
+    readonly orderId: FieldRef<"OrderItem", 'Int'>
+    readonly orderItemName: FieldRef<"OrderItem", 'String'>
   }
     
 
@@ -9681,47 +9667,47 @@ export namespace Prisma {
 
   export type LaundryJobMinAggregateOutputType = {
     id: number | null
-    station: $Enums.WorkerStation | null
-    isByPassRequested: boolean | null
     isCompleted: boolean | null
     byPassNote: string | null
-    byPassStatus: $Enums.ByPassStatus | null
-    orderId: number | null
-    workerId: number | null
     createdAt: Date | null
     updatedAt: Date | null
     isDeleted: boolean | null
     deletedAt: Date | null
+    orderId: number | null
+    workerId: number | null
+    byPassStatus: $Enums.ByPassStatus | null
+    isByPassRequested: boolean | null
+    station: $Enums.WorkerStation | null
   }
 
   export type LaundryJobMaxAggregateOutputType = {
     id: number | null
-    station: $Enums.WorkerStation | null
-    isByPassRequested: boolean | null
     isCompleted: boolean | null
     byPassNote: string | null
-    byPassStatus: $Enums.ByPassStatus | null
-    orderId: number | null
-    workerId: number | null
     createdAt: Date | null
     updatedAt: Date | null
     isDeleted: boolean | null
     deletedAt: Date | null
+    orderId: number | null
+    workerId: number | null
+    byPassStatus: $Enums.ByPassStatus | null
+    isByPassRequested: boolean | null
+    station: $Enums.WorkerStation | null
   }
 
   export type LaundryJobCountAggregateOutputType = {
     id: number
-    station: number
-    isByPassRequested: number
     isCompleted: number
     byPassNote: number
-    byPassStatus: number
-    orderId: number
-    workerId: number
     createdAt: number
     updatedAt: number
     isDeleted: number
     deletedAt: number
+    orderId: number
+    workerId: number
+    byPassStatus: number
+    isByPassRequested: number
+    station: number
     _all: number
   }
 
@@ -9740,47 +9726,47 @@ export namespace Prisma {
 
   export type LaundryJobMinAggregateInputType = {
     id?: true
-    station?: true
-    isByPassRequested?: true
     isCompleted?: true
     byPassNote?: true
-    byPassStatus?: true
-    orderId?: true
-    workerId?: true
     createdAt?: true
     updatedAt?: true
     isDeleted?: true
     deletedAt?: true
+    orderId?: true
+    workerId?: true
+    byPassStatus?: true
+    isByPassRequested?: true
+    station?: true
   }
 
   export type LaundryJobMaxAggregateInputType = {
     id?: true
-    station?: true
-    isByPassRequested?: true
     isCompleted?: true
     byPassNote?: true
-    byPassStatus?: true
-    orderId?: true
-    workerId?: true
     createdAt?: true
     updatedAt?: true
     isDeleted?: true
     deletedAt?: true
+    orderId?: true
+    workerId?: true
+    byPassStatus?: true
+    isByPassRequested?: true
+    station?: true
   }
 
   export type LaundryJobCountAggregateInputType = {
     id?: true
-    station?: true
-    isByPassRequested?: true
     isCompleted?: true
     byPassNote?: true
-    byPassStatus?: true
-    orderId?: true
-    workerId?: true
     createdAt?: true
     updatedAt?: true
     isDeleted?: true
     deletedAt?: true
+    orderId?: true
+    workerId?: true
+    byPassStatus?: true
+    isByPassRequested?: true
+    station?: true
     _all?: true
   }
 
@@ -9872,17 +9858,17 @@ export namespace Prisma {
 
   export type LaundryJobGroupByOutputType = {
     id: number
-    station: $Enums.WorkerStation
-    isByPassRequested: boolean
     isCompleted: boolean
     byPassNote: string | null
-    byPassStatus: $Enums.ByPassStatus | null
-    orderId: number
-    workerId: number | null
     createdAt: Date
     updatedAt: Date
     isDeleted: boolean
     deletedAt: Date | null
+    orderId: number
+    workerId: number | null
+    byPassStatus: $Enums.ByPassStatus | null
+    isByPassRequested: boolean
+    station: $Enums.WorkerStation
     _count: LaundryJobCountAggregateOutputType | null
     _avg: LaundryJobAvgAggregateOutputType | null
     _sum: LaundryJobSumAggregateOutputType | null
@@ -9906,71 +9892,71 @@ export namespace Prisma {
 
   export type LaundryJobSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
-    station?: boolean
-    isByPassRequested?: boolean
     isCompleted?: boolean
     byPassNote?: boolean
-    byPassStatus?: boolean
-    orderId?: boolean
-    workerId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     isDeleted?: boolean
     deletedAt?: boolean
+    orderId?: boolean
+    workerId?: boolean
+    byPassStatus?: boolean
+    isByPassRequested?: boolean
+    station?: boolean
     order?: boolean | OrderDefaultArgs<ExtArgs>
     worker?: boolean | LaundryJob$workerArgs<ExtArgs>
   }, ExtArgs["result"]["laundryJob"]>
 
   export type LaundryJobSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
-    station?: boolean
-    isByPassRequested?: boolean
     isCompleted?: boolean
     byPassNote?: boolean
-    byPassStatus?: boolean
-    orderId?: boolean
-    workerId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     isDeleted?: boolean
     deletedAt?: boolean
+    orderId?: boolean
+    workerId?: boolean
+    byPassStatus?: boolean
+    isByPassRequested?: boolean
+    station?: boolean
     order?: boolean | OrderDefaultArgs<ExtArgs>
     worker?: boolean | LaundryJob$workerArgs<ExtArgs>
   }, ExtArgs["result"]["laundryJob"]>
 
   export type LaundryJobSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
-    station?: boolean
-    isByPassRequested?: boolean
     isCompleted?: boolean
     byPassNote?: boolean
-    byPassStatus?: boolean
-    orderId?: boolean
-    workerId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     isDeleted?: boolean
     deletedAt?: boolean
+    orderId?: boolean
+    workerId?: boolean
+    byPassStatus?: boolean
+    isByPassRequested?: boolean
+    station?: boolean
     order?: boolean | OrderDefaultArgs<ExtArgs>
     worker?: boolean | LaundryJob$workerArgs<ExtArgs>
   }, ExtArgs["result"]["laundryJob"]>
 
   export type LaundryJobSelectScalar = {
     id?: boolean
-    station?: boolean
-    isByPassRequested?: boolean
     isCompleted?: boolean
     byPassNote?: boolean
-    byPassStatus?: boolean
-    orderId?: boolean
-    workerId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     isDeleted?: boolean
     deletedAt?: boolean
+    orderId?: boolean
+    workerId?: boolean
+    byPassStatus?: boolean
+    isByPassRequested?: boolean
+    station?: boolean
   }
 
-  export type LaundryJobOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "station" | "isByPassRequested" | "isCompleted" | "byPassNote" | "byPassStatus" | "orderId" | "workerId" | "createdAt" | "updatedAt" | "isDeleted" | "deletedAt", ExtArgs["result"]["laundryJob"]>
+  export type LaundryJobOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "isCompleted" | "byPassNote" | "createdAt" | "updatedAt" | "isDeleted" | "deletedAt" | "orderId" | "workerId" | "byPassStatus" | "isByPassRequested" | "station", ExtArgs["result"]["laundryJob"]>
   export type LaundryJobInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     order?: boolean | OrderDefaultArgs<ExtArgs>
     worker?: boolean | LaundryJob$workerArgs<ExtArgs>
@@ -9992,17 +9978,17 @@ export namespace Prisma {
     }
     scalars: $Extensions.GetPayloadResult<{
       id: number
-      station: $Enums.WorkerStation
-      isByPassRequested: boolean
       isCompleted: boolean
       byPassNote: string | null
-      byPassStatus: $Enums.ByPassStatus | null
-      orderId: number
-      workerId: number | null
       createdAt: Date
       updatedAt: Date
       isDeleted: boolean
       deletedAt: Date | null
+      orderId: number
+      workerId: number | null
+      byPassStatus: $Enums.ByPassStatus | null
+      isByPassRequested: boolean
+      station: $Enums.WorkerStation
     }, ExtArgs["result"]["laundryJob"]>
     composites: {}
   }
@@ -10429,17 +10415,17 @@ export namespace Prisma {
    */ 
   interface LaundryJobFieldRefs {
     readonly id: FieldRef<"LaundryJob", 'Int'>
-    readonly station: FieldRef<"LaundryJob", 'WorkerStation'>
-    readonly isByPassRequested: FieldRef<"LaundryJob", 'Boolean'>
     readonly isCompleted: FieldRef<"LaundryJob", 'Boolean'>
     readonly byPassNote: FieldRef<"LaundryJob", 'String'>
-    readonly byPassStatus: FieldRef<"LaundryJob", 'ByPassStatus'>
-    readonly orderId: FieldRef<"LaundryJob", 'Int'>
-    readonly workerId: FieldRef<"LaundryJob", 'Int'>
     readonly createdAt: FieldRef<"LaundryJob", 'DateTime'>
     readonly updatedAt: FieldRef<"LaundryJob", 'DateTime'>
     readonly isDeleted: FieldRef<"LaundryJob", 'Boolean'>
     readonly deletedAt: FieldRef<"LaundryJob", 'DateTime'>
+    readonly orderId: FieldRef<"LaundryJob", 'Int'>
+    readonly workerId: FieldRef<"LaundryJob", 'Int'>
+    readonly byPassStatus: FieldRef<"LaundryJob", 'ByPassStatus'>
+    readonly isByPassRequested: FieldRef<"LaundryJob", 'Boolean'>
+    readonly station: FieldRef<"LaundryJob", 'WorkerStation'>
   }
     
 
@@ -11111,8 +11097,8 @@ export namespace Prisma {
     updatedAt?: boolean
     isDeleted?: boolean
     deletedAt?: boolean
-    order?: boolean | OrderDefaultArgs<ExtArgs>
     driver?: boolean | TransportJob$driverArgs<ExtArgs>
+    order?: boolean | OrderDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["transportJob"]>
 
   export type TransportJobSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -11126,8 +11112,8 @@ export namespace Prisma {
     updatedAt?: boolean
     isDeleted?: boolean
     deletedAt?: boolean
-    order?: boolean | OrderDefaultArgs<ExtArgs>
     driver?: boolean | TransportJob$driverArgs<ExtArgs>
+    order?: boolean | OrderDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["transportJob"]>
 
   export type TransportJobSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -11141,8 +11127,8 @@ export namespace Prisma {
     updatedAt?: boolean
     isDeleted?: boolean
     deletedAt?: boolean
-    order?: boolean | OrderDefaultArgs<ExtArgs>
     driver?: boolean | TransportJob$driverArgs<ExtArgs>
+    order?: boolean | OrderDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["transportJob"]>
 
   export type TransportJobSelectScalar = {
@@ -11160,23 +11146,23 @@ export namespace Prisma {
 
   export type TransportJobOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "transportType" | "isCompleted" | "distance" | "orderId" | "driverId" | "createdAt" | "updatedAt" | "isDeleted" | "deletedAt", ExtArgs["result"]["transportJob"]>
   export type TransportJobInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    order?: boolean | OrderDefaultArgs<ExtArgs>
     driver?: boolean | TransportJob$driverArgs<ExtArgs>
+    order?: boolean | OrderDefaultArgs<ExtArgs>
   }
   export type TransportJobIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    order?: boolean | OrderDefaultArgs<ExtArgs>
     driver?: boolean | TransportJob$driverArgs<ExtArgs>
+    order?: boolean | OrderDefaultArgs<ExtArgs>
   }
   export type TransportJobIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    order?: boolean | OrderDefaultArgs<ExtArgs>
     driver?: boolean | TransportJob$driverArgs<ExtArgs>
+    order?: boolean | OrderDefaultArgs<ExtArgs>
   }
 
   export type $TransportJobPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "TransportJob"
     objects: {
-      order: Prisma.$OrderPayload<ExtArgs>
       driver: Prisma.$EmployeePayload<ExtArgs> | null
+      order: Prisma.$OrderPayload<ExtArgs>
     }
     scalars: $Extensions.GetPayloadResult<{
       id: number
@@ -11583,8 +11569,8 @@ export namespace Prisma {
    */
   export interface Prisma__TransportJobClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, ClientOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    order<T extends OrderDefaultArgs<ExtArgs> = {}>(args?: Subset<T, OrderDefaultArgs<ExtArgs>>): Prisma__OrderClient<$Result.GetResult<Prisma.$OrderPayload<ExtArgs>, T, "findUniqueOrThrow", ClientOptions> | Null, Null, ExtArgs, ClientOptions>
     driver<T extends TransportJob$driverArgs<ExtArgs> = {}>(args?: Subset<T, TransportJob$driverArgs<ExtArgs>>): Prisma__EmployeeClient<$Result.GetResult<Prisma.$EmployeePayload<ExtArgs>, T, "findUniqueOrThrow", ClientOptions> | null, null, ExtArgs, ClientOptions>
+    order<T extends OrderDefaultArgs<ExtArgs> = {}>(args?: Subset<T, OrderDefaultArgs<ExtArgs>>): Prisma__OrderClient<$Result.GetResult<Prisma.$OrderPayload<ExtArgs>, T, "findUniqueOrThrow", ClientOptions> | Null, Null, ExtArgs, ClientOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -12069,41 +12055,41 @@ export namespace Prisma {
 
   export type NotificationMinAggregateOutputType = {
     id: number | null
+    isRead: boolean | null
     title: string | null
     description: string | null
-    isRead: boolean | null
-    url: string | null
     userId: number | null
     createdAt: Date | null
     updatedAt: Date | null
     isDeleted: boolean | null
     deletedAt: Date | null
+    url: string | null
   }
 
   export type NotificationMaxAggregateOutputType = {
     id: number | null
+    isRead: boolean | null
     title: string | null
     description: string | null
-    isRead: boolean | null
-    url: string | null
     userId: number | null
     createdAt: Date | null
     updatedAt: Date | null
     isDeleted: boolean | null
     deletedAt: Date | null
+    url: string | null
   }
 
   export type NotificationCountAggregateOutputType = {
     id: number
+    isRead: number
     title: number
     description: number
-    isRead: number
-    url: number
     userId: number
     createdAt: number
     updatedAt: number
     isDeleted: number
     deletedAt: number
+    url: number
     _all: number
   }
 
@@ -12120,41 +12106,41 @@ export namespace Prisma {
 
   export type NotificationMinAggregateInputType = {
     id?: true
+    isRead?: true
     title?: true
     description?: true
-    isRead?: true
-    url?: true
     userId?: true
     createdAt?: true
     updatedAt?: true
     isDeleted?: true
     deletedAt?: true
+    url?: true
   }
 
   export type NotificationMaxAggregateInputType = {
     id?: true
+    isRead?: true
     title?: true
     description?: true
-    isRead?: true
-    url?: true
     userId?: true
     createdAt?: true
     updatedAt?: true
     isDeleted?: true
     deletedAt?: true
+    url?: true
   }
 
   export type NotificationCountAggregateInputType = {
     id?: true
+    isRead?: true
     title?: true
     description?: true
-    isRead?: true
-    url?: true
     userId?: true
     createdAt?: true
     updatedAt?: true
     isDeleted?: true
     deletedAt?: true
+    url?: true
     _all?: true
   }
 
@@ -12246,15 +12232,15 @@ export namespace Prisma {
 
   export type NotificationGroupByOutputType = {
     id: number
+    isRead: boolean
     title: string
     description: string
-    isRead: boolean
-    url: string | null
     userId: number
     createdAt: Date
     updatedAt: Date
     isDeleted: boolean
     deletedAt: Date | null
+    url: string | null
     _count: NotificationCountAggregateOutputType | null
     _avg: NotificationAvgAggregateOutputType | null
     _sum: NotificationSumAggregateOutputType | null
@@ -12278,60 +12264,60 @@ export namespace Prisma {
 
   export type NotificationSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
+    isRead?: boolean
     title?: boolean
     description?: boolean
-    isRead?: boolean
-    url?: boolean
     userId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     isDeleted?: boolean
     deletedAt?: boolean
+    url?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["notification"]>
 
   export type NotificationSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
+    isRead?: boolean
     title?: boolean
     description?: boolean
-    isRead?: boolean
-    url?: boolean
     userId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     isDeleted?: boolean
     deletedAt?: boolean
+    url?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["notification"]>
 
   export type NotificationSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
+    isRead?: boolean
     title?: boolean
     description?: boolean
-    isRead?: boolean
-    url?: boolean
     userId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     isDeleted?: boolean
     deletedAt?: boolean
+    url?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["notification"]>
 
   export type NotificationSelectScalar = {
     id?: boolean
+    isRead?: boolean
     title?: boolean
     description?: boolean
-    isRead?: boolean
-    url?: boolean
     userId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     isDeleted?: boolean
     deletedAt?: boolean
+    url?: boolean
   }
 
-  export type NotificationOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "description" | "isRead" | "url" | "userId" | "createdAt" | "updatedAt" | "isDeleted" | "deletedAt", ExtArgs["result"]["notification"]>
+  export type NotificationOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "isRead" | "title" | "description" | "userId" | "createdAt" | "updatedAt" | "isDeleted" | "deletedAt" | "url", ExtArgs["result"]["notification"]>
   export type NotificationInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | UserDefaultArgs<ExtArgs>
   }
@@ -12349,15 +12335,15 @@ export namespace Prisma {
     }
     scalars: $Extensions.GetPayloadResult<{
       id: number
+      isRead: boolean
       title: string
       description: string
-      isRead: boolean
-      url: string | null
       userId: number
       createdAt: Date
       updatedAt: Date
       isDeleted: boolean
       deletedAt: Date | null
+      url: string | null
     }, ExtArgs["result"]["notification"]>
     composites: {}
   }
@@ -12783,15 +12769,15 @@ export namespace Prisma {
    */ 
   interface NotificationFieldRefs {
     readonly id: FieldRef<"Notification", 'Int'>
+    readonly isRead: FieldRef<"Notification", 'Boolean'>
     readonly title: FieldRef<"Notification", 'String'>
     readonly description: FieldRef<"Notification", 'String'>
-    readonly isRead: FieldRef<"Notification", 'Boolean'>
-    readonly url: FieldRef<"Notification", 'String'>
     readonly userId: FieldRef<"Notification", 'Int'>
     readonly createdAt: FieldRef<"Notification", 'DateTime'>
     readonly updatedAt: FieldRef<"Notification", 'DateTime'>
     readonly isDeleted: FieldRef<"Notification", 'Boolean'>
     readonly deletedAt: FieldRef<"Notification", 'DateTime'>
+    readonly url: FieldRef<"Notification", 'String'>
   }
     
 
@@ -13225,11 +13211,11 @@ export namespace Prisma {
     paymentMethod: string | null
     snapToken: string | null
     snapRedirectURL: string | null
-    orderId: number | null
     createdAt: Date | null
     updatedAt: Date | null
     isDeleted: boolean | null
     deletedAt: Date | null
+    orderId: number | null
   }
 
   export type PaymentMaxAggregateOutputType = {
@@ -13239,11 +13225,11 @@ export namespace Prisma {
     paymentMethod: string | null
     snapToken: string | null
     snapRedirectURL: string | null
-    orderId: number | null
     createdAt: Date | null
     updatedAt: Date | null
     isDeleted: boolean | null
     deletedAt: Date | null
+    orderId: number | null
   }
 
   export type PaymentCountAggregateOutputType = {
@@ -13253,11 +13239,11 @@ export namespace Prisma {
     paymentMethod: number
     snapToken: number
     snapRedirectURL: number
-    orderId: number
     createdAt: number
     updatedAt: number
     isDeleted: number
     deletedAt: number
+    orderId: number
     _all: number
   }
 
@@ -13281,11 +13267,11 @@ export namespace Prisma {
     paymentMethod?: true
     snapToken?: true
     snapRedirectURL?: true
-    orderId?: true
     createdAt?: true
     updatedAt?: true
     isDeleted?: true
     deletedAt?: true
+    orderId?: true
   }
 
   export type PaymentMaxAggregateInputType = {
@@ -13295,11 +13281,11 @@ export namespace Prisma {
     paymentMethod?: true
     snapToken?: true
     snapRedirectURL?: true
-    orderId?: true
     createdAt?: true
     updatedAt?: true
     isDeleted?: true
     deletedAt?: true
+    orderId?: true
   }
 
   export type PaymentCountAggregateInputType = {
@@ -13309,11 +13295,11 @@ export namespace Prisma {
     paymentMethod?: true
     snapToken?: true
     snapRedirectURL?: true
-    orderId?: true
     createdAt?: true
     updatedAt?: true
     isDeleted?: true
     deletedAt?: true
+    orderId?: true
     _all?: true
   }
 
@@ -13410,11 +13396,11 @@ export namespace Prisma {
     paymentMethod: string | null
     snapToken: string | null
     snapRedirectURL: string | null
-    orderId: number
     createdAt: Date
     updatedAt: Date
     isDeleted: boolean
     deletedAt: Date | null
+    orderId: number
     _count: PaymentCountAggregateOutputType | null
     _avg: PaymentAvgAggregateOutputType | null
     _sum: PaymentSumAggregateOutputType | null
@@ -13443,11 +13429,11 @@ export namespace Prisma {
     paymentMethod?: boolean
     snapToken?: boolean
     snapRedirectURL?: boolean
-    orderId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     isDeleted?: boolean
     deletedAt?: boolean
+    orderId?: boolean
     order?: boolean | OrderDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["payment"]>
 
@@ -13458,11 +13444,11 @@ export namespace Prisma {
     paymentMethod?: boolean
     snapToken?: boolean
     snapRedirectURL?: boolean
-    orderId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     isDeleted?: boolean
     deletedAt?: boolean
+    orderId?: boolean
     order?: boolean | OrderDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["payment"]>
 
@@ -13473,11 +13459,11 @@ export namespace Prisma {
     paymentMethod?: boolean
     snapToken?: boolean
     snapRedirectURL?: boolean
-    orderId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     isDeleted?: boolean
     deletedAt?: boolean
+    orderId?: boolean
     order?: boolean | OrderDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["payment"]>
 
@@ -13488,14 +13474,14 @@ export namespace Prisma {
     paymentMethod?: boolean
     snapToken?: boolean
     snapRedirectURL?: boolean
-    orderId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     isDeleted?: boolean
     deletedAt?: boolean
+    orderId?: boolean
   }
 
-  export type PaymentOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "totalPrice" | "paymentStatus" | "paymentMethod" | "snapToken" | "snapRedirectURL" | "orderId" | "createdAt" | "updatedAt" | "isDeleted" | "deletedAt", ExtArgs["result"]["payment"]>
+  export type PaymentOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "totalPrice" | "paymentStatus" | "paymentMethod" | "snapToken" | "snapRedirectURL" | "createdAt" | "updatedAt" | "isDeleted" | "deletedAt" | "orderId", ExtArgs["result"]["payment"]>
   export type PaymentInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     order?: boolean | OrderDefaultArgs<ExtArgs>
   }
@@ -13518,11 +13504,11 @@ export namespace Prisma {
       paymentMethod: string | null
       snapToken: string | null
       snapRedirectURL: string | null
-      orderId: number
       createdAt: Date
       updatedAt: Date
       isDeleted: boolean
       deletedAt: Date | null
+      orderId: number
     }, ExtArgs["result"]["payment"]>
     composites: {}
   }
@@ -13953,11 +13939,11 @@ export namespace Prisma {
     readonly paymentMethod: FieldRef<"Payment", 'String'>
     readonly snapToken: FieldRef<"Payment", 'String'>
     readonly snapRedirectURL: FieldRef<"Payment", 'String'>
-    readonly orderId: FieldRef<"Payment", 'Int'>
     readonly createdAt: FieldRef<"Payment", 'DateTime'>
     readonly updatedAt: FieldRef<"Payment", 'DateTime'>
     readonly isDeleted: FieldRef<"Payment", 'Boolean'>
     readonly deletedAt: FieldRef<"Payment", 'DateTime'>
+    readonly orderId: FieldRef<"Payment", 'Int'>
   }
     
 
@@ -14384,35 +14370,35 @@ export namespace Prisma {
 
   export type EmployeeAttendanceMinAggregateOutputType = {
     id: number | null
-    isAttended: boolean | null
-    canClockIn: boolean | null
-    employeeId: number | null
     createdAt: Date | null
     updatedAt: Date | null
     isDeleted: boolean | null
     deletedAt: Date | null
+    employeeId: number | null
+    isAttended: boolean | null
+    canClockIn: boolean | null
   }
 
   export type EmployeeAttendanceMaxAggregateOutputType = {
     id: number | null
-    isAttended: boolean | null
-    canClockIn: boolean | null
-    employeeId: number | null
     createdAt: Date | null
     updatedAt: Date | null
     isDeleted: boolean | null
     deletedAt: Date | null
+    employeeId: number | null
+    isAttended: boolean | null
+    canClockIn: boolean | null
   }
 
   export type EmployeeAttendanceCountAggregateOutputType = {
     id: number
-    isAttended: number
-    canClockIn: number
-    employeeId: number
     createdAt: number
     updatedAt: number
     isDeleted: number
     deletedAt: number
+    employeeId: number
+    isAttended: number
+    canClockIn: number
     _all: number
   }
 
@@ -14429,35 +14415,35 @@ export namespace Prisma {
 
   export type EmployeeAttendanceMinAggregateInputType = {
     id?: true
-    isAttended?: true
-    canClockIn?: true
-    employeeId?: true
     createdAt?: true
     updatedAt?: true
     isDeleted?: true
     deletedAt?: true
+    employeeId?: true
+    isAttended?: true
+    canClockIn?: true
   }
 
   export type EmployeeAttendanceMaxAggregateInputType = {
     id?: true
-    isAttended?: true
-    canClockIn?: true
-    employeeId?: true
     createdAt?: true
     updatedAt?: true
     isDeleted?: true
     deletedAt?: true
+    employeeId?: true
+    isAttended?: true
+    canClockIn?: true
   }
 
   export type EmployeeAttendanceCountAggregateInputType = {
     id?: true
-    isAttended?: true
-    canClockIn?: true
-    employeeId?: true
     createdAt?: true
     updatedAt?: true
     isDeleted?: true
     deletedAt?: true
+    employeeId?: true
+    isAttended?: true
+    canClockIn?: true
     _all?: true
   }
 
@@ -14549,13 +14535,13 @@ export namespace Prisma {
 
   export type EmployeeAttendanceGroupByOutputType = {
     id: number
-    isAttended: boolean
-    canClockIn: boolean
-    employeeId: number
     createdAt: Date
     updatedAt: Date
     isDeleted: boolean
     deletedAt: Date | null
+    employeeId: number
+    isAttended: boolean
+    canClockIn: boolean
     _count: EmployeeAttendanceCountAggregateOutputType | null
     _avg: EmployeeAttendanceAvgAggregateOutputType | null
     _sum: EmployeeAttendanceSumAggregateOutputType | null
@@ -14579,57 +14565,57 @@ export namespace Prisma {
 
   export type EmployeeAttendanceSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
-    isAttended?: boolean
-    canClockIn?: boolean
-    employeeId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     isDeleted?: boolean
     deletedAt?: boolean
-    employee?: boolean | EmployeeDefaultArgs<ExtArgs>
+    employeeId?: boolean
+    isAttended?: boolean
+    canClockIn?: boolean
     AttendanceRecord?: boolean | EmployeeAttendance$AttendanceRecordArgs<ExtArgs>
+    employee?: boolean | EmployeeDefaultArgs<ExtArgs>
     _count?: boolean | EmployeeAttendanceCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["employeeAttendance"]>
 
   export type EmployeeAttendanceSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
-    isAttended?: boolean
-    canClockIn?: boolean
-    employeeId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     isDeleted?: boolean
     deletedAt?: boolean
+    employeeId?: boolean
+    isAttended?: boolean
+    canClockIn?: boolean
     employee?: boolean | EmployeeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["employeeAttendance"]>
 
   export type EmployeeAttendanceSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
-    isAttended?: boolean
-    canClockIn?: boolean
-    employeeId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     isDeleted?: boolean
     deletedAt?: boolean
+    employeeId?: boolean
+    isAttended?: boolean
+    canClockIn?: boolean
     employee?: boolean | EmployeeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["employeeAttendance"]>
 
   export type EmployeeAttendanceSelectScalar = {
     id?: boolean
-    isAttended?: boolean
-    canClockIn?: boolean
-    employeeId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     isDeleted?: boolean
     deletedAt?: boolean
+    employeeId?: boolean
+    isAttended?: boolean
+    canClockIn?: boolean
   }
 
-  export type EmployeeAttendanceOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "isAttended" | "canClockIn" | "employeeId" | "createdAt" | "updatedAt" | "isDeleted" | "deletedAt", ExtArgs["result"]["employeeAttendance"]>
+  export type EmployeeAttendanceOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "createdAt" | "updatedAt" | "isDeleted" | "deletedAt" | "employeeId" | "isAttended" | "canClockIn", ExtArgs["result"]["employeeAttendance"]>
   export type EmployeeAttendanceInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    employee?: boolean | EmployeeDefaultArgs<ExtArgs>
     AttendanceRecord?: boolean | EmployeeAttendance$AttendanceRecordArgs<ExtArgs>
+    employee?: boolean | EmployeeDefaultArgs<ExtArgs>
     _count?: boolean | EmployeeAttendanceCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type EmployeeAttendanceIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -14642,18 +14628,18 @@ export namespace Prisma {
   export type $EmployeeAttendancePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "EmployeeAttendance"
     objects: {
-      employee: Prisma.$EmployeePayload<ExtArgs>
       AttendanceRecord: Prisma.$AttendanceRecordPayload<ExtArgs>[]
+      employee: Prisma.$EmployeePayload<ExtArgs>
     }
     scalars: $Extensions.GetPayloadResult<{
       id: number
-      isAttended: boolean
-      canClockIn: boolean
-      employeeId: number
       createdAt: Date
       updatedAt: Date
       isDeleted: boolean
       deletedAt: Date | null
+      employeeId: number
+      isAttended: boolean
+      canClockIn: boolean
     }, ExtArgs["result"]["employeeAttendance"]>
     composites: {}
   }
@@ -15048,8 +15034,8 @@ export namespace Prisma {
    */
   export interface Prisma__EmployeeAttendanceClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, ClientOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    employee<T extends EmployeeDefaultArgs<ExtArgs> = {}>(args?: Subset<T, EmployeeDefaultArgs<ExtArgs>>): Prisma__EmployeeClient<$Result.GetResult<Prisma.$EmployeePayload<ExtArgs>, T, "findUniqueOrThrow", ClientOptions> | Null, Null, ExtArgs, ClientOptions>
     AttendanceRecord<T extends EmployeeAttendance$AttendanceRecordArgs<ExtArgs> = {}>(args?: Subset<T, EmployeeAttendance$AttendanceRecordArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AttendanceRecordPayload<ExtArgs>, T, "findMany", ClientOptions> | Null>
+    employee<T extends EmployeeDefaultArgs<ExtArgs> = {}>(args?: Subset<T, EmployeeDefaultArgs<ExtArgs>>): Prisma__EmployeeClient<$Result.GetResult<Prisma.$EmployeePayload<ExtArgs>, T, "findUniqueOrThrow", ClientOptions> | Null, Null, ExtArgs, ClientOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -15080,13 +15066,13 @@ export namespace Prisma {
    */ 
   interface EmployeeAttendanceFieldRefs {
     readonly id: FieldRef<"EmployeeAttendance", 'Int'>
-    readonly isAttended: FieldRef<"EmployeeAttendance", 'Boolean'>
-    readonly canClockIn: FieldRef<"EmployeeAttendance", 'Boolean'>
-    readonly employeeId: FieldRef<"EmployeeAttendance", 'Int'>
     readonly createdAt: FieldRef<"EmployeeAttendance", 'DateTime'>
     readonly updatedAt: FieldRef<"EmployeeAttendance", 'DateTime'>
     readonly isDeleted: FieldRef<"EmployeeAttendance", 'Boolean'>
     readonly deletedAt: FieldRef<"EmployeeAttendance", 'DateTime'>
+    readonly employeeId: FieldRef<"EmployeeAttendance", 'Int'>
+    readonly isAttended: FieldRef<"EmployeeAttendance", 'Boolean'>
+    readonly canClockIn: FieldRef<"EmployeeAttendance", 'Boolean'>
   }
     
 
@@ -16659,16 +16645,16 @@ export namespace Prisma {
   export const EmployeeScalarFieldEnum: {
     id: 'id',
     workShift: 'workShift',
-    station: 'station',
-    isPresent: 'isPresent',
-    isWorking: 'isWorking',
-    employmentStatus: 'employmentStatus',
     userId: 'userId',
-    outletId: 'outletId',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt',
     isDeleted: 'isDeleted',
-    deletedAt: 'deletedAt'
+    deletedAt: 'deletedAt',
+    station: 'station',
+    isWorking: 'isWorking',
+    employmentStatus: 'employmentStatus',
+    outletId: 'outletId',
+    isPresent: 'isPresent'
   };
 
   export type EmployeeScalarFieldEnum = (typeof EmployeeScalarFieldEnum)[keyof typeof EmployeeScalarFieldEnum]
@@ -16684,11 +16670,11 @@ export namespace Prisma {
     village: 'village',
     latitude: 'latitude',
     longitude: 'longitude',
-    customerId: 'customerId',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt',
     isDeleted: 'isDeleted',
-    deletedAt: 'deletedAt'
+    deletedAt: 'deletedAt',
+    customerId: 'customerId'
   };
 
   export type AddressScalarFieldEnum = (typeof AddressScalarFieldEnum)[keyof typeof AddressScalarFieldEnum]
@@ -16697,11 +16683,11 @@ export namespace Prisma {
   export const OutletScalarFieldEnum: {
     id: 'id',
     outletName: 'outletName',
-    outletAddressId: 'outletAddressId',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt',
     isDeleted: 'isDeleted',
-    deletedAt: 'deletedAt'
+    deletedAt: 'deletedAt',
+    outletAddressId: 'outletAddressId'
   };
 
   export type OutletScalarFieldEnum = (typeof OutletScalarFieldEnum)[keyof typeof OutletScalarFieldEnum]
@@ -16710,15 +16696,15 @@ export namespace Prisma {
   export const OrderScalarFieldEnum: {
     id: 'id',
     orderStatus: 'orderStatus',
-    customerAddressId: 'customerAddressId',
-    outletId: 'outletId',
-    laundryWeight: 'laundryWeight',
-    laundryPrice: 'laundryPrice',
     isPaid: 'isPaid',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt',
     isDeleted: 'isDeleted',
-    deletedAt: 'deletedAt'
+    deletedAt: 'deletedAt',
+    customerAddressId: 'customerAddressId',
+    laundryPrice: 'laundryPrice',
+    laundryWeight: 'laundryWeight',
+    outletId: 'outletId'
   };
 
   export type OrderScalarFieldEnum = (typeof OrderScalarFieldEnum)[keyof typeof OrderScalarFieldEnum]
@@ -16727,12 +16713,12 @@ export namespace Prisma {
   export const OrderItemScalarFieldEnum: {
     id: 'id',
     qty: 'qty',
-    orderItemName: 'orderItemName',
-    orderId: 'orderId',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt',
     isDeleted: 'isDeleted',
-    deletedAt: 'deletedAt'
+    deletedAt: 'deletedAt',
+    orderId: 'orderId',
+    orderItemName: 'orderItemName'
   };
 
   export type OrderItemScalarFieldEnum = (typeof OrderItemScalarFieldEnum)[keyof typeof OrderItemScalarFieldEnum]
@@ -16740,17 +16726,17 @@ export namespace Prisma {
 
   export const LaundryJobScalarFieldEnum: {
     id: 'id',
-    station: 'station',
-    isByPassRequested: 'isByPassRequested',
     isCompleted: 'isCompleted',
     byPassNote: 'byPassNote',
-    byPassStatus: 'byPassStatus',
-    orderId: 'orderId',
-    workerId: 'workerId',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt',
     isDeleted: 'isDeleted',
-    deletedAt: 'deletedAt'
+    deletedAt: 'deletedAt',
+    orderId: 'orderId',
+    workerId: 'workerId',
+    byPassStatus: 'byPassStatus',
+    isByPassRequested: 'isByPassRequested',
+    station: 'station'
   };
 
   export type LaundryJobScalarFieldEnum = (typeof LaundryJobScalarFieldEnum)[keyof typeof LaundryJobScalarFieldEnum]
@@ -16774,15 +16760,15 @@ export namespace Prisma {
 
   export const NotificationScalarFieldEnum: {
     id: 'id',
+    isRead: 'isRead',
     title: 'title',
     description: 'description',
-    isRead: 'isRead',
-    url: 'url',
     userId: 'userId',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt',
     isDeleted: 'isDeleted',
-    deletedAt: 'deletedAt'
+    deletedAt: 'deletedAt',
+    url: 'url'
   };
 
   export type NotificationScalarFieldEnum = (typeof NotificationScalarFieldEnum)[keyof typeof NotificationScalarFieldEnum]
@@ -16795,11 +16781,11 @@ export namespace Prisma {
     paymentMethod: 'paymentMethod',
     snapToken: 'snapToken',
     snapRedirectURL: 'snapRedirectURL',
-    orderId: 'orderId',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt',
     isDeleted: 'isDeleted',
-    deletedAt: 'deletedAt'
+    deletedAt: 'deletedAt',
+    orderId: 'orderId'
   };
 
   export type PaymentScalarFieldEnum = (typeof PaymentScalarFieldEnum)[keyof typeof PaymentScalarFieldEnum]
@@ -16807,13 +16793,13 @@ export namespace Prisma {
 
   export const EmployeeAttendanceScalarFieldEnum: {
     id: 'id',
-    isAttended: 'isAttended',
-    canClockIn: 'canClockIn',
-    employeeId: 'employeeId',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt',
     isDeleted: 'isDeleted',
-    deletedAt: 'deletedAt'
+    deletedAt: 'deletedAt',
+    employeeId: 'employeeId',
+    isAttended: 'isAttended',
+    canClockIn: 'canClockIn'
   };
 
   export type EmployeeAttendanceScalarFieldEnum = (typeof EmployeeAttendanceScalarFieldEnum)[keyof typeof EmployeeAttendanceScalarFieldEnum]
@@ -17070,8 +17056,8 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"User"> | Date | string
     isDeleted?: BoolFilter<"User"> | boolean
     deletedAt?: DateTimeNullableFilter<"User"> | Date | string | null
-    Employee?: XOR<EmployeeNullableScalarRelationFilter, EmployeeWhereInput> | null
     Address?: AddressListRelationFilter
+    Employee?: XOR<EmployeeNullableScalarRelationFilter, EmployeeWhereInput> | null
     Notification?: NotificationListRelationFilter
   }
 
@@ -17089,8 +17075,8 @@ export namespace Prisma {
     updatedAt?: SortOrder
     isDeleted?: SortOrder
     deletedAt?: SortOrderInput | SortOrder
-    Employee?: EmployeeOrderByWithRelationInput
     Address?: AddressOrderByRelationAggregateInput
+    Employee?: EmployeeOrderByWithRelationInput
     Notification?: NotificationOrderByRelationAggregateInput
   }
 
@@ -17111,8 +17097,8 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"User"> | Date | string
     isDeleted?: BoolFilter<"User"> | boolean
     deletedAt?: DateTimeNullableFilter<"User"> | Date | string | null
-    Employee?: XOR<EmployeeNullableScalarRelationFilter, EmployeeWhereInput> | null
     Address?: AddressListRelationFilter
+    Employee?: XOR<EmployeeNullableScalarRelationFilter, EmployeeWhereInput> | null
     Notification?: NotificationListRelationFilter
   }, "id" | "email">
 
@@ -17162,41 +17148,41 @@ export namespace Prisma {
     NOT?: EmployeeWhereInput | EmployeeWhereInput[]
     id?: IntFilter<"Employee"> | number
     workShift?: EnumEmployeeWorkShiftNullableFilter<"Employee"> | $Enums.EmployeeWorkShift | null
-    station?: EnumWorkerStationNullableFilter<"Employee"> | $Enums.WorkerStation | null
-    isPresent?: BoolFilter<"Employee"> | boolean
-    isWorking?: BoolFilter<"Employee"> | boolean
-    employmentStatus?: EnumEmploymentStatusFilter<"Employee"> | $Enums.EmploymentStatus
     userId?: IntFilter<"Employee"> | number
-    outletId?: IntFilter<"Employee"> | number
     createdAt?: DateTimeFilter<"Employee"> | Date | string
     updatedAt?: DateTimeFilter<"Employee"> | Date | string
     isDeleted?: BoolFilter<"Employee"> | boolean
     deletedAt?: DateTimeNullableFilter<"Employee"> | Date | string | null
-    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+    station?: EnumWorkerStationNullableFilter<"Employee"> | $Enums.WorkerStation | null
+    isWorking?: BoolFilter<"Employee"> | boolean
+    employmentStatus?: EnumEmploymentStatusFilter<"Employee"> | $Enums.EmploymentStatus
+    outletId?: IntFilter<"Employee"> | number
+    isPresent?: BoolFilter<"Employee"> | boolean
     outlet?: XOR<OutletScalarRelationFilter, OutletWhereInput>
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+    EmployeeAttendance?: EmployeeAttendanceListRelationFilter
     LaundryJob?: LaundryJobListRelationFilter
     TransportJob?: TransportJobListRelationFilter
-    EmployeeAttendance?: EmployeeAttendanceListRelationFilter
   }
 
   export type EmployeeOrderByWithRelationInput = {
     id?: SortOrder
     workShift?: SortOrderInput | SortOrder
-    station?: SortOrderInput | SortOrder
-    isPresent?: SortOrder
-    isWorking?: SortOrder
-    employmentStatus?: SortOrder
     userId?: SortOrder
-    outletId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     isDeleted?: SortOrder
     deletedAt?: SortOrderInput | SortOrder
-    user?: UserOrderByWithRelationInput
+    station?: SortOrderInput | SortOrder
+    isWorking?: SortOrder
+    employmentStatus?: SortOrder
+    outletId?: SortOrder
+    isPresent?: SortOrder
     outlet?: OutletOrderByWithRelationInput
+    user?: UserOrderByWithRelationInput
+    EmployeeAttendance?: EmployeeAttendanceOrderByRelationAggregateInput
     LaundryJob?: LaundryJobOrderByRelationAggregateInput
     TransportJob?: TransportJobOrderByRelationAggregateInput
-    EmployeeAttendance?: EmployeeAttendanceOrderByRelationAggregateInput
   }
 
   export type EmployeeWhereUniqueInput = Prisma.AtLeast<{
@@ -17206,35 +17192,35 @@ export namespace Prisma {
     OR?: EmployeeWhereInput[]
     NOT?: EmployeeWhereInput | EmployeeWhereInput[]
     workShift?: EnumEmployeeWorkShiftNullableFilter<"Employee"> | $Enums.EmployeeWorkShift | null
-    station?: EnumWorkerStationNullableFilter<"Employee"> | $Enums.WorkerStation | null
-    isPresent?: BoolFilter<"Employee"> | boolean
-    isWorking?: BoolFilter<"Employee"> | boolean
-    employmentStatus?: EnumEmploymentStatusFilter<"Employee"> | $Enums.EmploymentStatus
-    outletId?: IntFilter<"Employee"> | number
     createdAt?: DateTimeFilter<"Employee"> | Date | string
     updatedAt?: DateTimeFilter<"Employee"> | Date | string
     isDeleted?: BoolFilter<"Employee"> | boolean
     deletedAt?: DateTimeNullableFilter<"Employee"> | Date | string | null
-    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+    station?: EnumWorkerStationNullableFilter<"Employee"> | $Enums.WorkerStation | null
+    isWorking?: BoolFilter<"Employee"> | boolean
+    employmentStatus?: EnumEmploymentStatusFilter<"Employee"> | $Enums.EmploymentStatus
+    outletId?: IntFilter<"Employee"> | number
+    isPresent?: BoolFilter<"Employee"> | boolean
     outlet?: XOR<OutletScalarRelationFilter, OutletWhereInput>
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+    EmployeeAttendance?: EmployeeAttendanceListRelationFilter
     LaundryJob?: LaundryJobListRelationFilter
     TransportJob?: TransportJobListRelationFilter
-    EmployeeAttendance?: EmployeeAttendanceListRelationFilter
   }, "id" | "userId">
 
   export type EmployeeOrderByWithAggregationInput = {
     id?: SortOrder
     workShift?: SortOrderInput | SortOrder
-    station?: SortOrderInput | SortOrder
-    isPresent?: SortOrder
-    isWorking?: SortOrder
-    employmentStatus?: SortOrder
     userId?: SortOrder
-    outletId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     isDeleted?: SortOrder
     deletedAt?: SortOrderInput | SortOrder
+    station?: SortOrderInput | SortOrder
+    isWorking?: SortOrder
+    employmentStatus?: SortOrder
+    outletId?: SortOrder
+    isPresent?: SortOrder
     _count?: EmployeeCountOrderByAggregateInput
     _avg?: EmployeeAvgOrderByAggregateInput
     _max?: EmployeeMaxOrderByAggregateInput
@@ -17248,16 +17234,16 @@ export namespace Prisma {
     NOT?: EmployeeScalarWhereWithAggregatesInput | EmployeeScalarWhereWithAggregatesInput[]
     id?: IntWithAggregatesFilter<"Employee"> | number
     workShift?: EnumEmployeeWorkShiftNullableWithAggregatesFilter<"Employee"> | $Enums.EmployeeWorkShift | null
-    station?: EnumWorkerStationNullableWithAggregatesFilter<"Employee"> | $Enums.WorkerStation | null
-    isPresent?: BoolWithAggregatesFilter<"Employee"> | boolean
-    isWorking?: BoolWithAggregatesFilter<"Employee"> | boolean
-    employmentStatus?: EnumEmploymentStatusWithAggregatesFilter<"Employee"> | $Enums.EmploymentStatus
     userId?: IntWithAggregatesFilter<"Employee"> | number
-    outletId?: IntWithAggregatesFilter<"Employee"> | number
     createdAt?: DateTimeWithAggregatesFilter<"Employee"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Employee"> | Date | string
     isDeleted?: BoolWithAggregatesFilter<"Employee"> | boolean
     deletedAt?: DateTimeNullableWithAggregatesFilter<"Employee"> | Date | string | null
+    station?: EnumWorkerStationNullableWithAggregatesFilter<"Employee"> | $Enums.WorkerStation | null
+    isWorking?: BoolWithAggregatesFilter<"Employee"> | boolean
+    employmentStatus?: EnumEmploymentStatusWithAggregatesFilter<"Employee"> | $Enums.EmploymentStatus
+    outletId?: IntWithAggregatesFilter<"Employee"> | number
+    isPresent?: BoolWithAggregatesFilter<"Employee"> | boolean
   }
 
   export type AddressWhereInput = {
@@ -17273,14 +17259,14 @@ export namespace Prisma {
     village?: StringFilter<"Address"> | string
     latitude?: StringFilter<"Address"> | string
     longitude?: StringFilter<"Address"> | string
-    customerId?: IntNullableFilter<"Address"> | number | null
     createdAt?: DateTimeFilter<"Address"> | Date | string
     updatedAt?: DateTimeFilter<"Address"> | Date | string
     isDeleted?: BoolFilter<"Address"> | boolean
     deletedAt?: DateTimeNullableFilter<"Address"> | Date | string | null
+    customerId?: IntNullableFilter<"Address"> | number | null
     customer?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
-    Outlet?: XOR<OutletNullableScalarRelationFilter, OutletWhereInput> | null
     Order?: OrderListRelationFilter
+    Outlet?: XOR<OutletNullableScalarRelationFilter, OutletWhereInput> | null
   }
 
   export type AddressOrderByWithRelationInput = {
@@ -17293,14 +17279,14 @@ export namespace Prisma {
     village?: SortOrder
     latitude?: SortOrder
     longitude?: SortOrder
-    customerId?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     isDeleted?: SortOrder
     deletedAt?: SortOrderInput | SortOrder
+    customerId?: SortOrderInput | SortOrder
     customer?: UserOrderByWithRelationInput
-    Outlet?: OutletOrderByWithRelationInput
     Order?: OrderOrderByRelationAggregateInput
+    Outlet?: OutletOrderByWithRelationInput
   }
 
   export type AddressWhereUniqueInput = Prisma.AtLeast<{
@@ -17316,14 +17302,14 @@ export namespace Prisma {
     village?: StringFilter<"Address"> | string
     latitude?: StringFilter<"Address"> | string
     longitude?: StringFilter<"Address"> | string
-    customerId?: IntNullableFilter<"Address"> | number | null
     createdAt?: DateTimeFilter<"Address"> | Date | string
     updatedAt?: DateTimeFilter<"Address"> | Date | string
     isDeleted?: BoolFilter<"Address"> | boolean
     deletedAt?: DateTimeNullableFilter<"Address"> | Date | string | null
+    customerId?: IntNullableFilter<"Address"> | number | null
     customer?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
-    Outlet?: XOR<OutletNullableScalarRelationFilter, OutletWhereInput> | null
     Order?: OrderListRelationFilter
+    Outlet?: XOR<OutletNullableScalarRelationFilter, OutletWhereInput> | null
   }, "id">
 
   export type AddressOrderByWithAggregationInput = {
@@ -17336,11 +17322,11 @@ export namespace Prisma {
     village?: SortOrder
     latitude?: SortOrder
     longitude?: SortOrder
-    customerId?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     isDeleted?: SortOrder
     deletedAt?: SortOrderInput | SortOrder
+    customerId?: SortOrderInput | SortOrder
     _count?: AddressCountOrderByAggregateInput
     _avg?: AddressAvgOrderByAggregateInput
     _max?: AddressMaxOrderByAggregateInput
@@ -17361,11 +17347,11 @@ export namespace Prisma {
     village?: StringWithAggregatesFilter<"Address"> | string
     latitude?: StringWithAggregatesFilter<"Address"> | string
     longitude?: StringWithAggregatesFilter<"Address"> | string
-    customerId?: IntNullableWithAggregatesFilter<"Address"> | number | null
     createdAt?: DateTimeWithAggregatesFilter<"Address"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Address"> | Date | string
     isDeleted?: BoolWithAggregatesFilter<"Address"> | boolean
     deletedAt?: DateTimeNullableWithAggregatesFilter<"Address"> | Date | string | null
+    customerId?: IntNullableWithAggregatesFilter<"Address"> | number | null
   }
 
   export type OutletWhereInput = {
@@ -17374,27 +17360,27 @@ export namespace Prisma {
     NOT?: OutletWhereInput | OutletWhereInput[]
     id?: IntFilter<"Outlet"> | number
     outletName?: StringFilter<"Outlet"> | string
-    outletAddressId?: IntFilter<"Outlet"> | number
     createdAt?: DateTimeFilter<"Outlet"> | Date | string
     updatedAt?: DateTimeFilter<"Outlet"> | Date | string
     isDeleted?: BoolFilter<"Outlet"> | boolean
     deletedAt?: DateTimeNullableFilter<"Outlet"> | Date | string | null
-    outletAddress?: XOR<AddressScalarRelationFilter, AddressWhereInput>
-    Order?: OrderListRelationFilter
+    outletAddressId?: IntFilter<"Outlet"> | number
     Employee?: EmployeeListRelationFilter
+    Order?: OrderListRelationFilter
+    outletAddress?: XOR<AddressScalarRelationFilter, AddressWhereInput>
   }
 
   export type OutletOrderByWithRelationInput = {
     id?: SortOrder
     outletName?: SortOrder
-    outletAddressId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     isDeleted?: SortOrder
     deletedAt?: SortOrderInput | SortOrder
-    outletAddress?: AddressOrderByWithRelationInput
-    Order?: OrderOrderByRelationAggregateInput
+    outletAddressId?: SortOrder
     Employee?: EmployeeOrderByRelationAggregateInput
+    Order?: OrderOrderByRelationAggregateInput
+    outletAddress?: AddressOrderByWithRelationInput
   }
 
   export type OutletWhereUniqueInput = Prisma.AtLeast<{
@@ -17408,19 +17394,19 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"Outlet"> | Date | string
     isDeleted?: BoolFilter<"Outlet"> | boolean
     deletedAt?: DateTimeNullableFilter<"Outlet"> | Date | string | null
-    outletAddress?: XOR<AddressScalarRelationFilter, AddressWhereInput>
-    Order?: OrderListRelationFilter
     Employee?: EmployeeListRelationFilter
+    Order?: OrderListRelationFilter
+    outletAddress?: XOR<AddressScalarRelationFilter, AddressWhereInput>
   }, "id" | "outletAddressId">
 
   export type OutletOrderByWithAggregationInput = {
     id?: SortOrder
     outletName?: SortOrder
-    outletAddressId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     isDeleted?: SortOrder
     deletedAt?: SortOrderInput | SortOrder
+    outletAddressId?: SortOrder
     _count?: OutletCountOrderByAggregateInput
     _avg?: OutletAvgOrderByAggregateInput
     _max?: OutletMaxOrderByAggregateInput
@@ -17434,11 +17420,11 @@ export namespace Prisma {
     NOT?: OutletScalarWhereWithAggregatesInput | OutletScalarWhereWithAggregatesInput[]
     id?: IntWithAggregatesFilter<"Outlet"> | number
     outletName?: StringWithAggregatesFilter<"Outlet"> | string
-    outletAddressId?: IntWithAggregatesFilter<"Outlet"> | number
     createdAt?: DateTimeWithAggregatesFilter<"Outlet"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Outlet"> | Date | string
     isDeleted?: BoolWithAggregatesFilter<"Outlet"> | boolean
     deletedAt?: DateTimeNullableWithAggregatesFilter<"Outlet"> | Date | string | null
+    outletAddressId?: IntWithAggregatesFilter<"Outlet"> | number
   }
 
   export type OrderWhereInput = {
@@ -17447,41 +17433,41 @@ export namespace Prisma {
     NOT?: OrderWhereInput | OrderWhereInput[]
     id?: IntFilter<"Order"> | number
     orderStatus?: EnumOrderStatusFilter<"Order"> | $Enums.OrderStatus
-    customerAddressId?: IntFilter<"Order"> | number
-    outletId?: IntFilter<"Order"> | number
-    laundryWeight?: IntNullableFilter<"Order"> | number | null
-    laundryPrice?: IntNullableFilter<"Order"> | number | null
     isPaid?: BoolFilter<"Order"> | boolean
     createdAt?: DateTimeFilter<"Order"> | Date | string
     updatedAt?: DateTimeFilter<"Order"> | Date | string
     isDeleted?: BoolFilter<"Order"> | boolean
     deletedAt?: DateTimeNullableFilter<"Order"> | Date | string | null
+    customerAddressId?: IntFilter<"Order"> | number
+    laundryPrice?: IntNullableFilter<"Order"> | number | null
+    laundryWeight?: IntNullableFilter<"Order"> | number | null
+    outletId?: IntFilter<"Order"> | number
+    LaundryJob?: LaundryJobListRelationFilter
     customerAddress?: XOR<AddressScalarRelationFilter, AddressWhereInput>
     outlet?: XOR<OutletScalarRelationFilter, OutletWhereInput>
     OrderItem?: OrderItemListRelationFilter
-    LaundryJob?: LaundryJobListRelationFilter
+    Payment?: XOR<PaymentNullableScalarRelationFilter, PaymentWhereInput> | null
     TransportJob?: TransportJobListRelationFilter
-    Payment?: PaymentListRelationFilter
   }
 
   export type OrderOrderByWithRelationInput = {
     id?: SortOrder
     orderStatus?: SortOrder
-    customerAddressId?: SortOrder
-    outletId?: SortOrder
-    laundryWeight?: SortOrderInput | SortOrder
-    laundryPrice?: SortOrderInput | SortOrder
     isPaid?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     isDeleted?: SortOrder
     deletedAt?: SortOrderInput | SortOrder
+    customerAddressId?: SortOrder
+    laundryPrice?: SortOrderInput | SortOrder
+    laundryWeight?: SortOrderInput | SortOrder
+    outletId?: SortOrder
+    LaundryJob?: LaundryJobOrderByRelationAggregateInput
     customerAddress?: AddressOrderByWithRelationInput
     outlet?: OutletOrderByWithRelationInput
     OrderItem?: OrderItemOrderByRelationAggregateInput
-    LaundryJob?: LaundryJobOrderByRelationAggregateInput
+    Payment?: PaymentOrderByWithRelationInput
     TransportJob?: TransportJobOrderByRelationAggregateInput
-    Payment?: PaymentOrderByRelationAggregateInput
   }
 
   export type OrderWhereUniqueInput = Prisma.AtLeast<{
@@ -17490,35 +17476,35 @@ export namespace Prisma {
     OR?: OrderWhereInput[]
     NOT?: OrderWhereInput | OrderWhereInput[]
     orderStatus?: EnumOrderStatusFilter<"Order"> | $Enums.OrderStatus
-    customerAddressId?: IntFilter<"Order"> | number
-    outletId?: IntFilter<"Order"> | number
-    laundryWeight?: IntNullableFilter<"Order"> | number | null
-    laundryPrice?: IntNullableFilter<"Order"> | number | null
     isPaid?: BoolFilter<"Order"> | boolean
     createdAt?: DateTimeFilter<"Order"> | Date | string
     updatedAt?: DateTimeFilter<"Order"> | Date | string
     isDeleted?: BoolFilter<"Order"> | boolean
     deletedAt?: DateTimeNullableFilter<"Order"> | Date | string | null
+    customerAddressId?: IntFilter<"Order"> | number
+    laundryPrice?: IntNullableFilter<"Order"> | number | null
+    laundryWeight?: IntNullableFilter<"Order"> | number | null
+    outletId?: IntFilter<"Order"> | number
+    LaundryJob?: LaundryJobListRelationFilter
     customerAddress?: XOR<AddressScalarRelationFilter, AddressWhereInput>
     outlet?: XOR<OutletScalarRelationFilter, OutletWhereInput>
     OrderItem?: OrderItemListRelationFilter
-    LaundryJob?: LaundryJobListRelationFilter
+    Payment?: XOR<PaymentNullableScalarRelationFilter, PaymentWhereInput> | null
     TransportJob?: TransportJobListRelationFilter
-    Payment?: PaymentListRelationFilter
   }, "id">
 
   export type OrderOrderByWithAggregationInput = {
     id?: SortOrder
     orderStatus?: SortOrder
-    customerAddressId?: SortOrder
-    outletId?: SortOrder
-    laundryWeight?: SortOrderInput | SortOrder
-    laundryPrice?: SortOrderInput | SortOrder
     isPaid?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     isDeleted?: SortOrder
     deletedAt?: SortOrderInput | SortOrder
+    customerAddressId?: SortOrder
+    laundryPrice?: SortOrderInput | SortOrder
+    laundryWeight?: SortOrderInput | SortOrder
+    outletId?: SortOrder
     _count?: OrderCountOrderByAggregateInput
     _avg?: OrderAvgOrderByAggregateInput
     _max?: OrderMaxOrderByAggregateInput
@@ -17532,15 +17518,15 @@ export namespace Prisma {
     NOT?: OrderScalarWhereWithAggregatesInput | OrderScalarWhereWithAggregatesInput[]
     id?: IntWithAggregatesFilter<"Order"> | number
     orderStatus?: EnumOrderStatusWithAggregatesFilter<"Order"> | $Enums.OrderStatus
-    customerAddressId?: IntWithAggregatesFilter<"Order"> | number
-    outletId?: IntWithAggregatesFilter<"Order"> | number
-    laundryWeight?: IntNullableWithAggregatesFilter<"Order"> | number | null
-    laundryPrice?: IntNullableWithAggregatesFilter<"Order"> | number | null
     isPaid?: BoolWithAggregatesFilter<"Order"> | boolean
     createdAt?: DateTimeWithAggregatesFilter<"Order"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Order"> | Date | string
     isDeleted?: BoolWithAggregatesFilter<"Order"> | boolean
     deletedAt?: DateTimeNullableWithAggregatesFilter<"Order"> | Date | string | null
+    customerAddressId?: IntWithAggregatesFilter<"Order"> | number
+    laundryPrice?: IntNullableWithAggregatesFilter<"Order"> | number | null
+    laundryWeight?: IntNullableWithAggregatesFilter<"Order"> | number | null
+    outletId?: IntWithAggregatesFilter<"Order"> | number
   }
 
   export type OrderItemWhereInput = {
@@ -17549,24 +17535,24 @@ export namespace Prisma {
     NOT?: OrderItemWhereInput | OrderItemWhereInput[]
     id?: IntFilter<"OrderItem"> | number
     qty?: IntNullableFilter<"OrderItem"> | number | null
-    orderItemName?: StringFilter<"OrderItem"> | string
-    orderId?: IntNullableFilter<"OrderItem"> | number | null
     createdAt?: DateTimeFilter<"OrderItem"> | Date | string
     updatedAt?: DateTimeFilter<"OrderItem"> | Date | string
     isDeleted?: BoolFilter<"OrderItem"> | boolean
     deletedAt?: DateTimeNullableFilter<"OrderItem"> | Date | string | null
+    orderId?: IntNullableFilter<"OrderItem"> | number | null
+    orderItemName?: StringFilter<"OrderItem"> | string
     order?: XOR<OrderNullableScalarRelationFilter, OrderWhereInput> | null
   }
 
   export type OrderItemOrderByWithRelationInput = {
     id?: SortOrder
     qty?: SortOrderInput | SortOrder
-    orderItemName?: SortOrder
-    orderId?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     isDeleted?: SortOrder
     deletedAt?: SortOrderInput | SortOrder
+    orderId?: SortOrderInput | SortOrder
+    orderItemName?: SortOrder
     order?: OrderOrderByWithRelationInput
   }
 
@@ -17576,24 +17562,24 @@ export namespace Prisma {
     OR?: OrderItemWhereInput[]
     NOT?: OrderItemWhereInput | OrderItemWhereInput[]
     qty?: IntNullableFilter<"OrderItem"> | number | null
-    orderItemName?: StringFilter<"OrderItem"> | string
-    orderId?: IntNullableFilter<"OrderItem"> | number | null
     createdAt?: DateTimeFilter<"OrderItem"> | Date | string
     updatedAt?: DateTimeFilter<"OrderItem"> | Date | string
     isDeleted?: BoolFilter<"OrderItem"> | boolean
     deletedAt?: DateTimeNullableFilter<"OrderItem"> | Date | string | null
+    orderId?: IntNullableFilter<"OrderItem"> | number | null
+    orderItemName?: StringFilter<"OrderItem"> | string
     order?: XOR<OrderNullableScalarRelationFilter, OrderWhereInput> | null
   }, "id">
 
   export type OrderItemOrderByWithAggregationInput = {
     id?: SortOrder
     qty?: SortOrderInput | SortOrder
-    orderItemName?: SortOrder
-    orderId?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     isDeleted?: SortOrder
     deletedAt?: SortOrderInput | SortOrder
+    orderId?: SortOrderInput | SortOrder
+    orderItemName?: SortOrder
     _count?: OrderItemCountOrderByAggregateInput
     _avg?: OrderItemAvgOrderByAggregateInput
     _max?: OrderItemMaxOrderByAggregateInput
@@ -17607,12 +17593,12 @@ export namespace Prisma {
     NOT?: OrderItemScalarWhereWithAggregatesInput | OrderItemScalarWhereWithAggregatesInput[]
     id?: IntWithAggregatesFilter<"OrderItem"> | number
     qty?: IntNullableWithAggregatesFilter<"OrderItem"> | number | null
-    orderItemName?: StringWithAggregatesFilter<"OrderItem"> | string
-    orderId?: IntNullableWithAggregatesFilter<"OrderItem"> | number | null
     createdAt?: DateTimeWithAggregatesFilter<"OrderItem"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"OrderItem"> | Date | string
     isDeleted?: BoolWithAggregatesFilter<"OrderItem"> | boolean
     deletedAt?: DateTimeNullableWithAggregatesFilter<"OrderItem"> | Date | string | null
+    orderId?: IntNullableWithAggregatesFilter<"OrderItem"> | number | null
+    orderItemName?: StringWithAggregatesFilter<"OrderItem"> | string
   }
 
   export type LaundryJobWhereInput = {
@@ -17620,34 +17606,34 @@ export namespace Prisma {
     OR?: LaundryJobWhereInput[]
     NOT?: LaundryJobWhereInput | LaundryJobWhereInput[]
     id?: IntFilter<"LaundryJob"> | number
-    station?: EnumWorkerStationFilter<"LaundryJob"> | $Enums.WorkerStation
-    isByPassRequested?: BoolFilter<"LaundryJob"> | boolean
     isCompleted?: BoolFilter<"LaundryJob"> | boolean
     byPassNote?: StringNullableFilter<"LaundryJob"> | string | null
-    byPassStatus?: EnumByPassStatusNullableFilter<"LaundryJob"> | $Enums.ByPassStatus | null
-    orderId?: IntFilter<"LaundryJob"> | number
-    workerId?: IntNullableFilter<"LaundryJob"> | number | null
     createdAt?: DateTimeFilter<"LaundryJob"> | Date | string
     updatedAt?: DateTimeFilter<"LaundryJob"> | Date | string
     isDeleted?: BoolFilter<"LaundryJob"> | boolean
     deletedAt?: DateTimeNullableFilter<"LaundryJob"> | Date | string | null
+    orderId?: IntFilter<"LaundryJob"> | number
+    workerId?: IntNullableFilter<"LaundryJob"> | number | null
+    byPassStatus?: EnumByPassStatusNullableFilter<"LaundryJob"> | $Enums.ByPassStatus | null
+    isByPassRequested?: BoolFilter<"LaundryJob"> | boolean
+    station?: EnumWorkerStationFilter<"LaundryJob"> | $Enums.WorkerStation
     order?: XOR<OrderScalarRelationFilter, OrderWhereInput>
     worker?: XOR<EmployeeNullableScalarRelationFilter, EmployeeWhereInput> | null
   }
 
   export type LaundryJobOrderByWithRelationInput = {
     id?: SortOrder
-    station?: SortOrder
-    isByPassRequested?: SortOrder
     isCompleted?: SortOrder
     byPassNote?: SortOrderInput | SortOrder
-    byPassStatus?: SortOrderInput | SortOrder
-    orderId?: SortOrder
-    workerId?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     isDeleted?: SortOrder
     deletedAt?: SortOrderInput | SortOrder
+    orderId?: SortOrder
+    workerId?: SortOrderInput | SortOrder
+    byPassStatus?: SortOrderInput | SortOrder
+    isByPassRequested?: SortOrder
+    station?: SortOrder
     order?: OrderOrderByWithRelationInput
     worker?: EmployeeOrderByWithRelationInput
   }
@@ -17657,34 +17643,34 @@ export namespace Prisma {
     AND?: LaundryJobWhereInput | LaundryJobWhereInput[]
     OR?: LaundryJobWhereInput[]
     NOT?: LaundryJobWhereInput | LaundryJobWhereInput[]
-    station?: EnumWorkerStationFilter<"LaundryJob"> | $Enums.WorkerStation
-    isByPassRequested?: BoolFilter<"LaundryJob"> | boolean
     isCompleted?: BoolFilter<"LaundryJob"> | boolean
     byPassNote?: StringNullableFilter<"LaundryJob"> | string | null
-    byPassStatus?: EnumByPassStatusNullableFilter<"LaundryJob"> | $Enums.ByPassStatus | null
-    orderId?: IntFilter<"LaundryJob"> | number
-    workerId?: IntNullableFilter<"LaundryJob"> | number | null
     createdAt?: DateTimeFilter<"LaundryJob"> | Date | string
     updatedAt?: DateTimeFilter<"LaundryJob"> | Date | string
     isDeleted?: BoolFilter<"LaundryJob"> | boolean
     deletedAt?: DateTimeNullableFilter<"LaundryJob"> | Date | string | null
+    orderId?: IntFilter<"LaundryJob"> | number
+    workerId?: IntNullableFilter<"LaundryJob"> | number | null
+    byPassStatus?: EnumByPassStatusNullableFilter<"LaundryJob"> | $Enums.ByPassStatus | null
+    isByPassRequested?: BoolFilter<"LaundryJob"> | boolean
+    station?: EnumWorkerStationFilter<"LaundryJob"> | $Enums.WorkerStation
     order?: XOR<OrderScalarRelationFilter, OrderWhereInput>
     worker?: XOR<EmployeeNullableScalarRelationFilter, EmployeeWhereInput> | null
   }, "id">
 
   export type LaundryJobOrderByWithAggregationInput = {
     id?: SortOrder
-    station?: SortOrder
-    isByPassRequested?: SortOrder
     isCompleted?: SortOrder
     byPassNote?: SortOrderInput | SortOrder
-    byPassStatus?: SortOrderInput | SortOrder
-    orderId?: SortOrder
-    workerId?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     isDeleted?: SortOrder
     deletedAt?: SortOrderInput | SortOrder
+    orderId?: SortOrder
+    workerId?: SortOrderInput | SortOrder
+    byPassStatus?: SortOrderInput | SortOrder
+    isByPassRequested?: SortOrder
+    station?: SortOrder
     _count?: LaundryJobCountOrderByAggregateInput
     _avg?: LaundryJobAvgOrderByAggregateInput
     _max?: LaundryJobMaxOrderByAggregateInput
@@ -17697,17 +17683,17 @@ export namespace Prisma {
     OR?: LaundryJobScalarWhereWithAggregatesInput[]
     NOT?: LaundryJobScalarWhereWithAggregatesInput | LaundryJobScalarWhereWithAggregatesInput[]
     id?: IntWithAggregatesFilter<"LaundryJob"> | number
-    station?: EnumWorkerStationWithAggregatesFilter<"LaundryJob"> | $Enums.WorkerStation
-    isByPassRequested?: BoolWithAggregatesFilter<"LaundryJob"> | boolean
     isCompleted?: BoolWithAggregatesFilter<"LaundryJob"> | boolean
     byPassNote?: StringNullableWithAggregatesFilter<"LaundryJob"> | string | null
-    byPassStatus?: EnumByPassStatusNullableWithAggregatesFilter<"LaundryJob"> | $Enums.ByPassStatus | null
-    orderId?: IntWithAggregatesFilter<"LaundryJob"> | number
-    workerId?: IntNullableWithAggregatesFilter<"LaundryJob"> | number | null
     createdAt?: DateTimeWithAggregatesFilter<"LaundryJob"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"LaundryJob"> | Date | string
     isDeleted?: BoolWithAggregatesFilter<"LaundryJob"> | boolean
     deletedAt?: DateTimeNullableWithAggregatesFilter<"LaundryJob"> | Date | string | null
+    orderId?: IntWithAggregatesFilter<"LaundryJob"> | number
+    workerId?: IntNullableWithAggregatesFilter<"LaundryJob"> | number | null
+    byPassStatus?: EnumByPassStatusNullableWithAggregatesFilter<"LaundryJob"> | $Enums.ByPassStatus | null
+    isByPassRequested?: BoolWithAggregatesFilter<"LaundryJob"> | boolean
+    station?: EnumWorkerStationWithAggregatesFilter<"LaundryJob"> | $Enums.WorkerStation
   }
 
   export type TransportJobWhereInput = {
@@ -17724,8 +17710,8 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"TransportJob"> | Date | string
     isDeleted?: BoolFilter<"TransportJob"> | boolean
     deletedAt?: DateTimeNullableFilter<"TransportJob"> | Date | string | null
-    order?: XOR<OrderScalarRelationFilter, OrderWhereInput>
     driver?: XOR<EmployeeNullableScalarRelationFilter, EmployeeWhereInput> | null
+    order?: XOR<OrderScalarRelationFilter, OrderWhereInput>
   }
 
   export type TransportJobOrderByWithRelationInput = {
@@ -17739,8 +17725,8 @@ export namespace Prisma {
     updatedAt?: SortOrder
     isDeleted?: SortOrder
     deletedAt?: SortOrderInput | SortOrder
-    order?: OrderOrderByWithRelationInput
     driver?: EmployeeOrderByWithRelationInput
+    order?: OrderOrderByWithRelationInput
   }
 
   export type TransportJobWhereUniqueInput = Prisma.AtLeast<{
@@ -17757,8 +17743,8 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"TransportJob"> | Date | string
     isDeleted?: BoolFilter<"TransportJob"> | boolean
     deletedAt?: DateTimeNullableFilter<"TransportJob"> | Date | string | null
-    order?: XOR<OrderScalarRelationFilter, OrderWhereInput>
     driver?: XOR<EmployeeNullableScalarRelationFilter, EmployeeWhereInput> | null
+    order?: XOR<OrderScalarRelationFilter, OrderWhereInput>
   }, "id">
 
   export type TransportJobOrderByWithAggregationInput = {
@@ -17800,29 +17786,29 @@ export namespace Prisma {
     OR?: NotificationWhereInput[]
     NOT?: NotificationWhereInput | NotificationWhereInput[]
     id?: IntFilter<"Notification"> | number
+    isRead?: BoolFilter<"Notification"> | boolean
     title?: StringFilter<"Notification"> | string
     description?: StringFilter<"Notification"> | string
-    isRead?: BoolFilter<"Notification"> | boolean
-    url?: StringNullableFilter<"Notification"> | string | null
     userId?: IntFilter<"Notification"> | number
     createdAt?: DateTimeFilter<"Notification"> | Date | string
     updatedAt?: DateTimeFilter<"Notification"> | Date | string
     isDeleted?: BoolFilter<"Notification"> | boolean
     deletedAt?: DateTimeNullableFilter<"Notification"> | Date | string | null
+    url?: StringNullableFilter<"Notification"> | string | null
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
   }
 
   export type NotificationOrderByWithRelationInput = {
     id?: SortOrder
+    isRead?: SortOrder
     title?: SortOrder
     description?: SortOrder
-    isRead?: SortOrder
-    url?: SortOrderInput | SortOrder
     userId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     isDeleted?: SortOrder
     deletedAt?: SortOrderInput | SortOrder
+    url?: SortOrderInput | SortOrder
     user?: UserOrderByWithRelationInput
   }
 
@@ -17831,29 +17817,29 @@ export namespace Prisma {
     AND?: NotificationWhereInput | NotificationWhereInput[]
     OR?: NotificationWhereInput[]
     NOT?: NotificationWhereInput | NotificationWhereInput[]
+    isRead?: BoolFilter<"Notification"> | boolean
     title?: StringFilter<"Notification"> | string
     description?: StringFilter<"Notification"> | string
-    isRead?: BoolFilter<"Notification"> | boolean
-    url?: StringNullableFilter<"Notification"> | string | null
     userId?: IntFilter<"Notification"> | number
     createdAt?: DateTimeFilter<"Notification"> | Date | string
     updatedAt?: DateTimeFilter<"Notification"> | Date | string
     isDeleted?: BoolFilter<"Notification"> | boolean
     deletedAt?: DateTimeNullableFilter<"Notification"> | Date | string | null
+    url?: StringNullableFilter<"Notification"> | string | null
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
   }, "id">
 
   export type NotificationOrderByWithAggregationInput = {
     id?: SortOrder
+    isRead?: SortOrder
     title?: SortOrder
     description?: SortOrder
-    isRead?: SortOrder
-    url?: SortOrderInput | SortOrder
     userId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     isDeleted?: SortOrder
     deletedAt?: SortOrderInput | SortOrder
+    url?: SortOrderInput | SortOrder
     _count?: NotificationCountOrderByAggregateInput
     _avg?: NotificationAvgOrderByAggregateInput
     _max?: NotificationMaxOrderByAggregateInput
@@ -17866,15 +17852,15 @@ export namespace Prisma {
     OR?: NotificationScalarWhereWithAggregatesInput[]
     NOT?: NotificationScalarWhereWithAggregatesInput | NotificationScalarWhereWithAggregatesInput[]
     id?: IntWithAggregatesFilter<"Notification"> | number
+    isRead?: BoolWithAggregatesFilter<"Notification"> | boolean
     title?: StringWithAggregatesFilter<"Notification"> | string
     description?: StringWithAggregatesFilter<"Notification"> | string
-    isRead?: BoolWithAggregatesFilter<"Notification"> | boolean
-    url?: StringNullableWithAggregatesFilter<"Notification"> | string | null
     userId?: IntWithAggregatesFilter<"Notification"> | number
     createdAt?: DateTimeWithAggregatesFilter<"Notification"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Notification"> | Date | string
     isDeleted?: BoolWithAggregatesFilter<"Notification"> | boolean
     deletedAt?: DateTimeNullableWithAggregatesFilter<"Notification"> | Date | string | null
+    url?: StringNullableWithAggregatesFilter<"Notification"> | string | null
   }
 
   export type PaymentWhereInput = {
@@ -17887,11 +17873,11 @@ export namespace Prisma {
     paymentMethod?: StringNullableFilter<"Payment"> | string | null
     snapToken?: StringNullableFilter<"Payment"> | string | null
     snapRedirectURL?: StringNullableFilter<"Payment"> | string | null
-    orderId?: IntFilter<"Payment"> | number
     createdAt?: DateTimeFilter<"Payment"> | Date | string
     updatedAt?: DateTimeFilter<"Payment"> | Date | string
     isDeleted?: BoolFilter<"Payment"> | boolean
     deletedAt?: DateTimeNullableFilter<"Payment"> | Date | string | null
+    orderId?: IntFilter<"Payment"> | number
     order?: XOR<OrderScalarRelationFilter, OrderWhereInput>
   }
 
@@ -17902,11 +17888,11 @@ export namespace Prisma {
     paymentMethod?: SortOrderInput | SortOrder
     snapToken?: SortOrderInput | SortOrder
     snapRedirectURL?: SortOrderInput | SortOrder
-    orderId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     isDeleted?: SortOrder
     deletedAt?: SortOrderInput | SortOrder
+    orderId?: SortOrder
     order?: OrderOrderByWithRelationInput
   }
 
@@ -17935,11 +17921,11 @@ export namespace Prisma {
     paymentMethod?: SortOrderInput | SortOrder
     snapToken?: SortOrderInput | SortOrder
     snapRedirectURL?: SortOrderInput | SortOrder
-    orderId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     isDeleted?: SortOrder
     deletedAt?: SortOrderInput | SortOrder
+    orderId?: SortOrder
     _count?: PaymentCountOrderByAggregateInput
     _avg?: PaymentAvgOrderByAggregateInput
     _max?: PaymentMaxOrderByAggregateInput
@@ -17957,11 +17943,11 @@ export namespace Prisma {
     paymentMethod?: StringNullableWithAggregatesFilter<"Payment"> | string | null
     snapToken?: StringNullableWithAggregatesFilter<"Payment"> | string | null
     snapRedirectURL?: StringNullableWithAggregatesFilter<"Payment"> | string | null
-    orderId?: IntWithAggregatesFilter<"Payment"> | number
     createdAt?: DateTimeWithAggregatesFilter<"Payment"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Payment"> | Date | string
     isDeleted?: BoolWithAggregatesFilter<"Payment"> | boolean
     deletedAt?: DateTimeNullableWithAggregatesFilter<"Payment"> | Date | string | null
+    orderId?: IntWithAggregatesFilter<"Payment"> | number
   }
 
   export type EmployeeAttendanceWhereInput = {
@@ -17969,28 +17955,28 @@ export namespace Prisma {
     OR?: EmployeeAttendanceWhereInput[]
     NOT?: EmployeeAttendanceWhereInput | EmployeeAttendanceWhereInput[]
     id?: IntFilter<"EmployeeAttendance"> | number
-    isAttended?: BoolFilter<"EmployeeAttendance"> | boolean
-    canClockIn?: BoolFilter<"EmployeeAttendance"> | boolean
-    employeeId?: IntFilter<"EmployeeAttendance"> | number
     createdAt?: DateTimeFilter<"EmployeeAttendance"> | Date | string
     updatedAt?: DateTimeFilter<"EmployeeAttendance"> | Date | string
     isDeleted?: BoolFilter<"EmployeeAttendance"> | boolean
     deletedAt?: DateTimeNullableFilter<"EmployeeAttendance"> | Date | string | null
-    employee?: XOR<EmployeeScalarRelationFilter, EmployeeWhereInput>
+    employeeId?: IntFilter<"EmployeeAttendance"> | number
+    isAttended?: BoolFilter<"EmployeeAttendance"> | boolean
+    canClockIn?: BoolFilter<"EmployeeAttendance"> | boolean
     AttendanceRecord?: AttendanceRecordListRelationFilter
+    employee?: XOR<EmployeeScalarRelationFilter, EmployeeWhereInput>
   }
 
   export type EmployeeAttendanceOrderByWithRelationInput = {
     id?: SortOrder
-    isAttended?: SortOrder
-    canClockIn?: SortOrder
-    employeeId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     isDeleted?: SortOrder
     deletedAt?: SortOrderInput | SortOrder
-    employee?: EmployeeOrderByWithRelationInput
+    employeeId?: SortOrder
+    isAttended?: SortOrder
+    canClockIn?: SortOrder
     AttendanceRecord?: AttendanceRecordOrderByRelationAggregateInput
+    employee?: EmployeeOrderByWithRelationInput
   }
 
   export type EmployeeAttendanceWhereUniqueInput = Prisma.AtLeast<{
@@ -17998,26 +17984,26 @@ export namespace Prisma {
     AND?: EmployeeAttendanceWhereInput | EmployeeAttendanceWhereInput[]
     OR?: EmployeeAttendanceWhereInput[]
     NOT?: EmployeeAttendanceWhereInput | EmployeeAttendanceWhereInput[]
-    isAttended?: BoolFilter<"EmployeeAttendance"> | boolean
-    canClockIn?: BoolFilter<"EmployeeAttendance"> | boolean
-    employeeId?: IntFilter<"EmployeeAttendance"> | number
     createdAt?: DateTimeFilter<"EmployeeAttendance"> | Date | string
     updatedAt?: DateTimeFilter<"EmployeeAttendance"> | Date | string
     isDeleted?: BoolFilter<"EmployeeAttendance"> | boolean
     deletedAt?: DateTimeNullableFilter<"EmployeeAttendance"> | Date | string | null
-    employee?: XOR<EmployeeScalarRelationFilter, EmployeeWhereInput>
+    employeeId?: IntFilter<"EmployeeAttendance"> | number
+    isAttended?: BoolFilter<"EmployeeAttendance"> | boolean
+    canClockIn?: BoolFilter<"EmployeeAttendance"> | boolean
     AttendanceRecord?: AttendanceRecordListRelationFilter
+    employee?: XOR<EmployeeScalarRelationFilter, EmployeeWhereInput>
   }, "id">
 
   export type EmployeeAttendanceOrderByWithAggregationInput = {
     id?: SortOrder
-    isAttended?: SortOrder
-    canClockIn?: SortOrder
-    employeeId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     isDeleted?: SortOrder
     deletedAt?: SortOrderInput | SortOrder
+    employeeId?: SortOrder
+    isAttended?: SortOrder
+    canClockIn?: SortOrder
     _count?: EmployeeAttendanceCountOrderByAggregateInput
     _avg?: EmployeeAttendanceAvgOrderByAggregateInput
     _max?: EmployeeAttendanceMaxOrderByAggregateInput
@@ -18030,13 +18016,13 @@ export namespace Prisma {
     OR?: EmployeeAttendanceScalarWhereWithAggregatesInput[]
     NOT?: EmployeeAttendanceScalarWhereWithAggregatesInput | EmployeeAttendanceScalarWhereWithAggregatesInput[]
     id?: IntWithAggregatesFilter<"EmployeeAttendance"> | number
-    isAttended?: BoolWithAggregatesFilter<"EmployeeAttendance"> | boolean
-    canClockIn?: BoolWithAggregatesFilter<"EmployeeAttendance"> | boolean
-    employeeId?: IntWithAggregatesFilter<"EmployeeAttendance"> | number
     createdAt?: DateTimeWithAggregatesFilter<"EmployeeAttendance"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"EmployeeAttendance"> | Date | string
     isDeleted?: BoolWithAggregatesFilter<"EmployeeAttendance"> | boolean
     deletedAt?: DateTimeNullableWithAggregatesFilter<"EmployeeAttendance"> | Date | string | null
+    employeeId?: IntWithAggregatesFilter<"EmployeeAttendance"> | number
+    isAttended?: BoolWithAggregatesFilter<"EmployeeAttendance"> | boolean
+    canClockIn?: BoolWithAggregatesFilter<"EmployeeAttendance"> | boolean
   }
 
   export type AttendanceRecordWhereInput = {
@@ -18119,8 +18105,8 @@ export namespace Prisma {
     updatedAt?: Date | string
     isDeleted?: boolean
     deletedAt?: Date | string | null
-    Employee?: EmployeeCreateNestedOneWithoutUserInput
     Address?: AddressCreateNestedManyWithoutCustomerInput
+    Employee?: EmployeeCreateNestedOneWithoutUserInput
     Notification?: NotificationCreateNestedManyWithoutUserInput
   }
 
@@ -18138,8 +18124,8 @@ export namespace Prisma {
     updatedAt?: Date | string
     isDeleted?: boolean
     deletedAt?: Date | string | null
-    Employee?: EmployeeUncheckedCreateNestedOneWithoutUserInput
     Address?: AddressUncheckedCreateNestedManyWithoutCustomerInput
+    Employee?: EmployeeUncheckedCreateNestedOneWithoutUserInput
     Notification?: NotificationUncheckedCreateNestedManyWithoutUserInput
   }
 
@@ -18156,8 +18142,8 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isDeleted?: BoolFieldUpdateOperationsInput | boolean
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    Employee?: EmployeeUpdateOneWithoutUserNestedInput
     Address?: AddressUpdateManyWithoutCustomerNestedInput
+    Employee?: EmployeeUpdateOneWithoutUserNestedInput
     Notification?: NotificationUpdateManyWithoutUserNestedInput
   }
 
@@ -18175,8 +18161,8 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isDeleted?: BoolFieldUpdateOperationsInput | boolean
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    Employee?: EmployeeUncheckedUpdateOneWithoutUserNestedInput
     Address?: AddressUncheckedUpdateManyWithoutCustomerNestedInput
+    Employee?: EmployeeUncheckedUpdateOneWithoutUserNestedInput
     Notification?: NotificationUncheckedUpdateManyWithoutUserNestedInput
   }
 
@@ -18229,114 +18215,114 @@ export namespace Prisma {
 
   export type EmployeeCreateInput = {
     workShift?: $Enums.EmployeeWorkShift | null
-    station?: $Enums.WorkerStation | null
-    isPresent?: boolean
-    isWorking?: boolean
-    employmentStatus?: $Enums.EmploymentStatus
     createdAt?: Date | string
     updatedAt?: Date | string
     isDeleted?: boolean
     deletedAt?: Date | string | null
-    user: UserCreateNestedOneWithoutEmployeeInput
+    station?: $Enums.WorkerStation | null
+    isWorking?: boolean
+    employmentStatus?: $Enums.EmploymentStatus
+    isPresent?: boolean
     outlet: OutletCreateNestedOneWithoutEmployeeInput
+    user: UserCreateNestedOneWithoutEmployeeInput
+    EmployeeAttendance?: EmployeeAttendanceCreateNestedManyWithoutEmployeeInput
     LaundryJob?: LaundryJobCreateNestedManyWithoutWorkerInput
     TransportJob?: TransportJobCreateNestedManyWithoutDriverInput
-    EmployeeAttendance?: EmployeeAttendanceCreateNestedManyWithoutEmployeeInput
   }
 
   export type EmployeeUncheckedCreateInput = {
     id?: number
     workShift?: $Enums.EmployeeWorkShift | null
-    station?: $Enums.WorkerStation | null
-    isPresent?: boolean
-    isWorking?: boolean
-    employmentStatus?: $Enums.EmploymentStatus
     userId: number
-    outletId: number
     createdAt?: Date | string
     updatedAt?: Date | string
     isDeleted?: boolean
     deletedAt?: Date | string | null
+    station?: $Enums.WorkerStation | null
+    isWorking?: boolean
+    employmentStatus?: $Enums.EmploymentStatus
+    outletId: number
+    isPresent?: boolean
+    EmployeeAttendance?: EmployeeAttendanceUncheckedCreateNestedManyWithoutEmployeeInput
     LaundryJob?: LaundryJobUncheckedCreateNestedManyWithoutWorkerInput
     TransportJob?: TransportJobUncheckedCreateNestedManyWithoutDriverInput
-    EmployeeAttendance?: EmployeeAttendanceUncheckedCreateNestedManyWithoutEmployeeInput
   }
 
   export type EmployeeUpdateInput = {
     workShift?: NullableEnumEmployeeWorkShiftFieldUpdateOperationsInput | $Enums.EmployeeWorkShift | null
-    station?: NullableEnumWorkerStationFieldUpdateOperationsInput | $Enums.WorkerStation | null
-    isPresent?: BoolFieldUpdateOperationsInput | boolean
-    isWorking?: BoolFieldUpdateOperationsInput | boolean
-    employmentStatus?: EnumEmploymentStatusFieldUpdateOperationsInput | $Enums.EmploymentStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isDeleted?: BoolFieldUpdateOperationsInput | boolean
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    user?: UserUpdateOneRequiredWithoutEmployeeNestedInput
+    station?: NullableEnumWorkerStationFieldUpdateOperationsInput | $Enums.WorkerStation | null
+    isWorking?: BoolFieldUpdateOperationsInput | boolean
+    employmentStatus?: EnumEmploymentStatusFieldUpdateOperationsInput | $Enums.EmploymentStatus
+    isPresent?: BoolFieldUpdateOperationsInput | boolean
     outlet?: OutletUpdateOneRequiredWithoutEmployeeNestedInput
+    user?: UserUpdateOneRequiredWithoutEmployeeNestedInput
+    EmployeeAttendance?: EmployeeAttendanceUpdateManyWithoutEmployeeNestedInput
     LaundryJob?: LaundryJobUpdateManyWithoutWorkerNestedInput
     TransportJob?: TransportJobUpdateManyWithoutDriverNestedInput
-    EmployeeAttendance?: EmployeeAttendanceUpdateManyWithoutEmployeeNestedInput
   }
 
   export type EmployeeUncheckedUpdateInput = {
     id?: IntFieldUpdateOperationsInput | number
     workShift?: NullableEnumEmployeeWorkShiftFieldUpdateOperationsInput | $Enums.EmployeeWorkShift | null
-    station?: NullableEnumWorkerStationFieldUpdateOperationsInput | $Enums.WorkerStation | null
-    isPresent?: BoolFieldUpdateOperationsInput | boolean
-    isWorking?: BoolFieldUpdateOperationsInput | boolean
-    employmentStatus?: EnumEmploymentStatusFieldUpdateOperationsInput | $Enums.EmploymentStatus
     userId?: IntFieldUpdateOperationsInput | number
-    outletId?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isDeleted?: BoolFieldUpdateOperationsInput | boolean
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    station?: NullableEnumWorkerStationFieldUpdateOperationsInput | $Enums.WorkerStation | null
+    isWorking?: BoolFieldUpdateOperationsInput | boolean
+    employmentStatus?: EnumEmploymentStatusFieldUpdateOperationsInput | $Enums.EmploymentStatus
+    outletId?: IntFieldUpdateOperationsInput | number
+    isPresent?: BoolFieldUpdateOperationsInput | boolean
+    EmployeeAttendance?: EmployeeAttendanceUncheckedUpdateManyWithoutEmployeeNestedInput
     LaundryJob?: LaundryJobUncheckedUpdateManyWithoutWorkerNestedInput
     TransportJob?: TransportJobUncheckedUpdateManyWithoutDriverNestedInput
-    EmployeeAttendance?: EmployeeAttendanceUncheckedUpdateManyWithoutEmployeeNestedInput
   }
 
   export type EmployeeCreateManyInput = {
     id?: number
     workShift?: $Enums.EmployeeWorkShift | null
-    station?: $Enums.WorkerStation | null
-    isPresent?: boolean
-    isWorking?: boolean
-    employmentStatus?: $Enums.EmploymentStatus
     userId: number
-    outletId: number
     createdAt?: Date | string
     updatedAt?: Date | string
     isDeleted?: boolean
     deletedAt?: Date | string | null
+    station?: $Enums.WorkerStation | null
+    isWorking?: boolean
+    employmentStatus?: $Enums.EmploymentStatus
+    outletId: number
+    isPresent?: boolean
   }
 
   export type EmployeeUpdateManyMutationInput = {
     workShift?: NullableEnumEmployeeWorkShiftFieldUpdateOperationsInput | $Enums.EmployeeWorkShift | null
-    station?: NullableEnumWorkerStationFieldUpdateOperationsInput | $Enums.WorkerStation | null
-    isPresent?: BoolFieldUpdateOperationsInput | boolean
-    isWorking?: BoolFieldUpdateOperationsInput | boolean
-    employmentStatus?: EnumEmploymentStatusFieldUpdateOperationsInput | $Enums.EmploymentStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isDeleted?: BoolFieldUpdateOperationsInput | boolean
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    station?: NullableEnumWorkerStationFieldUpdateOperationsInput | $Enums.WorkerStation | null
+    isWorking?: BoolFieldUpdateOperationsInput | boolean
+    employmentStatus?: EnumEmploymentStatusFieldUpdateOperationsInput | $Enums.EmploymentStatus
+    isPresent?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type EmployeeUncheckedUpdateManyInput = {
     id?: IntFieldUpdateOperationsInput | number
     workShift?: NullableEnumEmployeeWorkShiftFieldUpdateOperationsInput | $Enums.EmployeeWorkShift | null
-    station?: NullableEnumWorkerStationFieldUpdateOperationsInput | $Enums.WorkerStation | null
-    isPresent?: BoolFieldUpdateOperationsInput | boolean
-    isWorking?: BoolFieldUpdateOperationsInput | boolean
-    employmentStatus?: EnumEmploymentStatusFieldUpdateOperationsInput | $Enums.EmploymentStatus
     userId?: IntFieldUpdateOperationsInput | number
-    outletId?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isDeleted?: BoolFieldUpdateOperationsInput | boolean
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    station?: NullableEnumWorkerStationFieldUpdateOperationsInput | $Enums.WorkerStation | null
+    isWorking?: BoolFieldUpdateOperationsInput | boolean
+    employmentStatus?: EnumEmploymentStatusFieldUpdateOperationsInput | $Enums.EmploymentStatus
+    outletId?: IntFieldUpdateOperationsInput | number
+    isPresent?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type AddressCreateInput = {
@@ -18353,8 +18339,8 @@ export namespace Prisma {
     isDeleted?: boolean
     deletedAt?: Date | string | null
     customer?: UserCreateNestedOneWithoutAddressInput
-    Outlet?: OutletCreateNestedOneWithoutOutletAddressInput
     Order?: OrderCreateNestedManyWithoutCustomerAddressInput
+    Outlet?: OutletCreateNestedOneWithoutOutletAddressInput
   }
 
   export type AddressUncheckedCreateInput = {
@@ -18367,13 +18353,13 @@ export namespace Prisma {
     village: string
     latitude: string
     longitude: string
-    customerId?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
     isDeleted?: boolean
     deletedAt?: Date | string | null
-    Outlet?: OutletUncheckedCreateNestedOneWithoutOutletAddressInput
+    customerId?: number | null
     Order?: OrderUncheckedCreateNestedManyWithoutCustomerAddressInput
+    Outlet?: OutletUncheckedCreateNestedOneWithoutOutletAddressInput
   }
 
   export type AddressUpdateInput = {
@@ -18390,8 +18376,8 @@ export namespace Prisma {
     isDeleted?: BoolFieldUpdateOperationsInput | boolean
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     customer?: UserUpdateOneWithoutAddressNestedInput
-    Outlet?: OutletUpdateOneWithoutOutletAddressNestedInput
     Order?: OrderUpdateManyWithoutCustomerAddressNestedInput
+    Outlet?: OutletUpdateOneWithoutOutletAddressNestedInput
   }
 
   export type AddressUncheckedUpdateInput = {
@@ -18404,13 +18390,13 @@ export namespace Prisma {
     village?: StringFieldUpdateOperationsInput | string
     latitude?: StringFieldUpdateOperationsInput | string
     longitude?: StringFieldUpdateOperationsInput | string
-    customerId?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isDeleted?: BoolFieldUpdateOperationsInput | boolean
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    Outlet?: OutletUncheckedUpdateOneWithoutOutletAddressNestedInput
+    customerId?: NullableIntFieldUpdateOperationsInput | number | null
     Order?: OrderUncheckedUpdateManyWithoutCustomerAddressNestedInput
+    Outlet?: OutletUncheckedUpdateOneWithoutOutletAddressNestedInput
   }
 
   export type AddressCreateManyInput = {
@@ -18423,11 +18409,11 @@ export namespace Prisma {
     village: string
     latitude: string
     longitude: string
-    customerId?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
     isDeleted?: boolean
     deletedAt?: Date | string | null
+    customerId?: number | null
   }
 
   export type AddressUpdateManyMutationInput = {
@@ -18455,11 +18441,11 @@ export namespace Prisma {
     village?: StringFieldUpdateOperationsInput | string
     latitude?: StringFieldUpdateOperationsInput | string
     longitude?: StringFieldUpdateOperationsInput | string
-    customerId?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isDeleted?: BoolFieldUpdateOperationsInput | boolean
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    customerId?: NullableIntFieldUpdateOperationsInput | number | null
   }
 
   export type OutletCreateInput = {
@@ -18468,21 +18454,21 @@ export namespace Prisma {
     updatedAt?: Date | string
     isDeleted?: boolean
     deletedAt?: Date | string | null
-    outletAddress: AddressCreateNestedOneWithoutOutletInput
-    Order?: OrderCreateNestedManyWithoutOutletInput
     Employee?: EmployeeCreateNestedManyWithoutOutletInput
+    Order?: OrderCreateNestedManyWithoutOutletInput
+    outletAddress: AddressCreateNestedOneWithoutOutletInput
   }
 
   export type OutletUncheckedCreateInput = {
     id?: number
     outletName: string
-    outletAddressId: number
     createdAt?: Date | string
     updatedAt?: Date | string
     isDeleted?: boolean
     deletedAt?: Date | string | null
-    Order?: OrderUncheckedCreateNestedManyWithoutOutletInput
+    outletAddressId: number
     Employee?: EmployeeUncheckedCreateNestedManyWithoutOutletInput
+    Order?: OrderUncheckedCreateNestedManyWithoutOutletInput
   }
 
   export type OutletUpdateInput = {
@@ -18491,31 +18477,31 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isDeleted?: BoolFieldUpdateOperationsInput | boolean
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    outletAddress?: AddressUpdateOneRequiredWithoutOutletNestedInput
-    Order?: OrderUpdateManyWithoutOutletNestedInput
     Employee?: EmployeeUpdateManyWithoutOutletNestedInput
+    Order?: OrderUpdateManyWithoutOutletNestedInput
+    outletAddress?: AddressUpdateOneRequiredWithoutOutletNestedInput
   }
 
   export type OutletUncheckedUpdateInput = {
     id?: IntFieldUpdateOperationsInput | number
     outletName?: StringFieldUpdateOperationsInput | string
-    outletAddressId?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isDeleted?: BoolFieldUpdateOperationsInput | boolean
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    Order?: OrderUncheckedUpdateManyWithoutOutletNestedInput
+    outletAddressId?: IntFieldUpdateOperationsInput | number
     Employee?: EmployeeUncheckedUpdateManyWithoutOutletNestedInput
+    Order?: OrderUncheckedUpdateManyWithoutOutletNestedInput
   }
 
   export type OutletCreateManyInput = {
     id?: number
     outletName: string
-    outletAddressId: number
     createdAt?: Date | string
     updatedAt?: Date | string
     isDeleted?: boolean
     deletedAt?: Date | string | null
+    outletAddressId: number
   }
 
   export type OutletUpdateManyMutationInput = {
@@ -18529,293 +18515,293 @@ export namespace Prisma {
   export type OutletUncheckedUpdateManyInput = {
     id?: IntFieldUpdateOperationsInput | number
     outletName?: StringFieldUpdateOperationsInput | string
-    outletAddressId?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isDeleted?: BoolFieldUpdateOperationsInput | boolean
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    outletAddressId?: IntFieldUpdateOperationsInput | number
   }
 
   export type OrderCreateInput = {
     orderStatus?: $Enums.OrderStatus
-    laundryWeight?: number | null
-    laundryPrice?: number | null
     isPaid?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     isDeleted?: boolean
     deletedAt?: Date | string | null
+    laundryPrice?: number | null
+    laundryWeight?: number | null
+    LaundryJob?: LaundryJobCreateNestedManyWithoutOrderInput
     customerAddress: AddressCreateNestedOneWithoutOrderInput
     outlet: OutletCreateNestedOneWithoutOrderInput
     OrderItem?: OrderItemCreateNestedManyWithoutOrderInput
-    LaundryJob?: LaundryJobCreateNestedManyWithoutOrderInput
+    Payment?: PaymentCreateNestedOneWithoutOrderInput
     TransportJob?: TransportJobCreateNestedManyWithoutOrderInput
-    Payment?: PaymentCreateNestedManyWithoutOrderInput
   }
 
   export type OrderUncheckedCreateInput = {
     id?: number
     orderStatus?: $Enums.OrderStatus
-    customerAddressId: number
-    outletId: number
-    laundryWeight?: number | null
-    laundryPrice?: number | null
     isPaid?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     isDeleted?: boolean
     deletedAt?: Date | string | null
-    OrderItem?: OrderItemUncheckedCreateNestedManyWithoutOrderInput
+    customerAddressId: number
+    laundryPrice?: number | null
+    laundryWeight?: number | null
+    outletId: number
     LaundryJob?: LaundryJobUncheckedCreateNestedManyWithoutOrderInput
+    OrderItem?: OrderItemUncheckedCreateNestedManyWithoutOrderInput
+    Payment?: PaymentUncheckedCreateNestedOneWithoutOrderInput
     TransportJob?: TransportJobUncheckedCreateNestedManyWithoutOrderInput
-    Payment?: PaymentUncheckedCreateNestedManyWithoutOrderInput
   }
 
   export type OrderUpdateInput = {
     orderStatus?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
-    laundryWeight?: NullableIntFieldUpdateOperationsInput | number | null
-    laundryPrice?: NullableIntFieldUpdateOperationsInput | number | null
     isPaid?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isDeleted?: BoolFieldUpdateOperationsInput | boolean
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    laundryPrice?: NullableIntFieldUpdateOperationsInput | number | null
+    laundryWeight?: NullableIntFieldUpdateOperationsInput | number | null
+    LaundryJob?: LaundryJobUpdateManyWithoutOrderNestedInput
     customerAddress?: AddressUpdateOneRequiredWithoutOrderNestedInput
     outlet?: OutletUpdateOneRequiredWithoutOrderNestedInput
     OrderItem?: OrderItemUpdateManyWithoutOrderNestedInput
-    LaundryJob?: LaundryJobUpdateManyWithoutOrderNestedInput
+    Payment?: PaymentUpdateOneWithoutOrderNestedInput
     TransportJob?: TransportJobUpdateManyWithoutOrderNestedInput
-    Payment?: PaymentUpdateManyWithoutOrderNestedInput
   }
 
   export type OrderUncheckedUpdateInput = {
     id?: IntFieldUpdateOperationsInput | number
     orderStatus?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
-    customerAddressId?: IntFieldUpdateOperationsInput | number
-    outletId?: IntFieldUpdateOperationsInput | number
-    laundryWeight?: NullableIntFieldUpdateOperationsInput | number | null
-    laundryPrice?: NullableIntFieldUpdateOperationsInput | number | null
     isPaid?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isDeleted?: BoolFieldUpdateOperationsInput | boolean
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    OrderItem?: OrderItemUncheckedUpdateManyWithoutOrderNestedInput
+    customerAddressId?: IntFieldUpdateOperationsInput | number
+    laundryPrice?: NullableIntFieldUpdateOperationsInput | number | null
+    laundryWeight?: NullableIntFieldUpdateOperationsInput | number | null
+    outletId?: IntFieldUpdateOperationsInput | number
     LaundryJob?: LaundryJobUncheckedUpdateManyWithoutOrderNestedInput
+    OrderItem?: OrderItemUncheckedUpdateManyWithoutOrderNestedInput
+    Payment?: PaymentUncheckedUpdateOneWithoutOrderNestedInput
     TransportJob?: TransportJobUncheckedUpdateManyWithoutOrderNestedInput
-    Payment?: PaymentUncheckedUpdateManyWithoutOrderNestedInput
   }
 
   export type OrderCreateManyInput = {
     id?: number
     orderStatus?: $Enums.OrderStatus
-    customerAddressId: number
-    outletId: number
-    laundryWeight?: number | null
-    laundryPrice?: number | null
     isPaid?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     isDeleted?: boolean
     deletedAt?: Date | string | null
+    customerAddressId: number
+    laundryPrice?: number | null
+    laundryWeight?: number | null
+    outletId: number
   }
 
   export type OrderUpdateManyMutationInput = {
     orderStatus?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
-    laundryWeight?: NullableIntFieldUpdateOperationsInput | number | null
-    laundryPrice?: NullableIntFieldUpdateOperationsInput | number | null
     isPaid?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isDeleted?: BoolFieldUpdateOperationsInput | boolean
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    laundryPrice?: NullableIntFieldUpdateOperationsInput | number | null
+    laundryWeight?: NullableIntFieldUpdateOperationsInput | number | null
   }
 
   export type OrderUncheckedUpdateManyInput = {
     id?: IntFieldUpdateOperationsInput | number
     orderStatus?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
-    customerAddressId?: IntFieldUpdateOperationsInput | number
-    outletId?: IntFieldUpdateOperationsInput | number
-    laundryWeight?: NullableIntFieldUpdateOperationsInput | number | null
-    laundryPrice?: NullableIntFieldUpdateOperationsInput | number | null
     isPaid?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isDeleted?: BoolFieldUpdateOperationsInput | boolean
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    customerAddressId?: IntFieldUpdateOperationsInput | number
+    laundryPrice?: NullableIntFieldUpdateOperationsInput | number | null
+    laundryWeight?: NullableIntFieldUpdateOperationsInput | number | null
+    outletId?: IntFieldUpdateOperationsInput | number
   }
 
   export type OrderItemCreateInput = {
     qty?: number | null
-    orderItemName: string
     createdAt?: Date | string
     updatedAt?: Date | string
     isDeleted?: boolean
     deletedAt?: Date | string | null
+    orderItemName: string
     order?: OrderCreateNestedOneWithoutOrderItemInput
   }
 
   export type OrderItemUncheckedCreateInput = {
     id?: number
     qty?: number | null
-    orderItemName: string
-    orderId?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
     isDeleted?: boolean
     deletedAt?: Date | string | null
+    orderId?: number | null
+    orderItemName: string
   }
 
   export type OrderItemUpdateInput = {
     qty?: NullableIntFieldUpdateOperationsInput | number | null
-    orderItemName?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isDeleted?: BoolFieldUpdateOperationsInput | boolean
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    orderItemName?: StringFieldUpdateOperationsInput | string
     order?: OrderUpdateOneWithoutOrderItemNestedInput
   }
 
   export type OrderItemUncheckedUpdateInput = {
     id?: IntFieldUpdateOperationsInput | number
     qty?: NullableIntFieldUpdateOperationsInput | number | null
-    orderItemName?: StringFieldUpdateOperationsInput | string
-    orderId?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isDeleted?: BoolFieldUpdateOperationsInput | boolean
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    orderId?: NullableIntFieldUpdateOperationsInput | number | null
+    orderItemName?: StringFieldUpdateOperationsInput | string
   }
 
   export type OrderItemCreateManyInput = {
     id?: number
     qty?: number | null
-    orderItemName: string
-    orderId?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
     isDeleted?: boolean
     deletedAt?: Date | string | null
+    orderId?: number | null
+    orderItemName: string
   }
 
   export type OrderItemUpdateManyMutationInput = {
     qty?: NullableIntFieldUpdateOperationsInput | number | null
-    orderItemName?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isDeleted?: BoolFieldUpdateOperationsInput | boolean
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    orderItemName?: StringFieldUpdateOperationsInput | string
   }
 
   export type OrderItemUncheckedUpdateManyInput = {
     id?: IntFieldUpdateOperationsInput | number
     qty?: NullableIntFieldUpdateOperationsInput | number | null
-    orderItemName?: StringFieldUpdateOperationsInput | string
-    orderId?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isDeleted?: BoolFieldUpdateOperationsInput | boolean
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    orderId?: NullableIntFieldUpdateOperationsInput | number | null
+    orderItemName?: StringFieldUpdateOperationsInput | string
   }
 
   export type LaundryJobCreateInput = {
-    station: $Enums.WorkerStation
-    isByPassRequested?: boolean
     isCompleted?: boolean
     byPassNote?: string | null
-    byPassStatus?: $Enums.ByPassStatus | null
     createdAt?: Date | string
     updatedAt?: Date | string
     isDeleted?: boolean
     deletedAt?: Date | string | null
+    byPassStatus?: $Enums.ByPassStatus | null
+    isByPassRequested?: boolean
+    station: $Enums.WorkerStation
     order: OrderCreateNestedOneWithoutLaundryJobInput
     worker?: EmployeeCreateNestedOneWithoutLaundryJobInput
   }
 
   export type LaundryJobUncheckedCreateInput = {
     id?: number
-    station: $Enums.WorkerStation
-    isByPassRequested?: boolean
     isCompleted?: boolean
     byPassNote?: string | null
-    byPassStatus?: $Enums.ByPassStatus | null
-    orderId: number
-    workerId?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
     isDeleted?: boolean
     deletedAt?: Date | string | null
+    orderId: number
+    workerId?: number | null
+    byPassStatus?: $Enums.ByPassStatus | null
+    isByPassRequested?: boolean
+    station: $Enums.WorkerStation
   }
 
   export type LaundryJobUpdateInput = {
-    station?: EnumWorkerStationFieldUpdateOperationsInput | $Enums.WorkerStation
-    isByPassRequested?: BoolFieldUpdateOperationsInput | boolean
     isCompleted?: BoolFieldUpdateOperationsInput | boolean
     byPassNote?: NullableStringFieldUpdateOperationsInput | string | null
-    byPassStatus?: NullableEnumByPassStatusFieldUpdateOperationsInput | $Enums.ByPassStatus | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isDeleted?: BoolFieldUpdateOperationsInput | boolean
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    byPassStatus?: NullableEnumByPassStatusFieldUpdateOperationsInput | $Enums.ByPassStatus | null
+    isByPassRequested?: BoolFieldUpdateOperationsInput | boolean
+    station?: EnumWorkerStationFieldUpdateOperationsInput | $Enums.WorkerStation
     order?: OrderUpdateOneRequiredWithoutLaundryJobNestedInput
     worker?: EmployeeUpdateOneWithoutLaundryJobNestedInput
   }
 
   export type LaundryJobUncheckedUpdateInput = {
     id?: IntFieldUpdateOperationsInput | number
-    station?: EnumWorkerStationFieldUpdateOperationsInput | $Enums.WorkerStation
-    isByPassRequested?: BoolFieldUpdateOperationsInput | boolean
     isCompleted?: BoolFieldUpdateOperationsInput | boolean
     byPassNote?: NullableStringFieldUpdateOperationsInput | string | null
-    byPassStatus?: NullableEnumByPassStatusFieldUpdateOperationsInput | $Enums.ByPassStatus | null
-    orderId?: IntFieldUpdateOperationsInput | number
-    workerId?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isDeleted?: BoolFieldUpdateOperationsInput | boolean
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    orderId?: IntFieldUpdateOperationsInput | number
+    workerId?: NullableIntFieldUpdateOperationsInput | number | null
+    byPassStatus?: NullableEnumByPassStatusFieldUpdateOperationsInput | $Enums.ByPassStatus | null
+    isByPassRequested?: BoolFieldUpdateOperationsInput | boolean
+    station?: EnumWorkerStationFieldUpdateOperationsInput | $Enums.WorkerStation
   }
 
   export type LaundryJobCreateManyInput = {
     id?: number
-    station: $Enums.WorkerStation
-    isByPassRequested?: boolean
     isCompleted?: boolean
     byPassNote?: string | null
-    byPassStatus?: $Enums.ByPassStatus | null
-    orderId: number
-    workerId?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
     isDeleted?: boolean
     deletedAt?: Date | string | null
+    orderId: number
+    workerId?: number | null
+    byPassStatus?: $Enums.ByPassStatus | null
+    isByPassRequested?: boolean
+    station: $Enums.WorkerStation
   }
 
   export type LaundryJobUpdateManyMutationInput = {
-    station?: EnumWorkerStationFieldUpdateOperationsInput | $Enums.WorkerStation
-    isByPassRequested?: BoolFieldUpdateOperationsInput | boolean
     isCompleted?: BoolFieldUpdateOperationsInput | boolean
     byPassNote?: NullableStringFieldUpdateOperationsInput | string | null
-    byPassStatus?: NullableEnumByPassStatusFieldUpdateOperationsInput | $Enums.ByPassStatus | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isDeleted?: BoolFieldUpdateOperationsInput | boolean
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    byPassStatus?: NullableEnumByPassStatusFieldUpdateOperationsInput | $Enums.ByPassStatus | null
+    isByPassRequested?: BoolFieldUpdateOperationsInput | boolean
+    station?: EnumWorkerStationFieldUpdateOperationsInput | $Enums.WorkerStation
   }
 
   export type LaundryJobUncheckedUpdateManyInput = {
     id?: IntFieldUpdateOperationsInput | number
-    station?: EnumWorkerStationFieldUpdateOperationsInput | $Enums.WorkerStation
-    isByPassRequested?: BoolFieldUpdateOperationsInput | boolean
     isCompleted?: BoolFieldUpdateOperationsInput | boolean
     byPassNote?: NullableStringFieldUpdateOperationsInput | string | null
-    byPassStatus?: NullableEnumByPassStatusFieldUpdateOperationsInput | $Enums.ByPassStatus | null
-    orderId?: IntFieldUpdateOperationsInput | number
-    workerId?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isDeleted?: BoolFieldUpdateOperationsInput | boolean
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    orderId?: IntFieldUpdateOperationsInput | number
+    workerId?: NullableIntFieldUpdateOperationsInput | number | null
+    byPassStatus?: NullableEnumByPassStatusFieldUpdateOperationsInput | $Enums.ByPassStatus | null
+    isByPassRequested?: BoolFieldUpdateOperationsInput | boolean
+    station?: EnumWorkerStationFieldUpdateOperationsInput | $Enums.WorkerStation
   }
 
   export type TransportJobCreateInput = {
@@ -18826,8 +18812,8 @@ export namespace Prisma {
     updatedAt?: Date | string
     isDeleted?: boolean
     deletedAt?: Date | string | null
-    order: OrderCreateNestedOneWithoutTransportJobInput
     driver?: EmployeeCreateNestedOneWithoutTransportJobInput
+    order: OrderCreateNestedOneWithoutTransportJobInput
   }
 
   export type TransportJobUncheckedCreateInput = {
@@ -18851,8 +18837,8 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isDeleted?: BoolFieldUpdateOperationsInput | boolean
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    order?: OrderUpdateOneRequiredWithoutTransportJobNestedInput
     driver?: EmployeeUpdateOneWithoutTransportJobNestedInput
+    order?: OrderUpdateOneRequiredWithoutTransportJobNestedInput
   }
 
   export type TransportJobUncheckedUpdateInput = {
@@ -18905,90 +18891,90 @@ export namespace Prisma {
   }
 
   export type NotificationCreateInput = {
+    isRead?: boolean
     title: string
     description: string
-    isRead?: boolean
-    url?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     isDeleted?: boolean
     deletedAt?: Date | string | null
+    url?: string | null
     user: UserCreateNestedOneWithoutNotificationInput
   }
 
   export type NotificationUncheckedCreateInput = {
     id?: number
+    isRead?: boolean
     title: string
     description: string
-    isRead?: boolean
-    url?: string | null
     userId: number
     createdAt?: Date | string
     updatedAt?: Date | string
     isDeleted?: boolean
     deletedAt?: Date | string | null
+    url?: string | null
   }
 
   export type NotificationUpdateInput = {
+    isRead?: BoolFieldUpdateOperationsInput | boolean
     title?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
-    isRead?: BoolFieldUpdateOperationsInput | boolean
-    url?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isDeleted?: BoolFieldUpdateOperationsInput | boolean
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    url?: NullableStringFieldUpdateOperationsInput | string | null
     user?: UserUpdateOneRequiredWithoutNotificationNestedInput
   }
 
   export type NotificationUncheckedUpdateInput = {
     id?: IntFieldUpdateOperationsInput | number
+    isRead?: BoolFieldUpdateOperationsInput | boolean
     title?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
-    isRead?: BoolFieldUpdateOperationsInput | boolean
-    url?: NullableStringFieldUpdateOperationsInput | string | null
     userId?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isDeleted?: BoolFieldUpdateOperationsInput | boolean
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    url?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type NotificationCreateManyInput = {
     id?: number
+    isRead?: boolean
     title: string
     description: string
-    isRead?: boolean
-    url?: string | null
     userId: number
     createdAt?: Date | string
     updatedAt?: Date | string
     isDeleted?: boolean
     deletedAt?: Date | string | null
+    url?: string | null
   }
 
   export type NotificationUpdateManyMutationInput = {
+    isRead?: BoolFieldUpdateOperationsInput | boolean
     title?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
-    isRead?: BoolFieldUpdateOperationsInput | boolean
-    url?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isDeleted?: BoolFieldUpdateOperationsInput | boolean
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    url?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type NotificationUncheckedUpdateManyInput = {
     id?: IntFieldUpdateOperationsInput | number
+    isRead?: BoolFieldUpdateOperationsInput | boolean
     title?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
-    isRead?: BoolFieldUpdateOperationsInput | boolean
-    url?: NullableStringFieldUpdateOperationsInput | string | null
     userId?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isDeleted?: BoolFieldUpdateOperationsInput | boolean
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    url?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type PaymentCreateInput = {
@@ -19011,11 +18997,11 @@ export namespace Prisma {
     paymentMethod?: string | null
     snapToken?: string | null
     snapRedirectURL?: string | null
-    orderId: number
     createdAt?: Date | string
     updatedAt?: Date | string
     isDeleted?: boolean
     deletedAt?: Date | string | null
+    orderId: number
   }
 
   export type PaymentUpdateInput = {
@@ -19038,11 +19024,11 @@ export namespace Prisma {
     paymentMethod?: NullableStringFieldUpdateOperationsInput | string | null
     snapToken?: NullableStringFieldUpdateOperationsInput | string | null
     snapRedirectURL?: NullableStringFieldUpdateOperationsInput | string | null
-    orderId?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isDeleted?: BoolFieldUpdateOperationsInput | boolean
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    orderId?: IntFieldUpdateOperationsInput | number
   }
 
   export type PaymentCreateManyInput = {
@@ -19052,11 +19038,11 @@ export namespace Prisma {
     paymentMethod?: string | null
     snapToken?: string | null
     snapRedirectURL?: string | null
-    orderId: number
     createdAt?: Date | string
     updatedAt?: Date | string
     isDeleted?: boolean
     deletedAt?: Date | string | null
+    orderId: number
   }
 
   export type PaymentUpdateManyMutationInput = {
@@ -19078,88 +19064,88 @@ export namespace Prisma {
     paymentMethod?: NullableStringFieldUpdateOperationsInput | string | null
     snapToken?: NullableStringFieldUpdateOperationsInput | string | null
     snapRedirectURL?: NullableStringFieldUpdateOperationsInput | string | null
-    orderId?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isDeleted?: BoolFieldUpdateOperationsInput | boolean
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    orderId?: IntFieldUpdateOperationsInput | number
   }
 
   export type EmployeeAttendanceCreateInput = {
-    isAttended?: boolean
-    canClockIn?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     isDeleted?: boolean
     deletedAt?: Date | string | null
-    employee: EmployeeCreateNestedOneWithoutEmployeeAttendanceInput
+    isAttended?: boolean
+    canClockIn?: boolean
     AttendanceRecord?: AttendanceRecordCreateNestedManyWithoutEmployeeAttendanceInput
+    employee: EmployeeCreateNestedOneWithoutEmployeeAttendanceInput
   }
 
   export type EmployeeAttendanceUncheckedCreateInput = {
     id?: number
-    isAttended?: boolean
-    canClockIn?: boolean
-    employeeId: number
     createdAt?: Date | string
     updatedAt?: Date | string
     isDeleted?: boolean
     deletedAt?: Date | string | null
+    employeeId: number
+    isAttended?: boolean
+    canClockIn?: boolean
     AttendanceRecord?: AttendanceRecordUncheckedCreateNestedManyWithoutEmployeeAttendanceInput
   }
 
   export type EmployeeAttendanceUpdateInput = {
-    isAttended?: BoolFieldUpdateOperationsInput | boolean
-    canClockIn?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isDeleted?: BoolFieldUpdateOperationsInput | boolean
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    employee?: EmployeeUpdateOneRequiredWithoutEmployeeAttendanceNestedInput
+    isAttended?: BoolFieldUpdateOperationsInput | boolean
+    canClockIn?: BoolFieldUpdateOperationsInput | boolean
     AttendanceRecord?: AttendanceRecordUpdateManyWithoutEmployeeAttendanceNestedInput
+    employee?: EmployeeUpdateOneRequiredWithoutEmployeeAttendanceNestedInput
   }
 
   export type EmployeeAttendanceUncheckedUpdateInput = {
     id?: IntFieldUpdateOperationsInput | number
-    isAttended?: BoolFieldUpdateOperationsInput | boolean
-    canClockIn?: BoolFieldUpdateOperationsInput | boolean
-    employeeId?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isDeleted?: BoolFieldUpdateOperationsInput | boolean
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    employeeId?: IntFieldUpdateOperationsInput | number
+    isAttended?: BoolFieldUpdateOperationsInput | boolean
+    canClockIn?: BoolFieldUpdateOperationsInput | boolean
     AttendanceRecord?: AttendanceRecordUncheckedUpdateManyWithoutEmployeeAttendanceNestedInput
   }
 
   export type EmployeeAttendanceCreateManyInput = {
     id?: number
-    isAttended?: boolean
-    canClockIn?: boolean
-    employeeId: number
     createdAt?: Date | string
     updatedAt?: Date | string
     isDeleted?: boolean
     deletedAt?: Date | string | null
+    employeeId: number
+    isAttended?: boolean
+    canClockIn?: boolean
   }
 
   export type EmployeeAttendanceUpdateManyMutationInput = {
-    isAttended?: BoolFieldUpdateOperationsInput | boolean
-    canClockIn?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isDeleted?: BoolFieldUpdateOperationsInput | boolean
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    isAttended?: BoolFieldUpdateOperationsInput | boolean
+    canClockIn?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type EmployeeAttendanceUncheckedUpdateManyInput = {
     id?: IntFieldUpdateOperationsInput | number
-    isAttended?: BoolFieldUpdateOperationsInput | boolean
-    canClockIn?: BoolFieldUpdateOperationsInput | boolean
-    employeeId?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isDeleted?: BoolFieldUpdateOperationsInput | boolean
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    employeeId?: IntFieldUpdateOperationsInput | number
+    isAttended?: BoolFieldUpdateOperationsInput | boolean
+    canClockIn?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type AttendanceRecordCreateInput = {
@@ -19303,15 +19289,15 @@ export namespace Prisma {
     not?: NestedDateTimeFilter<$PrismaModel> | Date | string
   }
 
-  export type EmployeeNullableScalarRelationFilter = {
-    is?: EmployeeWhereInput | null
-    isNot?: EmployeeWhereInput | null
-  }
-
   export type AddressListRelationFilter = {
     every?: AddressWhereInput
     some?: AddressWhereInput
     none?: AddressWhereInput
+  }
+
+  export type EmployeeNullableScalarRelationFilter = {
+    is?: EmployeeWhereInput | null
+    isNot?: EmployeeWhereInput | null
   }
 
   export type NotificationListRelationFilter = {
@@ -19508,14 +19494,20 @@ export namespace Prisma {
     not?: NestedEnumEmploymentStatusFilter<$PrismaModel> | $Enums.EmploymentStatus
   }
 
+  export type OutletScalarRelationFilter = {
+    is?: OutletWhereInput
+    isNot?: OutletWhereInput
+  }
+
   export type UserScalarRelationFilter = {
     is?: UserWhereInput
     isNot?: UserWhereInput
   }
 
-  export type OutletScalarRelationFilter = {
-    is?: OutletWhereInput
-    isNot?: OutletWhereInput
+  export type EmployeeAttendanceListRelationFilter = {
+    every?: EmployeeAttendanceWhereInput
+    some?: EmployeeAttendanceWhereInput
+    none?: EmployeeAttendanceWhereInput
   }
 
   export type LaundryJobListRelationFilter = {
@@ -19530,10 +19522,8 @@ export namespace Prisma {
     none?: TransportJobWhereInput
   }
 
-  export type EmployeeAttendanceListRelationFilter = {
-    every?: EmployeeAttendanceWhereInput
-    some?: EmployeeAttendanceWhereInput
-    none?: EmployeeAttendanceWhereInput
+  export type EmployeeAttendanceOrderByRelationAggregateInput = {
+    _count?: SortOrder
   }
 
   export type LaundryJobOrderByRelationAggregateInput = {
@@ -19544,23 +19534,19 @@ export namespace Prisma {
     _count?: SortOrder
   }
 
-  export type EmployeeAttendanceOrderByRelationAggregateInput = {
-    _count?: SortOrder
-  }
-
   export type EmployeeCountOrderByAggregateInput = {
     id?: SortOrder
     workShift?: SortOrder
-    station?: SortOrder
-    isPresent?: SortOrder
-    isWorking?: SortOrder
-    employmentStatus?: SortOrder
     userId?: SortOrder
-    outletId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     isDeleted?: SortOrder
     deletedAt?: SortOrder
+    station?: SortOrder
+    isWorking?: SortOrder
+    employmentStatus?: SortOrder
+    outletId?: SortOrder
+    isPresent?: SortOrder
   }
 
   export type EmployeeAvgOrderByAggregateInput = {
@@ -19572,31 +19558,31 @@ export namespace Prisma {
   export type EmployeeMaxOrderByAggregateInput = {
     id?: SortOrder
     workShift?: SortOrder
-    station?: SortOrder
-    isPresent?: SortOrder
-    isWorking?: SortOrder
-    employmentStatus?: SortOrder
     userId?: SortOrder
-    outletId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     isDeleted?: SortOrder
     deletedAt?: SortOrder
+    station?: SortOrder
+    isWorking?: SortOrder
+    employmentStatus?: SortOrder
+    outletId?: SortOrder
+    isPresent?: SortOrder
   }
 
   export type EmployeeMinOrderByAggregateInput = {
     id?: SortOrder
     workShift?: SortOrder
-    station?: SortOrder
-    isPresent?: SortOrder
-    isWorking?: SortOrder
-    employmentStatus?: SortOrder
     userId?: SortOrder
-    outletId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     isDeleted?: SortOrder
     deletedAt?: SortOrder
+    station?: SortOrder
+    isWorking?: SortOrder
+    employmentStatus?: SortOrder
+    outletId?: SortOrder
+    isPresent?: SortOrder
   }
 
   export type EmployeeSumOrderByAggregateInput = {
@@ -19651,15 +19637,15 @@ export namespace Prisma {
     isNot?: UserWhereInput | null
   }
 
-  export type OutletNullableScalarRelationFilter = {
-    is?: OutletWhereInput | null
-    isNot?: OutletWhereInput | null
-  }
-
   export type OrderListRelationFilter = {
     every?: OrderWhereInput
     some?: OrderWhereInput
     none?: OrderWhereInput
+  }
+
+  export type OutletNullableScalarRelationFilter = {
+    is?: OutletWhereInput | null
+    isNot?: OutletWhereInput | null
   }
 
   export type OrderOrderByRelationAggregateInput = {
@@ -19676,11 +19662,11 @@ export namespace Prisma {
     village?: SortOrder
     latitude?: SortOrder
     longitude?: SortOrder
-    customerId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     isDeleted?: SortOrder
     deletedAt?: SortOrder
+    customerId?: SortOrder
   }
 
   export type AddressAvgOrderByAggregateInput = {
@@ -19698,11 +19684,11 @@ export namespace Prisma {
     village?: SortOrder
     latitude?: SortOrder
     longitude?: SortOrder
-    customerId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     isDeleted?: SortOrder
     deletedAt?: SortOrder
+    customerId?: SortOrder
   }
 
   export type AddressMinOrderByAggregateInput = {
@@ -19715,11 +19701,11 @@ export namespace Prisma {
     village?: SortOrder
     latitude?: SortOrder
     longitude?: SortOrder
-    customerId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     isDeleted?: SortOrder
     deletedAt?: SortOrder
+    customerId?: SortOrder
   }
 
   export type AddressSumOrderByAggregateInput = {
@@ -19743,15 +19729,15 @@ export namespace Prisma {
     _max?: NestedIntNullableFilter<$PrismaModel>
   }
 
-  export type AddressScalarRelationFilter = {
-    is?: AddressWhereInput
-    isNot?: AddressWhereInput
-  }
-
   export type EmployeeListRelationFilter = {
     every?: EmployeeWhereInput
     some?: EmployeeWhereInput
     none?: EmployeeWhereInput
+  }
+
+  export type AddressScalarRelationFilter = {
+    is?: AddressWhereInput
+    isNot?: AddressWhereInput
   }
 
   export type EmployeeOrderByRelationAggregateInput = {
@@ -19761,11 +19747,11 @@ export namespace Prisma {
   export type OutletCountOrderByAggregateInput = {
     id?: SortOrder
     outletName?: SortOrder
-    outletAddressId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     isDeleted?: SortOrder
     deletedAt?: SortOrder
+    outletAddressId?: SortOrder
   }
 
   export type OutletAvgOrderByAggregateInput = {
@@ -19776,21 +19762,21 @@ export namespace Prisma {
   export type OutletMaxOrderByAggregateInput = {
     id?: SortOrder
     outletName?: SortOrder
-    outletAddressId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     isDeleted?: SortOrder
     deletedAt?: SortOrder
+    outletAddressId?: SortOrder
   }
 
   export type OutletMinOrderByAggregateInput = {
     id?: SortOrder
     outletName?: SortOrder
-    outletAddressId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     isDeleted?: SortOrder
     deletedAt?: SortOrder
+    outletAddressId?: SortOrder
   }
 
   export type OutletSumOrderByAggregateInput = {
@@ -19811,76 +19797,71 @@ export namespace Prisma {
     none?: OrderItemWhereInput
   }
 
-  export type PaymentListRelationFilter = {
-    every?: PaymentWhereInput
-    some?: PaymentWhereInput
-    none?: PaymentWhereInput
+  export type PaymentNullableScalarRelationFilter = {
+    is?: PaymentWhereInput | null
+    isNot?: PaymentWhereInput | null
   }
 
   export type OrderItemOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
-  export type PaymentOrderByRelationAggregateInput = {
-    _count?: SortOrder
-  }
-
   export type OrderCountOrderByAggregateInput = {
     id?: SortOrder
     orderStatus?: SortOrder
-    customerAddressId?: SortOrder
-    outletId?: SortOrder
-    laundryWeight?: SortOrder
-    laundryPrice?: SortOrder
     isPaid?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     isDeleted?: SortOrder
     deletedAt?: SortOrder
+    customerAddressId?: SortOrder
+    laundryPrice?: SortOrder
+    laundryWeight?: SortOrder
+    outletId?: SortOrder
   }
 
   export type OrderAvgOrderByAggregateInput = {
     id?: SortOrder
     customerAddressId?: SortOrder
-    outletId?: SortOrder
-    laundryWeight?: SortOrder
     laundryPrice?: SortOrder
+    laundryWeight?: SortOrder
+    outletId?: SortOrder
   }
 
   export type OrderMaxOrderByAggregateInput = {
     id?: SortOrder
     orderStatus?: SortOrder
-    customerAddressId?: SortOrder
-    outletId?: SortOrder
-    laundryWeight?: SortOrder
-    laundryPrice?: SortOrder
     isPaid?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     isDeleted?: SortOrder
     deletedAt?: SortOrder
+    customerAddressId?: SortOrder
+    laundryPrice?: SortOrder
+    laundryWeight?: SortOrder
+    outletId?: SortOrder
   }
 
   export type OrderMinOrderByAggregateInput = {
     id?: SortOrder
     orderStatus?: SortOrder
-    customerAddressId?: SortOrder
-    outletId?: SortOrder
-    laundryWeight?: SortOrder
-    laundryPrice?: SortOrder
     isPaid?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     isDeleted?: SortOrder
     deletedAt?: SortOrder
+    customerAddressId?: SortOrder
+    laundryPrice?: SortOrder
+    laundryWeight?: SortOrder
+    outletId?: SortOrder
   }
 
   export type OrderSumOrderByAggregateInput = {
     id?: SortOrder
     customerAddressId?: SortOrder
-    outletId?: SortOrder
-    laundryWeight?: SortOrder
     laundryPrice?: SortOrder
+    laundryWeight?: SortOrder
+    outletId?: SortOrder
   }
 
   export type EnumOrderStatusWithAggregatesFilter<$PrismaModel = never> = {
@@ -19901,12 +19882,12 @@ export namespace Prisma {
   export type OrderItemCountOrderByAggregateInput = {
     id?: SortOrder
     qty?: SortOrder
-    orderItemName?: SortOrder
-    orderId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     isDeleted?: SortOrder
     deletedAt?: SortOrder
+    orderId?: SortOrder
+    orderItemName?: SortOrder
   }
 
   export type OrderItemAvgOrderByAggregateInput = {
@@ -19918,36 +19899,29 @@ export namespace Prisma {
   export type OrderItemMaxOrderByAggregateInput = {
     id?: SortOrder
     qty?: SortOrder
-    orderItemName?: SortOrder
-    orderId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     isDeleted?: SortOrder
     deletedAt?: SortOrder
+    orderId?: SortOrder
+    orderItemName?: SortOrder
   }
 
   export type OrderItemMinOrderByAggregateInput = {
     id?: SortOrder
     qty?: SortOrder
-    orderItemName?: SortOrder
-    orderId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     isDeleted?: SortOrder
     deletedAt?: SortOrder
+    orderId?: SortOrder
+    orderItemName?: SortOrder
   }
 
   export type OrderItemSumOrderByAggregateInput = {
     id?: SortOrder
     qty?: SortOrder
     orderId?: SortOrder
-  }
-
-  export type EnumWorkerStationFilter<$PrismaModel = never> = {
-    equals?: $Enums.WorkerStation | EnumWorkerStationFieldRefInput<$PrismaModel>
-    in?: $Enums.WorkerStation[] | ListEnumWorkerStationFieldRefInput<$PrismaModel>
-    notIn?: $Enums.WorkerStation[] | ListEnumWorkerStationFieldRefInput<$PrismaModel>
-    not?: NestedEnumWorkerStationFilter<$PrismaModel> | $Enums.WorkerStation
   }
 
   export type EnumByPassStatusNullableFilter<$PrismaModel = never> = {
@@ -19957,6 +19931,13 @@ export namespace Prisma {
     not?: NestedEnumByPassStatusNullableFilter<$PrismaModel> | $Enums.ByPassStatus | null
   }
 
+  export type EnumWorkerStationFilter<$PrismaModel = never> = {
+    equals?: $Enums.WorkerStation | EnumWorkerStationFieldRefInput<$PrismaModel>
+    in?: $Enums.WorkerStation[] | ListEnumWorkerStationFieldRefInput<$PrismaModel>
+    notIn?: $Enums.WorkerStation[] | ListEnumWorkerStationFieldRefInput<$PrismaModel>
+    not?: NestedEnumWorkerStationFilter<$PrismaModel> | $Enums.WorkerStation
+  }
+
   export type OrderScalarRelationFilter = {
     is?: OrderWhereInput
     isNot?: OrderWhereInput
@@ -19964,17 +19945,17 @@ export namespace Prisma {
 
   export type LaundryJobCountOrderByAggregateInput = {
     id?: SortOrder
-    station?: SortOrder
-    isByPassRequested?: SortOrder
     isCompleted?: SortOrder
     byPassNote?: SortOrder
-    byPassStatus?: SortOrder
-    orderId?: SortOrder
-    workerId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     isDeleted?: SortOrder
     deletedAt?: SortOrder
+    orderId?: SortOrder
+    workerId?: SortOrder
+    byPassStatus?: SortOrder
+    isByPassRequested?: SortOrder
+    station?: SortOrder
   }
 
   export type LaundryJobAvgOrderByAggregateInput = {
@@ -19985,48 +19966,38 @@ export namespace Prisma {
 
   export type LaundryJobMaxOrderByAggregateInput = {
     id?: SortOrder
-    station?: SortOrder
-    isByPassRequested?: SortOrder
     isCompleted?: SortOrder
     byPassNote?: SortOrder
-    byPassStatus?: SortOrder
-    orderId?: SortOrder
-    workerId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     isDeleted?: SortOrder
     deletedAt?: SortOrder
+    orderId?: SortOrder
+    workerId?: SortOrder
+    byPassStatus?: SortOrder
+    isByPassRequested?: SortOrder
+    station?: SortOrder
   }
 
   export type LaundryJobMinOrderByAggregateInput = {
     id?: SortOrder
-    station?: SortOrder
-    isByPassRequested?: SortOrder
     isCompleted?: SortOrder
     byPassNote?: SortOrder
-    byPassStatus?: SortOrder
-    orderId?: SortOrder
-    workerId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     isDeleted?: SortOrder
     deletedAt?: SortOrder
+    orderId?: SortOrder
+    workerId?: SortOrder
+    byPassStatus?: SortOrder
+    isByPassRequested?: SortOrder
+    station?: SortOrder
   }
 
   export type LaundryJobSumOrderByAggregateInput = {
     id?: SortOrder
     orderId?: SortOrder
     workerId?: SortOrder
-  }
-
-  export type EnumWorkerStationWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: $Enums.WorkerStation | EnumWorkerStationFieldRefInput<$PrismaModel>
-    in?: $Enums.WorkerStation[] | ListEnumWorkerStationFieldRefInput<$PrismaModel>
-    notIn?: $Enums.WorkerStation[] | ListEnumWorkerStationFieldRefInput<$PrismaModel>
-    not?: NestedEnumWorkerStationWithAggregatesFilter<$PrismaModel> | $Enums.WorkerStation
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedEnumWorkerStationFilter<$PrismaModel>
-    _max?: NestedEnumWorkerStationFilter<$PrismaModel>
   }
 
   export type EnumByPassStatusNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -20037,6 +20008,16 @@ export namespace Prisma {
     _count?: NestedIntNullableFilter<$PrismaModel>
     _min?: NestedEnumByPassStatusNullableFilter<$PrismaModel>
     _max?: NestedEnumByPassStatusNullableFilter<$PrismaModel>
+  }
+
+  export type EnumWorkerStationWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.WorkerStation | EnumWorkerStationFieldRefInput<$PrismaModel>
+    in?: $Enums.WorkerStation[] | ListEnumWorkerStationFieldRefInput<$PrismaModel>
+    notIn?: $Enums.WorkerStation[] | ListEnumWorkerStationFieldRefInput<$PrismaModel>
+    not?: NestedEnumWorkerStationWithAggregatesFilter<$PrismaModel> | $Enums.WorkerStation
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumWorkerStationFilter<$PrismaModel>
+    _max?: NestedEnumWorkerStationFilter<$PrismaModel>
   }
 
   export type EnumTransportTypeFilter<$PrismaModel = never> = {
@@ -20111,15 +20092,15 @@ export namespace Prisma {
 
   export type NotificationCountOrderByAggregateInput = {
     id?: SortOrder
+    isRead?: SortOrder
     title?: SortOrder
     description?: SortOrder
-    isRead?: SortOrder
-    url?: SortOrder
     userId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     isDeleted?: SortOrder
     deletedAt?: SortOrder
+    url?: SortOrder
   }
 
   export type NotificationAvgOrderByAggregateInput = {
@@ -20129,28 +20110,28 @@ export namespace Prisma {
 
   export type NotificationMaxOrderByAggregateInput = {
     id?: SortOrder
+    isRead?: SortOrder
     title?: SortOrder
     description?: SortOrder
-    isRead?: SortOrder
-    url?: SortOrder
     userId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     isDeleted?: SortOrder
     deletedAt?: SortOrder
+    url?: SortOrder
   }
 
   export type NotificationMinOrderByAggregateInput = {
     id?: SortOrder
+    isRead?: SortOrder
     title?: SortOrder
     description?: SortOrder
-    isRead?: SortOrder
-    url?: SortOrder
     userId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     isDeleted?: SortOrder
     deletedAt?: SortOrder
+    url?: SortOrder
   }
 
   export type NotificationSumOrderByAggregateInput = {
@@ -20172,11 +20153,11 @@ export namespace Prisma {
     paymentMethod?: SortOrder
     snapToken?: SortOrder
     snapRedirectURL?: SortOrder
-    orderId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     isDeleted?: SortOrder
     deletedAt?: SortOrder
+    orderId?: SortOrder
   }
 
   export type PaymentAvgOrderByAggregateInput = {
@@ -20192,11 +20173,11 @@ export namespace Prisma {
     paymentMethod?: SortOrder
     snapToken?: SortOrder
     snapRedirectURL?: SortOrder
-    orderId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     isDeleted?: SortOrder
     deletedAt?: SortOrder
+    orderId?: SortOrder
   }
 
   export type PaymentMinOrderByAggregateInput = {
@@ -20206,11 +20187,11 @@ export namespace Prisma {
     paymentMethod?: SortOrder
     snapToken?: SortOrder
     snapRedirectURL?: SortOrder
-    orderId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     isDeleted?: SortOrder
     deletedAt?: SortOrder
+    orderId?: SortOrder
   }
 
   export type PaymentSumOrderByAggregateInput = {
@@ -20229,15 +20210,15 @@ export namespace Prisma {
     _max?: NestedEnumPaymentStatusFilter<$PrismaModel>
   }
 
-  export type EmployeeScalarRelationFilter = {
-    is?: EmployeeWhereInput
-    isNot?: EmployeeWhereInput
-  }
-
   export type AttendanceRecordListRelationFilter = {
     every?: AttendanceRecordWhereInput
     some?: AttendanceRecordWhereInput
     none?: AttendanceRecordWhereInput
+  }
+
+  export type EmployeeScalarRelationFilter = {
+    is?: EmployeeWhereInput
+    isNot?: EmployeeWhereInput
   }
 
   export type AttendanceRecordOrderByRelationAggregateInput = {
@@ -20246,13 +20227,13 @@ export namespace Prisma {
 
   export type EmployeeAttendanceCountOrderByAggregateInput = {
     id?: SortOrder
-    isAttended?: SortOrder
-    canClockIn?: SortOrder
-    employeeId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     isDeleted?: SortOrder
     deletedAt?: SortOrder
+    employeeId?: SortOrder
+    isAttended?: SortOrder
+    canClockIn?: SortOrder
   }
 
   export type EmployeeAttendanceAvgOrderByAggregateInput = {
@@ -20262,24 +20243,24 @@ export namespace Prisma {
 
   export type EmployeeAttendanceMaxOrderByAggregateInput = {
     id?: SortOrder
-    isAttended?: SortOrder
-    canClockIn?: SortOrder
-    employeeId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     isDeleted?: SortOrder
     deletedAt?: SortOrder
+    employeeId?: SortOrder
+    isAttended?: SortOrder
+    canClockIn?: SortOrder
   }
 
   export type EmployeeAttendanceMinOrderByAggregateInput = {
     id?: SortOrder
-    isAttended?: SortOrder
-    canClockIn?: SortOrder
-    employeeId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     isDeleted?: SortOrder
     deletedAt?: SortOrder
+    employeeId?: SortOrder
+    isAttended?: SortOrder
+    canClockIn?: SortOrder
   }
 
   export type EmployeeAttendanceSumOrderByAggregateInput = {
@@ -20349,17 +20330,17 @@ export namespace Prisma {
     _max?: NestedEnumAttendanceTypeFilter<$PrismaModel>
   }
 
-  export type EmployeeCreateNestedOneWithoutUserInput = {
-    create?: XOR<EmployeeCreateWithoutUserInput, EmployeeUncheckedCreateWithoutUserInput>
-    connectOrCreate?: EmployeeCreateOrConnectWithoutUserInput
-    connect?: EmployeeWhereUniqueInput
-  }
-
   export type AddressCreateNestedManyWithoutCustomerInput = {
     create?: XOR<AddressCreateWithoutCustomerInput, AddressUncheckedCreateWithoutCustomerInput> | AddressCreateWithoutCustomerInput[] | AddressUncheckedCreateWithoutCustomerInput[]
     connectOrCreate?: AddressCreateOrConnectWithoutCustomerInput | AddressCreateOrConnectWithoutCustomerInput[]
     createMany?: AddressCreateManyCustomerInputEnvelope
     connect?: AddressWhereUniqueInput | AddressWhereUniqueInput[]
+  }
+
+  export type EmployeeCreateNestedOneWithoutUserInput = {
+    create?: XOR<EmployeeCreateWithoutUserInput, EmployeeUncheckedCreateWithoutUserInput>
+    connectOrCreate?: EmployeeCreateOrConnectWithoutUserInput
+    connect?: EmployeeWhereUniqueInput
   }
 
   export type NotificationCreateNestedManyWithoutUserInput = {
@@ -20369,17 +20350,17 @@ export namespace Prisma {
     connect?: NotificationWhereUniqueInput | NotificationWhereUniqueInput[]
   }
 
-  export type EmployeeUncheckedCreateNestedOneWithoutUserInput = {
-    create?: XOR<EmployeeCreateWithoutUserInput, EmployeeUncheckedCreateWithoutUserInput>
-    connectOrCreate?: EmployeeCreateOrConnectWithoutUserInput
-    connect?: EmployeeWhereUniqueInput
-  }
-
   export type AddressUncheckedCreateNestedManyWithoutCustomerInput = {
     create?: XOR<AddressCreateWithoutCustomerInput, AddressUncheckedCreateWithoutCustomerInput> | AddressCreateWithoutCustomerInput[] | AddressUncheckedCreateWithoutCustomerInput[]
     connectOrCreate?: AddressCreateOrConnectWithoutCustomerInput | AddressCreateOrConnectWithoutCustomerInput[]
     createMany?: AddressCreateManyCustomerInputEnvelope
     connect?: AddressWhereUniqueInput | AddressWhereUniqueInput[]
+  }
+
+  export type EmployeeUncheckedCreateNestedOneWithoutUserInput = {
+    create?: XOR<EmployeeCreateWithoutUserInput, EmployeeUncheckedCreateWithoutUserInput>
+    connectOrCreate?: EmployeeCreateOrConnectWithoutUserInput
+    connect?: EmployeeWhereUniqueInput
   }
 
   export type NotificationUncheckedCreateNestedManyWithoutUserInput = {
@@ -20413,16 +20394,6 @@ export namespace Prisma {
     set?: Date | string
   }
 
-  export type EmployeeUpdateOneWithoutUserNestedInput = {
-    create?: XOR<EmployeeCreateWithoutUserInput, EmployeeUncheckedCreateWithoutUserInput>
-    connectOrCreate?: EmployeeCreateOrConnectWithoutUserInput
-    upsert?: EmployeeUpsertWithoutUserInput
-    disconnect?: EmployeeWhereInput | boolean
-    delete?: EmployeeWhereInput | boolean
-    connect?: EmployeeWhereUniqueInput
-    update?: XOR<XOR<EmployeeUpdateToOneWithWhereWithoutUserInput, EmployeeUpdateWithoutUserInput>, EmployeeUncheckedUpdateWithoutUserInput>
-  }
-
   export type AddressUpdateManyWithoutCustomerNestedInput = {
     create?: XOR<AddressCreateWithoutCustomerInput, AddressUncheckedCreateWithoutCustomerInput> | AddressCreateWithoutCustomerInput[] | AddressUncheckedCreateWithoutCustomerInput[]
     connectOrCreate?: AddressCreateOrConnectWithoutCustomerInput | AddressCreateOrConnectWithoutCustomerInput[]
@@ -20435,6 +20406,16 @@ export namespace Prisma {
     update?: AddressUpdateWithWhereUniqueWithoutCustomerInput | AddressUpdateWithWhereUniqueWithoutCustomerInput[]
     updateMany?: AddressUpdateManyWithWhereWithoutCustomerInput | AddressUpdateManyWithWhereWithoutCustomerInput[]
     deleteMany?: AddressScalarWhereInput | AddressScalarWhereInput[]
+  }
+
+  export type EmployeeUpdateOneWithoutUserNestedInput = {
+    create?: XOR<EmployeeCreateWithoutUserInput, EmployeeUncheckedCreateWithoutUserInput>
+    connectOrCreate?: EmployeeCreateOrConnectWithoutUserInput
+    upsert?: EmployeeUpsertWithoutUserInput
+    disconnect?: EmployeeWhereInput | boolean
+    delete?: EmployeeWhereInput | boolean
+    connect?: EmployeeWhereUniqueInput
+    update?: XOR<XOR<EmployeeUpdateToOneWithWhereWithoutUserInput, EmployeeUpdateWithoutUserInput>, EmployeeUncheckedUpdateWithoutUserInput>
   }
 
   export type NotificationUpdateManyWithoutUserNestedInput = {
@@ -20459,16 +20440,6 @@ export namespace Prisma {
     divide?: number
   }
 
-  export type EmployeeUncheckedUpdateOneWithoutUserNestedInput = {
-    create?: XOR<EmployeeCreateWithoutUserInput, EmployeeUncheckedCreateWithoutUserInput>
-    connectOrCreate?: EmployeeCreateOrConnectWithoutUserInput
-    upsert?: EmployeeUpsertWithoutUserInput
-    disconnect?: EmployeeWhereInput | boolean
-    delete?: EmployeeWhereInput | boolean
-    connect?: EmployeeWhereUniqueInput
-    update?: XOR<XOR<EmployeeUpdateToOneWithWhereWithoutUserInput, EmployeeUpdateWithoutUserInput>, EmployeeUncheckedUpdateWithoutUserInput>
-  }
-
   export type AddressUncheckedUpdateManyWithoutCustomerNestedInput = {
     create?: XOR<AddressCreateWithoutCustomerInput, AddressUncheckedCreateWithoutCustomerInput> | AddressCreateWithoutCustomerInput[] | AddressUncheckedCreateWithoutCustomerInput[]
     connectOrCreate?: AddressCreateOrConnectWithoutCustomerInput | AddressCreateOrConnectWithoutCustomerInput[]
@@ -20481,6 +20452,16 @@ export namespace Prisma {
     update?: AddressUpdateWithWhereUniqueWithoutCustomerInput | AddressUpdateWithWhereUniqueWithoutCustomerInput[]
     updateMany?: AddressUpdateManyWithWhereWithoutCustomerInput | AddressUpdateManyWithWhereWithoutCustomerInput[]
     deleteMany?: AddressScalarWhereInput | AddressScalarWhereInput[]
+  }
+
+  export type EmployeeUncheckedUpdateOneWithoutUserNestedInput = {
+    create?: XOR<EmployeeCreateWithoutUserInput, EmployeeUncheckedCreateWithoutUserInput>
+    connectOrCreate?: EmployeeCreateOrConnectWithoutUserInput
+    upsert?: EmployeeUpsertWithoutUserInput
+    disconnect?: EmployeeWhereInput | boolean
+    delete?: EmployeeWhereInput | boolean
+    connect?: EmployeeWhereUniqueInput
+    update?: XOR<XOR<EmployeeUpdateToOneWithWhereWithoutUserInput, EmployeeUpdateWithoutUserInput>, EmployeeUncheckedUpdateWithoutUserInput>
   }
 
   export type NotificationUncheckedUpdateManyWithoutUserNestedInput = {
@@ -20497,16 +20478,23 @@ export namespace Prisma {
     deleteMany?: NotificationScalarWhereInput | NotificationScalarWhereInput[]
   }
 
+  export type OutletCreateNestedOneWithoutEmployeeInput = {
+    create?: XOR<OutletCreateWithoutEmployeeInput, OutletUncheckedCreateWithoutEmployeeInput>
+    connectOrCreate?: OutletCreateOrConnectWithoutEmployeeInput
+    connect?: OutletWhereUniqueInput
+  }
+
   export type UserCreateNestedOneWithoutEmployeeInput = {
     create?: XOR<UserCreateWithoutEmployeeInput, UserUncheckedCreateWithoutEmployeeInput>
     connectOrCreate?: UserCreateOrConnectWithoutEmployeeInput
     connect?: UserWhereUniqueInput
   }
 
-  export type OutletCreateNestedOneWithoutEmployeeInput = {
-    create?: XOR<OutletCreateWithoutEmployeeInput, OutletUncheckedCreateWithoutEmployeeInput>
-    connectOrCreate?: OutletCreateOrConnectWithoutEmployeeInput
-    connect?: OutletWhereUniqueInput
+  export type EmployeeAttendanceCreateNestedManyWithoutEmployeeInput = {
+    create?: XOR<EmployeeAttendanceCreateWithoutEmployeeInput, EmployeeAttendanceUncheckedCreateWithoutEmployeeInput> | EmployeeAttendanceCreateWithoutEmployeeInput[] | EmployeeAttendanceUncheckedCreateWithoutEmployeeInput[]
+    connectOrCreate?: EmployeeAttendanceCreateOrConnectWithoutEmployeeInput | EmployeeAttendanceCreateOrConnectWithoutEmployeeInput[]
+    createMany?: EmployeeAttendanceCreateManyEmployeeInputEnvelope
+    connect?: EmployeeAttendanceWhereUniqueInput | EmployeeAttendanceWhereUniqueInput[]
   }
 
   export type LaundryJobCreateNestedManyWithoutWorkerInput = {
@@ -20523,7 +20511,7 @@ export namespace Prisma {
     connect?: TransportJobWhereUniqueInput | TransportJobWhereUniqueInput[]
   }
 
-  export type EmployeeAttendanceCreateNestedManyWithoutEmployeeInput = {
+  export type EmployeeAttendanceUncheckedCreateNestedManyWithoutEmployeeInput = {
     create?: XOR<EmployeeAttendanceCreateWithoutEmployeeInput, EmployeeAttendanceUncheckedCreateWithoutEmployeeInput> | EmployeeAttendanceCreateWithoutEmployeeInput[] | EmployeeAttendanceUncheckedCreateWithoutEmployeeInput[]
     connectOrCreate?: EmployeeAttendanceCreateOrConnectWithoutEmployeeInput | EmployeeAttendanceCreateOrConnectWithoutEmployeeInput[]
     createMany?: EmployeeAttendanceCreateManyEmployeeInputEnvelope
@@ -20544,13 +20532,6 @@ export namespace Prisma {
     connect?: TransportJobWhereUniqueInput | TransportJobWhereUniqueInput[]
   }
 
-  export type EmployeeAttendanceUncheckedCreateNestedManyWithoutEmployeeInput = {
-    create?: XOR<EmployeeAttendanceCreateWithoutEmployeeInput, EmployeeAttendanceUncheckedCreateWithoutEmployeeInput> | EmployeeAttendanceCreateWithoutEmployeeInput[] | EmployeeAttendanceUncheckedCreateWithoutEmployeeInput[]
-    connectOrCreate?: EmployeeAttendanceCreateOrConnectWithoutEmployeeInput | EmployeeAttendanceCreateOrConnectWithoutEmployeeInput[]
-    createMany?: EmployeeAttendanceCreateManyEmployeeInputEnvelope
-    connect?: EmployeeAttendanceWhereUniqueInput | EmployeeAttendanceWhereUniqueInput[]
-  }
-
   export type NullableEnumEmployeeWorkShiftFieldUpdateOperationsInput = {
     set?: $Enums.EmployeeWorkShift | null
   }
@@ -20563,6 +20544,14 @@ export namespace Prisma {
     set?: $Enums.EmploymentStatus
   }
 
+  export type OutletUpdateOneRequiredWithoutEmployeeNestedInput = {
+    create?: XOR<OutletCreateWithoutEmployeeInput, OutletUncheckedCreateWithoutEmployeeInput>
+    connectOrCreate?: OutletCreateOrConnectWithoutEmployeeInput
+    upsert?: OutletUpsertWithoutEmployeeInput
+    connect?: OutletWhereUniqueInput
+    update?: XOR<XOR<OutletUpdateToOneWithWhereWithoutEmployeeInput, OutletUpdateWithoutEmployeeInput>, OutletUncheckedUpdateWithoutEmployeeInput>
+  }
+
   export type UserUpdateOneRequiredWithoutEmployeeNestedInput = {
     create?: XOR<UserCreateWithoutEmployeeInput, UserUncheckedCreateWithoutEmployeeInput>
     connectOrCreate?: UserCreateOrConnectWithoutEmployeeInput
@@ -20571,12 +20560,18 @@ export namespace Prisma {
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutEmployeeInput, UserUpdateWithoutEmployeeInput>, UserUncheckedUpdateWithoutEmployeeInput>
   }
 
-  export type OutletUpdateOneRequiredWithoutEmployeeNestedInput = {
-    create?: XOR<OutletCreateWithoutEmployeeInput, OutletUncheckedCreateWithoutEmployeeInput>
-    connectOrCreate?: OutletCreateOrConnectWithoutEmployeeInput
-    upsert?: OutletUpsertWithoutEmployeeInput
-    connect?: OutletWhereUniqueInput
-    update?: XOR<XOR<OutletUpdateToOneWithWhereWithoutEmployeeInput, OutletUpdateWithoutEmployeeInput>, OutletUncheckedUpdateWithoutEmployeeInput>
+  export type EmployeeAttendanceUpdateManyWithoutEmployeeNestedInput = {
+    create?: XOR<EmployeeAttendanceCreateWithoutEmployeeInput, EmployeeAttendanceUncheckedCreateWithoutEmployeeInput> | EmployeeAttendanceCreateWithoutEmployeeInput[] | EmployeeAttendanceUncheckedCreateWithoutEmployeeInput[]
+    connectOrCreate?: EmployeeAttendanceCreateOrConnectWithoutEmployeeInput | EmployeeAttendanceCreateOrConnectWithoutEmployeeInput[]
+    upsert?: EmployeeAttendanceUpsertWithWhereUniqueWithoutEmployeeInput | EmployeeAttendanceUpsertWithWhereUniqueWithoutEmployeeInput[]
+    createMany?: EmployeeAttendanceCreateManyEmployeeInputEnvelope
+    set?: EmployeeAttendanceWhereUniqueInput | EmployeeAttendanceWhereUniqueInput[]
+    disconnect?: EmployeeAttendanceWhereUniqueInput | EmployeeAttendanceWhereUniqueInput[]
+    delete?: EmployeeAttendanceWhereUniqueInput | EmployeeAttendanceWhereUniqueInput[]
+    connect?: EmployeeAttendanceWhereUniqueInput | EmployeeAttendanceWhereUniqueInput[]
+    update?: EmployeeAttendanceUpdateWithWhereUniqueWithoutEmployeeInput | EmployeeAttendanceUpdateWithWhereUniqueWithoutEmployeeInput[]
+    updateMany?: EmployeeAttendanceUpdateManyWithWhereWithoutEmployeeInput | EmployeeAttendanceUpdateManyWithWhereWithoutEmployeeInput[]
+    deleteMany?: EmployeeAttendanceScalarWhereInput | EmployeeAttendanceScalarWhereInput[]
   }
 
   export type LaundryJobUpdateManyWithoutWorkerNestedInput = {
@@ -20607,7 +20602,7 @@ export namespace Prisma {
     deleteMany?: TransportJobScalarWhereInput | TransportJobScalarWhereInput[]
   }
 
-  export type EmployeeAttendanceUpdateManyWithoutEmployeeNestedInput = {
+  export type EmployeeAttendanceUncheckedUpdateManyWithoutEmployeeNestedInput = {
     create?: XOR<EmployeeAttendanceCreateWithoutEmployeeInput, EmployeeAttendanceUncheckedCreateWithoutEmployeeInput> | EmployeeAttendanceCreateWithoutEmployeeInput[] | EmployeeAttendanceUncheckedCreateWithoutEmployeeInput[]
     connectOrCreate?: EmployeeAttendanceCreateOrConnectWithoutEmployeeInput | EmployeeAttendanceCreateOrConnectWithoutEmployeeInput[]
     upsert?: EmployeeAttendanceUpsertWithWhereUniqueWithoutEmployeeInput | EmployeeAttendanceUpsertWithWhereUniqueWithoutEmployeeInput[]
@@ -20649,30 +20644,10 @@ export namespace Prisma {
     deleteMany?: TransportJobScalarWhereInput | TransportJobScalarWhereInput[]
   }
 
-  export type EmployeeAttendanceUncheckedUpdateManyWithoutEmployeeNestedInput = {
-    create?: XOR<EmployeeAttendanceCreateWithoutEmployeeInput, EmployeeAttendanceUncheckedCreateWithoutEmployeeInput> | EmployeeAttendanceCreateWithoutEmployeeInput[] | EmployeeAttendanceUncheckedCreateWithoutEmployeeInput[]
-    connectOrCreate?: EmployeeAttendanceCreateOrConnectWithoutEmployeeInput | EmployeeAttendanceCreateOrConnectWithoutEmployeeInput[]
-    upsert?: EmployeeAttendanceUpsertWithWhereUniqueWithoutEmployeeInput | EmployeeAttendanceUpsertWithWhereUniqueWithoutEmployeeInput[]
-    createMany?: EmployeeAttendanceCreateManyEmployeeInputEnvelope
-    set?: EmployeeAttendanceWhereUniqueInput | EmployeeAttendanceWhereUniqueInput[]
-    disconnect?: EmployeeAttendanceWhereUniqueInput | EmployeeAttendanceWhereUniqueInput[]
-    delete?: EmployeeAttendanceWhereUniqueInput | EmployeeAttendanceWhereUniqueInput[]
-    connect?: EmployeeAttendanceWhereUniqueInput | EmployeeAttendanceWhereUniqueInput[]
-    update?: EmployeeAttendanceUpdateWithWhereUniqueWithoutEmployeeInput | EmployeeAttendanceUpdateWithWhereUniqueWithoutEmployeeInput[]
-    updateMany?: EmployeeAttendanceUpdateManyWithWhereWithoutEmployeeInput | EmployeeAttendanceUpdateManyWithWhereWithoutEmployeeInput[]
-    deleteMany?: EmployeeAttendanceScalarWhereInput | EmployeeAttendanceScalarWhereInput[]
-  }
-
   export type UserCreateNestedOneWithoutAddressInput = {
     create?: XOR<UserCreateWithoutAddressInput, UserUncheckedCreateWithoutAddressInput>
     connectOrCreate?: UserCreateOrConnectWithoutAddressInput
     connect?: UserWhereUniqueInput
-  }
-
-  export type OutletCreateNestedOneWithoutOutletAddressInput = {
-    create?: XOR<OutletCreateWithoutOutletAddressInput, OutletUncheckedCreateWithoutOutletAddressInput>
-    connectOrCreate?: OutletCreateOrConnectWithoutOutletAddressInput
-    connect?: OutletWhereUniqueInput
   }
 
   export type OrderCreateNestedManyWithoutCustomerAddressInput = {
@@ -20682,7 +20657,7 @@ export namespace Prisma {
     connect?: OrderWhereUniqueInput | OrderWhereUniqueInput[]
   }
 
-  export type OutletUncheckedCreateNestedOneWithoutOutletAddressInput = {
+  export type OutletCreateNestedOneWithoutOutletAddressInput = {
     create?: XOR<OutletCreateWithoutOutletAddressInput, OutletUncheckedCreateWithoutOutletAddressInput>
     connectOrCreate?: OutletCreateOrConnectWithoutOutletAddressInput
     connect?: OutletWhereUniqueInput
@@ -20695,6 +20670,12 @@ export namespace Prisma {
     connect?: OrderWhereUniqueInput | OrderWhereUniqueInput[]
   }
 
+  export type OutletUncheckedCreateNestedOneWithoutOutletAddressInput = {
+    create?: XOR<OutletCreateWithoutOutletAddressInput, OutletUncheckedCreateWithoutOutletAddressInput>
+    connectOrCreate?: OutletCreateOrConnectWithoutOutletAddressInput
+    connect?: OutletWhereUniqueInput
+  }
+
   export type UserUpdateOneWithoutAddressNestedInput = {
     create?: XOR<UserCreateWithoutAddressInput, UserUncheckedCreateWithoutAddressInput>
     connectOrCreate?: UserCreateOrConnectWithoutAddressInput
@@ -20703,16 +20684,6 @@ export namespace Prisma {
     delete?: UserWhereInput | boolean
     connect?: UserWhereUniqueInput
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutAddressInput, UserUpdateWithoutAddressInput>, UserUncheckedUpdateWithoutAddressInput>
-  }
-
-  export type OutletUpdateOneWithoutOutletAddressNestedInput = {
-    create?: XOR<OutletCreateWithoutOutletAddressInput, OutletUncheckedCreateWithoutOutletAddressInput>
-    connectOrCreate?: OutletCreateOrConnectWithoutOutletAddressInput
-    upsert?: OutletUpsertWithoutOutletAddressInput
-    disconnect?: OutletWhereInput | boolean
-    delete?: OutletWhereInput | boolean
-    connect?: OutletWhereUniqueInput
-    update?: XOR<XOR<OutletUpdateToOneWithWhereWithoutOutletAddressInput, OutletUpdateWithoutOutletAddressInput>, OutletUncheckedUpdateWithoutOutletAddressInput>
   }
 
   export type OrderUpdateManyWithoutCustomerAddressNestedInput = {
@@ -20729,15 +20700,7 @@ export namespace Prisma {
     deleteMany?: OrderScalarWhereInput | OrderScalarWhereInput[]
   }
 
-  export type NullableIntFieldUpdateOperationsInput = {
-    set?: number | null
-    increment?: number
-    decrement?: number
-    multiply?: number
-    divide?: number
-  }
-
-  export type OutletUncheckedUpdateOneWithoutOutletAddressNestedInput = {
+  export type OutletUpdateOneWithoutOutletAddressNestedInput = {
     create?: XOR<OutletCreateWithoutOutletAddressInput, OutletUncheckedCreateWithoutOutletAddressInput>
     connectOrCreate?: OutletCreateOrConnectWithoutOutletAddressInput
     upsert?: OutletUpsertWithoutOutletAddressInput
@@ -20745,6 +20708,14 @@ export namespace Prisma {
     delete?: OutletWhereInput | boolean
     connect?: OutletWhereUniqueInput
     update?: XOR<XOR<OutletUpdateToOneWithWhereWithoutOutletAddressInput, OutletUpdateWithoutOutletAddressInput>, OutletUncheckedUpdateWithoutOutletAddressInput>
+  }
+
+  export type NullableIntFieldUpdateOperationsInput = {
+    set?: number | null
+    increment?: number
+    decrement?: number
+    multiply?: number
+    divide?: number
   }
 
   export type OrderUncheckedUpdateManyWithoutCustomerAddressNestedInput = {
@@ -20761,10 +20732,21 @@ export namespace Prisma {
     deleteMany?: OrderScalarWhereInput | OrderScalarWhereInput[]
   }
 
-  export type AddressCreateNestedOneWithoutOutletInput = {
-    create?: XOR<AddressCreateWithoutOutletInput, AddressUncheckedCreateWithoutOutletInput>
-    connectOrCreate?: AddressCreateOrConnectWithoutOutletInput
-    connect?: AddressWhereUniqueInput
+  export type OutletUncheckedUpdateOneWithoutOutletAddressNestedInput = {
+    create?: XOR<OutletCreateWithoutOutletAddressInput, OutletUncheckedCreateWithoutOutletAddressInput>
+    connectOrCreate?: OutletCreateOrConnectWithoutOutletAddressInput
+    upsert?: OutletUpsertWithoutOutletAddressInput
+    disconnect?: OutletWhereInput | boolean
+    delete?: OutletWhereInput | boolean
+    connect?: OutletWhereUniqueInput
+    update?: XOR<XOR<OutletUpdateToOneWithWhereWithoutOutletAddressInput, OutletUpdateWithoutOutletAddressInput>, OutletUncheckedUpdateWithoutOutletAddressInput>
+  }
+
+  export type EmployeeCreateNestedManyWithoutOutletInput = {
+    create?: XOR<EmployeeCreateWithoutOutletInput, EmployeeUncheckedCreateWithoutOutletInput> | EmployeeCreateWithoutOutletInput[] | EmployeeUncheckedCreateWithoutOutletInput[]
+    connectOrCreate?: EmployeeCreateOrConnectWithoutOutletInput | EmployeeCreateOrConnectWithoutOutletInput[]
+    createMany?: EmployeeCreateManyOutletInputEnvelope
+    connect?: EmployeeWhereUniqueInput | EmployeeWhereUniqueInput[]
   }
 
   export type OrderCreateNestedManyWithoutOutletInput = {
@@ -20774,7 +20756,13 @@ export namespace Prisma {
     connect?: OrderWhereUniqueInput | OrderWhereUniqueInput[]
   }
 
-  export type EmployeeCreateNestedManyWithoutOutletInput = {
+  export type AddressCreateNestedOneWithoutOutletInput = {
+    create?: XOR<AddressCreateWithoutOutletInput, AddressUncheckedCreateWithoutOutletInput>
+    connectOrCreate?: AddressCreateOrConnectWithoutOutletInput
+    connect?: AddressWhereUniqueInput
+  }
+
+  export type EmployeeUncheckedCreateNestedManyWithoutOutletInput = {
     create?: XOR<EmployeeCreateWithoutOutletInput, EmployeeUncheckedCreateWithoutOutletInput> | EmployeeCreateWithoutOutletInput[] | EmployeeUncheckedCreateWithoutOutletInput[]
     connectOrCreate?: EmployeeCreateOrConnectWithoutOutletInput | EmployeeCreateOrConnectWithoutOutletInput[]
     createMany?: EmployeeCreateManyOutletInputEnvelope
@@ -20788,19 +20776,18 @@ export namespace Prisma {
     connect?: OrderWhereUniqueInput | OrderWhereUniqueInput[]
   }
 
-  export type EmployeeUncheckedCreateNestedManyWithoutOutletInput = {
+  export type EmployeeUpdateManyWithoutOutletNestedInput = {
     create?: XOR<EmployeeCreateWithoutOutletInput, EmployeeUncheckedCreateWithoutOutletInput> | EmployeeCreateWithoutOutletInput[] | EmployeeUncheckedCreateWithoutOutletInput[]
     connectOrCreate?: EmployeeCreateOrConnectWithoutOutletInput | EmployeeCreateOrConnectWithoutOutletInput[]
+    upsert?: EmployeeUpsertWithWhereUniqueWithoutOutletInput | EmployeeUpsertWithWhereUniqueWithoutOutletInput[]
     createMany?: EmployeeCreateManyOutletInputEnvelope
+    set?: EmployeeWhereUniqueInput | EmployeeWhereUniqueInput[]
+    disconnect?: EmployeeWhereUniqueInput | EmployeeWhereUniqueInput[]
+    delete?: EmployeeWhereUniqueInput | EmployeeWhereUniqueInput[]
     connect?: EmployeeWhereUniqueInput | EmployeeWhereUniqueInput[]
-  }
-
-  export type AddressUpdateOneRequiredWithoutOutletNestedInput = {
-    create?: XOR<AddressCreateWithoutOutletInput, AddressUncheckedCreateWithoutOutletInput>
-    connectOrCreate?: AddressCreateOrConnectWithoutOutletInput
-    upsert?: AddressUpsertWithoutOutletInput
-    connect?: AddressWhereUniqueInput
-    update?: XOR<XOR<AddressUpdateToOneWithWhereWithoutOutletInput, AddressUpdateWithoutOutletInput>, AddressUncheckedUpdateWithoutOutletInput>
+    update?: EmployeeUpdateWithWhereUniqueWithoutOutletInput | EmployeeUpdateWithWhereUniqueWithoutOutletInput[]
+    updateMany?: EmployeeUpdateManyWithWhereWithoutOutletInput | EmployeeUpdateManyWithWhereWithoutOutletInput[]
+    deleteMany?: EmployeeScalarWhereInput | EmployeeScalarWhereInput[]
   }
 
   export type OrderUpdateManyWithoutOutletNestedInput = {
@@ -20817,7 +20804,15 @@ export namespace Prisma {
     deleteMany?: OrderScalarWhereInput | OrderScalarWhereInput[]
   }
 
-  export type EmployeeUpdateManyWithoutOutletNestedInput = {
+  export type AddressUpdateOneRequiredWithoutOutletNestedInput = {
+    create?: XOR<AddressCreateWithoutOutletInput, AddressUncheckedCreateWithoutOutletInput>
+    connectOrCreate?: AddressCreateOrConnectWithoutOutletInput
+    upsert?: AddressUpsertWithoutOutletInput
+    connect?: AddressWhereUniqueInput
+    update?: XOR<XOR<AddressUpdateToOneWithWhereWithoutOutletInput, AddressUpdateWithoutOutletInput>, AddressUncheckedUpdateWithoutOutletInput>
+  }
+
+  export type EmployeeUncheckedUpdateManyWithoutOutletNestedInput = {
     create?: XOR<EmployeeCreateWithoutOutletInput, EmployeeUncheckedCreateWithoutOutletInput> | EmployeeCreateWithoutOutletInput[] | EmployeeUncheckedCreateWithoutOutletInput[]
     connectOrCreate?: EmployeeCreateOrConnectWithoutOutletInput | EmployeeCreateOrConnectWithoutOutletInput[]
     upsert?: EmployeeUpsertWithWhereUniqueWithoutOutletInput | EmployeeUpsertWithWhereUniqueWithoutOutletInput[]
@@ -20845,18 +20840,11 @@ export namespace Prisma {
     deleteMany?: OrderScalarWhereInput | OrderScalarWhereInput[]
   }
 
-  export type EmployeeUncheckedUpdateManyWithoutOutletNestedInput = {
-    create?: XOR<EmployeeCreateWithoutOutletInput, EmployeeUncheckedCreateWithoutOutletInput> | EmployeeCreateWithoutOutletInput[] | EmployeeUncheckedCreateWithoutOutletInput[]
-    connectOrCreate?: EmployeeCreateOrConnectWithoutOutletInput | EmployeeCreateOrConnectWithoutOutletInput[]
-    upsert?: EmployeeUpsertWithWhereUniqueWithoutOutletInput | EmployeeUpsertWithWhereUniqueWithoutOutletInput[]
-    createMany?: EmployeeCreateManyOutletInputEnvelope
-    set?: EmployeeWhereUniqueInput | EmployeeWhereUniqueInput[]
-    disconnect?: EmployeeWhereUniqueInput | EmployeeWhereUniqueInput[]
-    delete?: EmployeeWhereUniqueInput | EmployeeWhereUniqueInput[]
-    connect?: EmployeeWhereUniqueInput | EmployeeWhereUniqueInput[]
-    update?: EmployeeUpdateWithWhereUniqueWithoutOutletInput | EmployeeUpdateWithWhereUniqueWithoutOutletInput[]
-    updateMany?: EmployeeUpdateManyWithWhereWithoutOutletInput | EmployeeUpdateManyWithWhereWithoutOutletInput[]
-    deleteMany?: EmployeeScalarWhereInput | EmployeeScalarWhereInput[]
+  export type LaundryJobCreateNestedManyWithoutOrderInput = {
+    create?: XOR<LaundryJobCreateWithoutOrderInput, LaundryJobUncheckedCreateWithoutOrderInput> | LaundryJobCreateWithoutOrderInput[] | LaundryJobUncheckedCreateWithoutOrderInput[]
+    connectOrCreate?: LaundryJobCreateOrConnectWithoutOrderInput | LaundryJobCreateOrConnectWithoutOrderInput[]
+    createMany?: LaundryJobCreateManyOrderInputEnvelope
+    connect?: LaundryJobWhereUniqueInput | LaundryJobWhereUniqueInput[]
   }
 
   export type AddressCreateNestedOneWithoutOrderInput = {
@@ -20878,11 +20866,10 @@ export namespace Prisma {
     connect?: OrderItemWhereUniqueInput | OrderItemWhereUniqueInput[]
   }
 
-  export type LaundryJobCreateNestedManyWithoutOrderInput = {
-    create?: XOR<LaundryJobCreateWithoutOrderInput, LaundryJobUncheckedCreateWithoutOrderInput> | LaundryJobCreateWithoutOrderInput[] | LaundryJobUncheckedCreateWithoutOrderInput[]
-    connectOrCreate?: LaundryJobCreateOrConnectWithoutOrderInput | LaundryJobCreateOrConnectWithoutOrderInput[]
-    createMany?: LaundryJobCreateManyOrderInputEnvelope
-    connect?: LaundryJobWhereUniqueInput | LaundryJobWhereUniqueInput[]
+  export type PaymentCreateNestedOneWithoutOrderInput = {
+    create?: XOR<PaymentCreateWithoutOrderInput, PaymentUncheckedCreateWithoutOrderInput>
+    connectOrCreate?: PaymentCreateOrConnectWithoutOrderInput
+    connect?: PaymentWhereUniqueInput
   }
 
   export type TransportJobCreateNestedManyWithoutOrderInput = {
@@ -20892,11 +20879,11 @@ export namespace Prisma {
     connect?: TransportJobWhereUniqueInput | TransportJobWhereUniqueInput[]
   }
 
-  export type PaymentCreateNestedManyWithoutOrderInput = {
-    create?: XOR<PaymentCreateWithoutOrderInput, PaymentUncheckedCreateWithoutOrderInput> | PaymentCreateWithoutOrderInput[] | PaymentUncheckedCreateWithoutOrderInput[]
-    connectOrCreate?: PaymentCreateOrConnectWithoutOrderInput | PaymentCreateOrConnectWithoutOrderInput[]
-    createMany?: PaymentCreateManyOrderInputEnvelope
-    connect?: PaymentWhereUniqueInput | PaymentWhereUniqueInput[]
+  export type LaundryJobUncheckedCreateNestedManyWithoutOrderInput = {
+    create?: XOR<LaundryJobCreateWithoutOrderInput, LaundryJobUncheckedCreateWithoutOrderInput> | LaundryJobCreateWithoutOrderInput[] | LaundryJobUncheckedCreateWithoutOrderInput[]
+    connectOrCreate?: LaundryJobCreateOrConnectWithoutOrderInput | LaundryJobCreateOrConnectWithoutOrderInput[]
+    createMany?: LaundryJobCreateManyOrderInputEnvelope
+    connect?: LaundryJobWhereUniqueInput | LaundryJobWhereUniqueInput[]
   }
 
   export type OrderItemUncheckedCreateNestedManyWithoutOrderInput = {
@@ -20906,11 +20893,10 @@ export namespace Prisma {
     connect?: OrderItemWhereUniqueInput | OrderItemWhereUniqueInput[]
   }
 
-  export type LaundryJobUncheckedCreateNestedManyWithoutOrderInput = {
-    create?: XOR<LaundryJobCreateWithoutOrderInput, LaundryJobUncheckedCreateWithoutOrderInput> | LaundryJobCreateWithoutOrderInput[] | LaundryJobUncheckedCreateWithoutOrderInput[]
-    connectOrCreate?: LaundryJobCreateOrConnectWithoutOrderInput | LaundryJobCreateOrConnectWithoutOrderInput[]
-    createMany?: LaundryJobCreateManyOrderInputEnvelope
-    connect?: LaundryJobWhereUniqueInput | LaundryJobWhereUniqueInput[]
+  export type PaymentUncheckedCreateNestedOneWithoutOrderInput = {
+    create?: XOR<PaymentCreateWithoutOrderInput, PaymentUncheckedCreateWithoutOrderInput>
+    connectOrCreate?: PaymentCreateOrConnectWithoutOrderInput
+    connect?: PaymentWhereUniqueInput
   }
 
   export type TransportJobUncheckedCreateNestedManyWithoutOrderInput = {
@@ -20920,15 +20906,22 @@ export namespace Prisma {
     connect?: TransportJobWhereUniqueInput | TransportJobWhereUniqueInput[]
   }
 
-  export type PaymentUncheckedCreateNestedManyWithoutOrderInput = {
-    create?: XOR<PaymentCreateWithoutOrderInput, PaymentUncheckedCreateWithoutOrderInput> | PaymentCreateWithoutOrderInput[] | PaymentUncheckedCreateWithoutOrderInput[]
-    connectOrCreate?: PaymentCreateOrConnectWithoutOrderInput | PaymentCreateOrConnectWithoutOrderInput[]
-    createMany?: PaymentCreateManyOrderInputEnvelope
-    connect?: PaymentWhereUniqueInput | PaymentWhereUniqueInput[]
-  }
-
   export type EnumOrderStatusFieldUpdateOperationsInput = {
     set?: $Enums.OrderStatus
+  }
+
+  export type LaundryJobUpdateManyWithoutOrderNestedInput = {
+    create?: XOR<LaundryJobCreateWithoutOrderInput, LaundryJobUncheckedCreateWithoutOrderInput> | LaundryJobCreateWithoutOrderInput[] | LaundryJobUncheckedCreateWithoutOrderInput[]
+    connectOrCreate?: LaundryJobCreateOrConnectWithoutOrderInput | LaundryJobCreateOrConnectWithoutOrderInput[]
+    upsert?: LaundryJobUpsertWithWhereUniqueWithoutOrderInput | LaundryJobUpsertWithWhereUniqueWithoutOrderInput[]
+    createMany?: LaundryJobCreateManyOrderInputEnvelope
+    set?: LaundryJobWhereUniqueInput | LaundryJobWhereUniqueInput[]
+    disconnect?: LaundryJobWhereUniqueInput | LaundryJobWhereUniqueInput[]
+    delete?: LaundryJobWhereUniqueInput | LaundryJobWhereUniqueInput[]
+    connect?: LaundryJobWhereUniqueInput | LaundryJobWhereUniqueInput[]
+    update?: LaundryJobUpdateWithWhereUniqueWithoutOrderInput | LaundryJobUpdateWithWhereUniqueWithoutOrderInput[]
+    updateMany?: LaundryJobUpdateManyWithWhereWithoutOrderInput | LaundryJobUpdateManyWithWhereWithoutOrderInput[]
+    deleteMany?: LaundryJobScalarWhereInput | LaundryJobScalarWhereInput[]
   }
 
   export type AddressUpdateOneRequiredWithoutOrderNestedInput = {
@@ -20961,18 +20954,14 @@ export namespace Prisma {
     deleteMany?: OrderItemScalarWhereInput | OrderItemScalarWhereInput[]
   }
 
-  export type LaundryJobUpdateManyWithoutOrderNestedInput = {
-    create?: XOR<LaundryJobCreateWithoutOrderInput, LaundryJobUncheckedCreateWithoutOrderInput> | LaundryJobCreateWithoutOrderInput[] | LaundryJobUncheckedCreateWithoutOrderInput[]
-    connectOrCreate?: LaundryJobCreateOrConnectWithoutOrderInput | LaundryJobCreateOrConnectWithoutOrderInput[]
-    upsert?: LaundryJobUpsertWithWhereUniqueWithoutOrderInput | LaundryJobUpsertWithWhereUniqueWithoutOrderInput[]
-    createMany?: LaundryJobCreateManyOrderInputEnvelope
-    set?: LaundryJobWhereUniqueInput | LaundryJobWhereUniqueInput[]
-    disconnect?: LaundryJobWhereUniqueInput | LaundryJobWhereUniqueInput[]
-    delete?: LaundryJobWhereUniqueInput | LaundryJobWhereUniqueInput[]
-    connect?: LaundryJobWhereUniqueInput | LaundryJobWhereUniqueInput[]
-    update?: LaundryJobUpdateWithWhereUniqueWithoutOrderInput | LaundryJobUpdateWithWhereUniqueWithoutOrderInput[]
-    updateMany?: LaundryJobUpdateManyWithWhereWithoutOrderInput | LaundryJobUpdateManyWithWhereWithoutOrderInput[]
-    deleteMany?: LaundryJobScalarWhereInput | LaundryJobScalarWhereInput[]
+  export type PaymentUpdateOneWithoutOrderNestedInput = {
+    create?: XOR<PaymentCreateWithoutOrderInput, PaymentUncheckedCreateWithoutOrderInput>
+    connectOrCreate?: PaymentCreateOrConnectWithoutOrderInput
+    upsert?: PaymentUpsertWithoutOrderInput
+    disconnect?: PaymentWhereInput | boolean
+    delete?: PaymentWhereInput | boolean
+    connect?: PaymentWhereUniqueInput
+    update?: XOR<XOR<PaymentUpdateToOneWithWhereWithoutOrderInput, PaymentUpdateWithoutOrderInput>, PaymentUncheckedUpdateWithoutOrderInput>
   }
 
   export type TransportJobUpdateManyWithoutOrderNestedInput = {
@@ -20989,18 +20978,18 @@ export namespace Prisma {
     deleteMany?: TransportJobScalarWhereInput | TransportJobScalarWhereInput[]
   }
 
-  export type PaymentUpdateManyWithoutOrderNestedInput = {
-    create?: XOR<PaymentCreateWithoutOrderInput, PaymentUncheckedCreateWithoutOrderInput> | PaymentCreateWithoutOrderInput[] | PaymentUncheckedCreateWithoutOrderInput[]
-    connectOrCreate?: PaymentCreateOrConnectWithoutOrderInput | PaymentCreateOrConnectWithoutOrderInput[]
-    upsert?: PaymentUpsertWithWhereUniqueWithoutOrderInput | PaymentUpsertWithWhereUniqueWithoutOrderInput[]
-    createMany?: PaymentCreateManyOrderInputEnvelope
-    set?: PaymentWhereUniqueInput | PaymentWhereUniqueInput[]
-    disconnect?: PaymentWhereUniqueInput | PaymentWhereUniqueInput[]
-    delete?: PaymentWhereUniqueInput | PaymentWhereUniqueInput[]
-    connect?: PaymentWhereUniqueInput | PaymentWhereUniqueInput[]
-    update?: PaymentUpdateWithWhereUniqueWithoutOrderInput | PaymentUpdateWithWhereUniqueWithoutOrderInput[]
-    updateMany?: PaymentUpdateManyWithWhereWithoutOrderInput | PaymentUpdateManyWithWhereWithoutOrderInput[]
-    deleteMany?: PaymentScalarWhereInput | PaymentScalarWhereInput[]
+  export type LaundryJobUncheckedUpdateManyWithoutOrderNestedInput = {
+    create?: XOR<LaundryJobCreateWithoutOrderInput, LaundryJobUncheckedCreateWithoutOrderInput> | LaundryJobCreateWithoutOrderInput[] | LaundryJobUncheckedCreateWithoutOrderInput[]
+    connectOrCreate?: LaundryJobCreateOrConnectWithoutOrderInput | LaundryJobCreateOrConnectWithoutOrderInput[]
+    upsert?: LaundryJobUpsertWithWhereUniqueWithoutOrderInput | LaundryJobUpsertWithWhereUniqueWithoutOrderInput[]
+    createMany?: LaundryJobCreateManyOrderInputEnvelope
+    set?: LaundryJobWhereUniqueInput | LaundryJobWhereUniqueInput[]
+    disconnect?: LaundryJobWhereUniqueInput | LaundryJobWhereUniqueInput[]
+    delete?: LaundryJobWhereUniqueInput | LaundryJobWhereUniqueInput[]
+    connect?: LaundryJobWhereUniqueInput | LaundryJobWhereUniqueInput[]
+    update?: LaundryJobUpdateWithWhereUniqueWithoutOrderInput | LaundryJobUpdateWithWhereUniqueWithoutOrderInput[]
+    updateMany?: LaundryJobUpdateManyWithWhereWithoutOrderInput | LaundryJobUpdateManyWithWhereWithoutOrderInput[]
+    deleteMany?: LaundryJobScalarWhereInput | LaundryJobScalarWhereInput[]
   }
 
   export type OrderItemUncheckedUpdateManyWithoutOrderNestedInput = {
@@ -21017,18 +21006,14 @@ export namespace Prisma {
     deleteMany?: OrderItemScalarWhereInput | OrderItemScalarWhereInput[]
   }
 
-  export type LaundryJobUncheckedUpdateManyWithoutOrderNestedInput = {
-    create?: XOR<LaundryJobCreateWithoutOrderInput, LaundryJobUncheckedCreateWithoutOrderInput> | LaundryJobCreateWithoutOrderInput[] | LaundryJobUncheckedCreateWithoutOrderInput[]
-    connectOrCreate?: LaundryJobCreateOrConnectWithoutOrderInput | LaundryJobCreateOrConnectWithoutOrderInput[]
-    upsert?: LaundryJobUpsertWithWhereUniqueWithoutOrderInput | LaundryJobUpsertWithWhereUniqueWithoutOrderInput[]
-    createMany?: LaundryJobCreateManyOrderInputEnvelope
-    set?: LaundryJobWhereUniqueInput | LaundryJobWhereUniqueInput[]
-    disconnect?: LaundryJobWhereUniqueInput | LaundryJobWhereUniqueInput[]
-    delete?: LaundryJobWhereUniqueInput | LaundryJobWhereUniqueInput[]
-    connect?: LaundryJobWhereUniqueInput | LaundryJobWhereUniqueInput[]
-    update?: LaundryJobUpdateWithWhereUniqueWithoutOrderInput | LaundryJobUpdateWithWhereUniqueWithoutOrderInput[]
-    updateMany?: LaundryJobUpdateManyWithWhereWithoutOrderInput | LaundryJobUpdateManyWithWhereWithoutOrderInput[]
-    deleteMany?: LaundryJobScalarWhereInput | LaundryJobScalarWhereInput[]
+  export type PaymentUncheckedUpdateOneWithoutOrderNestedInput = {
+    create?: XOR<PaymentCreateWithoutOrderInput, PaymentUncheckedCreateWithoutOrderInput>
+    connectOrCreate?: PaymentCreateOrConnectWithoutOrderInput
+    upsert?: PaymentUpsertWithoutOrderInput
+    disconnect?: PaymentWhereInput | boolean
+    delete?: PaymentWhereInput | boolean
+    connect?: PaymentWhereUniqueInput
+    update?: XOR<XOR<PaymentUpdateToOneWithWhereWithoutOrderInput, PaymentUpdateWithoutOrderInput>, PaymentUncheckedUpdateWithoutOrderInput>
   }
 
   export type TransportJobUncheckedUpdateManyWithoutOrderNestedInput = {
@@ -21043,20 +21028,6 @@ export namespace Prisma {
     update?: TransportJobUpdateWithWhereUniqueWithoutOrderInput | TransportJobUpdateWithWhereUniqueWithoutOrderInput[]
     updateMany?: TransportJobUpdateManyWithWhereWithoutOrderInput | TransportJobUpdateManyWithWhereWithoutOrderInput[]
     deleteMany?: TransportJobScalarWhereInput | TransportJobScalarWhereInput[]
-  }
-
-  export type PaymentUncheckedUpdateManyWithoutOrderNestedInput = {
-    create?: XOR<PaymentCreateWithoutOrderInput, PaymentUncheckedCreateWithoutOrderInput> | PaymentCreateWithoutOrderInput[] | PaymentUncheckedCreateWithoutOrderInput[]
-    connectOrCreate?: PaymentCreateOrConnectWithoutOrderInput | PaymentCreateOrConnectWithoutOrderInput[]
-    upsert?: PaymentUpsertWithWhereUniqueWithoutOrderInput | PaymentUpsertWithWhereUniqueWithoutOrderInput[]
-    createMany?: PaymentCreateManyOrderInputEnvelope
-    set?: PaymentWhereUniqueInput | PaymentWhereUniqueInput[]
-    disconnect?: PaymentWhereUniqueInput | PaymentWhereUniqueInput[]
-    delete?: PaymentWhereUniqueInput | PaymentWhereUniqueInput[]
-    connect?: PaymentWhereUniqueInput | PaymentWhereUniqueInput[]
-    update?: PaymentUpdateWithWhereUniqueWithoutOrderInput | PaymentUpdateWithWhereUniqueWithoutOrderInput[]
-    updateMany?: PaymentUpdateManyWithWhereWithoutOrderInput | PaymentUpdateManyWithWhereWithoutOrderInput[]
-    deleteMany?: PaymentScalarWhereInput | PaymentScalarWhereInput[]
   }
 
   export type OrderCreateNestedOneWithoutOrderItemInput = {
@@ -21087,12 +21058,12 @@ export namespace Prisma {
     connect?: EmployeeWhereUniqueInput
   }
 
-  export type EnumWorkerStationFieldUpdateOperationsInput = {
-    set?: $Enums.WorkerStation
-  }
-
   export type NullableEnumByPassStatusFieldUpdateOperationsInput = {
     set?: $Enums.ByPassStatus | null
+  }
+
+  export type EnumWorkerStationFieldUpdateOperationsInput = {
+    set?: $Enums.WorkerStation
   }
 
   export type OrderUpdateOneRequiredWithoutLaundryJobNestedInput = {
@@ -21113,28 +21084,20 @@ export namespace Prisma {
     update?: XOR<XOR<EmployeeUpdateToOneWithWhereWithoutLaundryJobInput, EmployeeUpdateWithoutLaundryJobInput>, EmployeeUncheckedUpdateWithoutLaundryJobInput>
   }
 
-  export type OrderCreateNestedOneWithoutTransportJobInput = {
-    create?: XOR<OrderCreateWithoutTransportJobInput, OrderUncheckedCreateWithoutTransportJobInput>
-    connectOrCreate?: OrderCreateOrConnectWithoutTransportJobInput
-    connect?: OrderWhereUniqueInput
-  }
-
   export type EmployeeCreateNestedOneWithoutTransportJobInput = {
     create?: XOR<EmployeeCreateWithoutTransportJobInput, EmployeeUncheckedCreateWithoutTransportJobInput>
     connectOrCreate?: EmployeeCreateOrConnectWithoutTransportJobInput
     connect?: EmployeeWhereUniqueInput
   }
 
-  export type EnumTransportTypeFieldUpdateOperationsInput = {
-    set?: $Enums.TransportType
-  }
-
-  export type OrderUpdateOneRequiredWithoutTransportJobNestedInput = {
+  export type OrderCreateNestedOneWithoutTransportJobInput = {
     create?: XOR<OrderCreateWithoutTransportJobInput, OrderUncheckedCreateWithoutTransportJobInput>
     connectOrCreate?: OrderCreateOrConnectWithoutTransportJobInput
-    upsert?: OrderUpsertWithoutTransportJobInput
     connect?: OrderWhereUniqueInput
-    update?: XOR<XOR<OrderUpdateToOneWithWhereWithoutTransportJobInput, OrderUpdateWithoutTransportJobInput>, OrderUncheckedUpdateWithoutTransportJobInput>
+  }
+
+  export type EnumTransportTypeFieldUpdateOperationsInput = {
+    set?: $Enums.TransportType
   }
 
   export type EmployeeUpdateOneWithoutTransportJobNestedInput = {
@@ -21145,6 +21108,14 @@ export namespace Prisma {
     delete?: EmployeeWhereInput | boolean
     connect?: EmployeeWhereUniqueInput
     update?: XOR<XOR<EmployeeUpdateToOneWithWhereWithoutTransportJobInput, EmployeeUpdateWithoutTransportJobInput>, EmployeeUncheckedUpdateWithoutTransportJobInput>
+  }
+
+  export type OrderUpdateOneRequiredWithoutTransportJobNestedInput = {
+    create?: XOR<OrderCreateWithoutTransportJobInput, OrderUncheckedCreateWithoutTransportJobInput>
+    connectOrCreate?: OrderCreateOrConnectWithoutTransportJobInput
+    upsert?: OrderUpsertWithoutTransportJobInput
+    connect?: OrderWhereUniqueInput
+    update?: XOR<XOR<OrderUpdateToOneWithWhereWithoutTransportJobInput, OrderUpdateWithoutTransportJobInput>, OrderUncheckedUpdateWithoutTransportJobInput>
   }
 
   export type UserCreateNestedOneWithoutNotificationInput = {
@@ -21179,12 +21150,6 @@ export namespace Prisma {
     update?: XOR<XOR<OrderUpdateToOneWithWhereWithoutPaymentInput, OrderUpdateWithoutPaymentInput>, OrderUncheckedUpdateWithoutPaymentInput>
   }
 
-  export type EmployeeCreateNestedOneWithoutEmployeeAttendanceInput = {
-    create?: XOR<EmployeeCreateWithoutEmployeeAttendanceInput, EmployeeUncheckedCreateWithoutEmployeeAttendanceInput>
-    connectOrCreate?: EmployeeCreateOrConnectWithoutEmployeeAttendanceInput
-    connect?: EmployeeWhereUniqueInput
-  }
-
   export type AttendanceRecordCreateNestedManyWithoutEmployeeAttendanceInput = {
     create?: XOR<AttendanceRecordCreateWithoutEmployeeAttendanceInput, AttendanceRecordUncheckedCreateWithoutEmployeeAttendanceInput> | AttendanceRecordCreateWithoutEmployeeAttendanceInput[] | AttendanceRecordUncheckedCreateWithoutEmployeeAttendanceInput[]
     connectOrCreate?: AttendanceRecordCreateOrConnectWithoutEmployeeAttendanceInput | AttendanceRecordCreateOrConnectWithoutEmployeeAttendanceInput[]
@@ -21192,19 +21157,17 @@ export namespace Prisma {
     connect?: AttendanceRecordWhereUniqueInput | AttendanceRecordWhereUniqueInput[]
   }
 
+  export type EmployeeCreateNestedOneWithoutEmployeeAttendanceInput = {
+    create?: XOR<EmployeeCreateWithoutEmployeeAttendanceInput, EmployeeUncheckedCreateWithoutEmployeeAttendanceInput>
+    connectOrCreate?: EmployeeCreateOrConnectWithoutEmployeeAttendanceInput
+    connect?: EmployeeWhereUniqueInput
+  }
+
   export type AttendanceRecordUncheckedCreateNestedManyWithoutEmployeeAttendanceInput = {
     create?: XOR<AttendanceRecordCreateWithoutEmployeeAttendanceInput, AttendanceRecordUncheckedCreateWithoutEmployeeAttendanceInput> | AttendanceRecordCreateWithoutEmployeeAttendanceInput[] | AttendanceRecordUncheckedCreateWithoutEmployeeAttendanceInput[]
     connectOrCreate?: AttendanceRecordCreateOrConnectWithoutEmployeeAttendanceInput | AttendanceRecordCreateOrConnectWithoutEmployeeAttendanceInput[]
     createMany?: AttendanceRecordCreateManyEmployeeAttendanceInputEnvelope
     connect?: AttendanceRecordWhereUniqueInput | AttendanceRecordWhereUniqueInput[]
-  }
-
-  export type EmployeeUpdateOneRequiredWithoutEmployeeAttendanceNestedInput = {
-    create?: XOR<EmployeeCreateWithoutEmployeeAttendanceInput, EmployeeUncheckedCreateWithoutEmployeeAttendanceInput>
-    connectOrCreate?: EmployeeCreateOrConnectWithoutEmployeeAttendanceInput
-    upsert?: EmployeeUpsertWithoutEmployeeAttendanceInput
-    connect?: EmployeeWhereUniqueInput
-    update?: XOR<XOR<EmployeeUpdateToOneWithWhereWithoutEmployeeAttendanceInput, EmployeeUpdateWithoutEmployeeAttendanceInput>, EmployeeUncheckedUpdateWithoutEmployeeAttendanceInput>
   }
 
   export type AttendanceRecordUpdateManyWithoutEmployeeAttendanceNestedInput = {
@@ -21219,6 +21182,14 @@ export namespace Prisma {
     update?: AttendanceRecordUpdateWithWhereUniqueWithoutEmployeeAttendanceInput | AttendanceRecordUpdateWithWhereUniqueWithoutEmployeeAttendanceInput[]
     updateMany?: AttendanceRecordUpdateManyWithWhereWithoutEmployeeAttendanceInput | AttendanceRecordUpdateManyWithWhereWithoutEmployeeAttendanceInput[]
     deleteMany?: AttendanceRecordScalarWhereInput | AttendanceRecordScalarWhereInput[]
+  }
+
+  export type EmployeeUpdateOneRequiredWithoutEmployeeAttendanceNestedInput = {
+    create?: XOR<EmployeeCreateWithoutEmployeeAttendanceInput, EmployeeUncheckedCreateWithoutEmployeeAttendanceInput>
+    connectOrCreate?: EmployeeCreateOrConnectWithoutEmployeeAttendanceInput
+    upsert?: EmployeeUpsertWithoutEmployeeAttendanceInput
+    connect?: EmployeeWhereUniqueInput
+    update?: XOR<XOR<EmployeeUpdateToOneWithWhereWithoutEmployeeAttendanceInput, EmployeeUpdateWithoutEmployeeAttendanceInput>, EmployeeUncheckedUpdateWithoutEmployeeAttendanceInput>
   }
 
   export type AttendanceRecordUncheckedUpdateManyWithoutEmployeeAttendanceNestedInput = {
@@ -21539,13 +21510,6 @@ export namespace Prisma {
     _max?: NestedEnumOrderStatusFilter<$PrismaModel>
   }
 
-  export type NestedEnumWorkerStationFilter<$PrismaModel = never> = {
-    equals?: $Enums.WorkerStation | EnumWorkerStationFieldRefInput<$PrismaModel>
-    in?: $Enums.WorkerStation[] | ListEnumWorkerStationFieldRefInput<$PrismaModel>
-    notIn?: $Enums.WorkerStation[] | ListEnumWorkerStationFieldRefInput<$PrismaModel>
-    not?: NestedEnumWorkerStationFilter<$PrismaModel> | $Enums.WorkerStation
-  }
-
   export type NestedEnumByPassStatusNullableFilter<$PrismaModel = never> = {
     equals?: $Enums.ByPassStatus | EnumByPassStatusFieldRefInput<$PrismaModel> | null
     in?: $Enums.ByPassStatus[] | ListEnumByPassStatusFieldRefInput<$PrismaModel> | null
@@ -21553,14 +21517,11 @@ export namespace Prisma {
     not?: NestedEnumByPassStatusNullableFilter<$PrismaModel> | $Enums.ByPassStatus | null
   }
 
-  export type NestedEnumWorkerStationWithAggregatesFilter<$PrismaModel = never> = {
+  export type NestedEnumWorkerStationFilter<$PrismaModel = never> = {
     equals?: $Enums.WorkerStation | EnumWorkerStationFieldRefInput<$PrismaModel>
     in?: $Enums.WorkerStation[] | ListEnumWorkerStationFieldRefInput<$PrismaModel>
     notIn?: $Enums.WorkerStation[] | ListEnumWorkerStationFieldRefInput<$PrismaModel>
-    not?: NestedEnumWorkerStationWithAggregatesFilter<$PrismaModel> | $Enums.WorkerStation
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedEnumWorkerStationFilter<$PrismaModel>
-    _max?: NestedEnumWorkerStationFilter<$PrismaModel>
+    not?: NestedEnumWorkerStationFilter<$PrismaModel> | $Enums.WorkerStation
   }
 
   export type NestedEnumByPassStatusNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -21571,6 +21532,16 @@ export namespace Prisma {
     _count?: NestedIntNullableFilter<$PrismaModel>
     _min?: NestedEnumByPassStatusNullableFilter<$PrismaModel>
     _max?: NestedEnumByPassStatusNullableFilter<$PrismaModel>
+  }
+
+  export type NestedEnumWorkerStationWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.WorkerStation | EnumWorkerStationFieldRefInput<$PrismaModel>
+    in?: $Enums.WorkerStation[] | ListEnumWorkerStationFieldRefInput<$PrismaModel>
+    notIn?: $Enums.WorkerStation[] | ListEnumWorkerStationFieldRefInput<$PrismaModel>
+    not?: NestedEnumWorkerStationWithAggregatesFilter<$PrismaModel> | $Enums.WorkerStation
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumWorkerStationFilter<$PrismaModel>
+    _max?: NestedEnumWorkerStationFilter<$PrismaModel>
   }
 
   export type NestedEnumTransportTypeFilter<$PrismaModel = never> = {
@@ -21624,44 +21595,6 @@ export namespace Prisma {
     _max?: NestedEnumAttendanceTypeFilter<$PrismaModel>
   }
 
-  export type EmployeeCreateWithoutUserInput = {
-    workShift?: $Enums.EmployeeWorkShift | null
-    station?: $Enums.WorkerStation | null
-    isPresent?: boolean
-    isWorking?: boolean
-    employmentStatus?: $Enums.EmploymentStatus
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    isDeleted?: boolean
-    deletedAt?: Date | string | null
-    outlet: OutletCreateNestedOneWithoutEmployeeInput
-    LaundryJob?: LaundryJobCreateNestedManyWithoutWorkerInput
-    TransportJob?: TransportJobCreateNestedManyWithoutDriverInput
-    EmployeeAttendance?: EmployeeAttendanceCreateNestedManyWithoutEmployeeInput
-  }
-
-  export type EmployeeUncheckedCreateWithoutUserInput = {
-    id?: number
-    workShift?: $Enums.EmployeeWorkShift | null
-    station?: $Enums.WorkerStation | null
-    isPresent?: boolean
-    isWorking?: boolean
-    employmentStatus?: $Enums.EmploymentStatus
-    outletId: number
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    isDeleted?: boolean
-    deletedAt?: Date | string | null
-    LaundryJob?: LaundryJobUncheckedCreateNestedManyWithoutWorkerInput
-    TransportJob?: TransportJobUncheckedCreateNestedManyWithoutDriverInput
-    EmployeeAttendance?: EmployeeAttendanceUncheckedCreateNestedManyWithoutEmployeeInput
-  }
-
-  export type EmployeeCreateOrConnectWithoutUserInput = {
-    where: EmployeeWhereUniqueInput
-    create: XOR<EmployeeCreateWithoutUserInput, EmployeeUncheckedCreateWithoutUserInput>
-  }
-
   export type AddressCreateWithoutCustomerInput = {
     isPrimary?: boolean
     addressLine: string
@@ -21675,8 +21608,8 @@ export namespace Prisma {
     updatedAt?: Date | string
     isDeleted?: boolean
     deletedAt?: Date | string | null
-    Outlet?: OutletCreateNestedOneWithoutOutletAddressInput
     Order?: OrderCreateNestedManyWithoutCustomerAddressInput
+    Outlet?: OutletCreateNestedOneWithoutOutletAddressInput
   }
 
   export type AddressUncheckedCreateWithoutCustomerInput = {
@@ -21693,8 +21626,8 @@ export namespace Prisma {
     updatedAt?: Date | string
     isDeleted?: boolean
     deletedAt?: Date | string | null
-    Outlet?: OutletUncheckedCreateNestedOneWithoutOutletAddressInput
     Order?: OrderUncheckedCreateNestedManyWithoutCustomerAddressInput
+    Outlet?: OutletUncheckedCreateNestedOneWithoutOutletAddressInput
   }
 
   export type AddressCreateOrConnectWithoutCustomerInput = {
@@ -21707,27 +21640,65 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
-  export type NotificationCreateWithoutUserInput = {
-    title: string
-    description: string
-    isRead?: boolean
-    url?: string | null
+  export type EmployeeCreateWithoutUserInput = {
+    workShift?: $Enums.EmployeeWorkShift | null
     createdAt?: Date | string
     updatedAt?: Date | string
     isDeleted?: boolean
     deletedAt?: Date | string | null
+    station?: $Enums.WorkerStation | null
+    isWorking?: boolean
+    employmentStatus?: $Enums.EmploymentStatus
+    isPresent?: boolean
+    outlet: OutletCreateNestedOneWithoutEmployeeInput
+    EmployeeAttendance?: EmployeeAttendanceCreateNestedManyWithoutEmployeeInput
+    LaundryJob?: LaundryJobCreateNestedManyWithoutWorkerInput
+    TransportJob?: TransportJobCreateNestedManyWithoutDriverInput
+  }
+
+  export type EmployeeUncheckedCreateWithoutUserInput = {
+    id?: number
+    workShift?: $Enums.EmployeeWorkShift | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    isDeleted?: boolean
+    deletedAt?: Date | string | null
+    station?: $Enums.WorkerStation | null
+    isWorking?: boolean
+    employmentStatus?: $Enums.EmploymentStatus
+    outletId: number
+    isPresent?: boolean
+    EmployeeAttendance?: EmployeeAttendanceUncheckedCreateNestedManyWithoutEmployeeInput
+    LaundryJob?: LaundryJobUncheckedCreateNestedManyWithoutWorkerInput
+    TransportJob?: TransportJobUncheckedCreateNestedManyWithoutDriverInput
+  }
+
+  export type EmployeeCreateOrConnectWithoutUserInput = {
+    where: EmployeeWhereUniqueInput
+    create: XOR<EmployeeCreateWithoutUserInput, EmployeeUncheckedCreateWithoutUserInput>
+  }
+
+  export type NotificationCreateWithoutUserInput = {
+    isRead?: boolean
+    title: string
+    description: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    isDeleted?: boolean
+    deletedAt?: Date | string | null
+    url?: string | null
   }
 
   export type NotificationUncheckedCreateWithoutUserInput = {
     id?: number
+    isRead?: boolean
     title: string
     description: string
-    isRead?: boolean
-    url?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     isDeleted?: boolean
     deletedAt?: Date | string | null
+    url?: string | null
   }
 
   export type NotificationCreateOrConnectWithoutUserInput = {
@@ -21738,50 +21709,6 @@ export namespace Prisma {
   export type NotificationCreateManyUserInputEnvelope = {
     data: NotificationCreateManyUserInput | NotificationCreateManyUserInput[]
     skipDuplicates?: boolean
-  }
-
-  export type EmployeeUpsertWithoutUserInput = {
-    update: XOR<EmployeeUpdateWithoutUserInput, EmployeeUncheckedUpdateWithoutUserInput>
-    create: XOR<EmployeeCreateWithoutUserInput, EmployeeUncheckedCreateWithoutUserInput>
-    where?: EmployeeWhereInput
-  }
-
-  export type EmployeeUpdateToOneWithWhereWithoutUserInput = {
-    where?: EmployeeWhereInput
-    data: XOR<EmployeeUpdateWithoutUserInput, EmployeeUncheckedUpdateWithoutUserInput>
-  }
-
-  export type EmployeeUpdateWithoutUserInput = {
-    workShift?: NullableEnumEmployeeWorkShiftFieldUpdateOperationsInput | $Enums.EmployeeWorkShift | null
-    station?: NullableEnumWorkerStationFieldUpdateOperationsInput | $Enums.WorkerStation | null
-    isPresent?: BoolFieldUpdateOperationsInput | boolean
-    isWorking?: BoolFieldUpdateOperationsInput | boolean
-    employmentStatus?: EnumEmploymentStatusFieldUpdateOperationsInput | $Enums.EmploymentStatus
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    isDeleted?: BoolFieldUpdateOperationsInput | boolean
-    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    outlet?: OutletUpdateOneRequiredWithoutEmployeeNestedInput
-    LaundryJob?: LaundryJobUpdateManyWithoutWorkerNestedInput
-    TransportJob?: TransportJobUpdateManyWithoutDriverNestedInput
-    EmployeeAttendance?: EmployeeAttendanceUpdateManyWithoutEmployeeNestedInput
-  }
-
-  export type EmployeeUncheckedUpdateWithoutUserInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    workShift?: NullableEnumEmployeeWorkShiftFieldUpdateOperationsInput | $Enums.EmployeeWorkShift | null
-    station?: NullableEnumWorkerStationFieldUpdateOperationsInput | $Enums.WorkerStation | null
-    isPresent?: BoolFieldUpdateOperationsInput | boolean
-    isWorking?: BoolFieldUpdateOperationsInput | boolean
-    employmentStatus?: EnumEmploymentStatusFieldUpdateOperationsInput | $Enums.EmploymentStatus
-    outletId?: IntFieldUpdateOperationsInput | number
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    isDeleted?: BoolFieldUpdateOperationsInput | boolean
-    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    LaundryJob?: LaundryJobUncheckedUpdateManyWithoutWorkerNestedInput
-    TransportJob?: TransportJobUncheckedUpdateManyWithoutDriverNestedInput
-    EmployeeAttendance?: EmployeeAttendanceUncheckedUpdateManyWithoutEmployeeNestedInput
   }
 
   export type AddressUpsertWithWhereUniqueWithoutCustomerInput = {
@@ -21813,11 +21740,55 @@ export namespace Prisma {
     village?: StringFilter<"Address"> | string
     latitude?: StringFilter<"Address"> | string
     longitude?: StringFilter<"Address"> | string
-    customerId?: IntNullableFilter<"Address"> | number | null
     createdAt?: DateTimeFilter<"Address"> | Date | string
     updatedAt?: DateTimeFilter<"Address"> | Date | string
     isDeleted?: BoolFilter<"Address"> | boolean
     deletedAt?: DateTimeNullableFilter<"Address"> | Date | string | null
+    customerId?: IntNullableFilter<"Address"> | number | null
+  }
+
+  export type EmployeeUpsertWithoutUserInput = {
+    update: XOR<EmployeeUpdateWithoutUserInput, EmployeeUncheckedUpdateWithoutUserInput>
+    create: XOR<EmployeeCreateWithoutUserInput, EmployeeUncheckedCreateWithoutUserInput>
+    where?: EmployeeWhereInput
+  }
+
+  export type EmployeeUpdateToOneWithWhereWithoutUserInput = {
+    where?: EmployeeWhereInput
+    data: XOR<EmployeeUpdateWithoutUserInput, EmployeeUncheckedUpdateWithoutUserInput>
+  }
+
+  export type EmployeeUpdateWithoutUserInput = {
+    workShift?: NullableEnumEmployeeWorkShiftFieldUpdateOperationsInput | $Enums.EmployeeWorkShift | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    isDeleted?: BoolFieldUpdateOperationsInput | boolean
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    station?: NullableEnumWorkerStationFieldUpdateOperationsInput | $Enums.WorkerStation | null
+    isWorking?: BoolFieldUpdateOperationsInput | boolean
+    employmentStatus?: EnumEmploymentStatusFieldUpdateOperationsInput | $Enums.EmploymentStatus
+    isPresent?: BoolFieldUpdateOperationsInput | boolean
+    outlet?: OutletUpdateOneRequiredWithoutEmployeeNestedInput
+    EmployeeAttendance?: EmployeeAttendanceUpdateManyWithoutEmployeeNestedInput
+    LaundryJob?: LaundryJobUpdateManyWithoutWorkerNestedInput
+    TransportJob?: TransportJobUpdateManyWithoutDriverNestedInput
+  }
+
+  export type EmployeeUncheckedUpdateWithoutUserInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    workShift?: NullableEnumEmployeeWorkShiftFieldUpdateOperationsInput | $Enums.EmployeeWorkShift | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    isDeleted?: BoolFieldUpdateOperationsInput | boolean
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    station?: NullableEnumWorkerStationFieldUpdateOperationsInput | $Enums.WorkerStation | null
+    isWorking?: BoolFieldUpdateOperationsInput | boolean
+    employmentStatus?: EnumEmploymentStatusFieldUpdateOperationsInput | $Enums.EmploymentStatus
+    outletId?: IntFieldUpdateOperationsInput | number
+    isPresent?: BoolFieldUpdateOperationsInput | boolean
+    EmployeeAttendance?: EmployeeAttendanceUncheckedUpdateManyWithoutEmployeeNestedInput
+    LaundryJob?: LaundryJobUncheckedUpdateManyWithoutWorkerNestedInput
+    TransportJob?: TransportJobUncheckedUpdateManyWithoutDriverNestedInput
   }
 
   export type NotificationUpsertWithWhereUniqueWithoutUserInput = {
@@ -21841,15 +21812,41 @@ export namespace Prisma {
     OR?: NotificationScalarWhereInput[]
     NOT?: NotificationScalarWhereInput | NotificationScalarWhereInput[]
     id?: IntFilter<"Notification"> | number
+    isRead?: BoolFilter<"Notification"> | boolean
     title?: StringFilter<"Notification"> | string
     description?: StringFilter<"Notification"> | string
-    isRead?: BoolFilter<"Notification"> | boolean
-    url?: StringNullableFilter<"Notification"> | string | null
     userId?: IntFilter<"Notification"> | number
     createdAt?: DateTimeFilter<"Notification"> | Date | string
     updatedAt?: DateTimeFilter<"Notification"> | Date | string
     isDeleted?: BoolFilter<"Notification"> | boolean
     deletedAt?: DateTimeNullableFilter<"Notification"> | Date | string | null
+    url?: StringNullableFilter<"Notification"> | string | null
+  }
+
+  export type OutletCreateWithoutEmployeeInput = {
+    outletName: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    isDeleted?: boolean
+    deletedAt?: Date | string | null
+    Order?: OrderCreateNestedManyWithoutOutletInput
+    outletAddress: AddressCreateNestedOneWithoutOutletInput
+  }
+
+  export type OutletUncheckedCreateWithoutEmployeeInput = {
+    id?: number
+    outletName: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    isDeleted?: boolean
+    deletedAt?: Date | string | null
+    outletAddressId: number
+    Order?: OrderUncheckedCreateNestedManyWithoutOutletInput
+  }
+
+  export type OutletCreateOrConnectWithoutEmployeeInput = {
+    where: OutletWhereUniqueInput
+    create: XOR<OutletCreateWithoutEmployeeInput, OutletUncheckedCreateWithoutEmployeeInput>
   }
 
   export type UserCreateWithoutEmployeeInput = {
@@ -21892,57 +21889,62 @@ export namespace Prisma {
     create: XOR<UserCreateWithoutEmployeeInput, UserUncheckedCreateWithoutEmployeeInput>
   }
 
-  export type OutletCreateWithoutEmployeeInput = {
-    outletName: string
+  export type EmployeeAttendanceCreateWithoutEmployeeInput = {
     createdAt?: Date | string
     updatedAt?: Date | string
     isDeleted?: boolean
     deletedAt?: Date | string | null
-    outletAddress: AddressCreateNestedOneWithoutOutletInput
-    Order?: OrderCreateNestedManyWithoutOutletInput
+    isAttended?: boolean
+    canClockIn?: boolean
+    AttendanceRecord?: AttendanceRecordCreateNestedManyWithoutEmployeeAttendanceInput
   }
 
-  export type OutletUncheckedCreateWithoutEmployeeInput = {
+  export type EmployeeAttendanceUncheckedCreateWithoutEmployeeInput = {
     id?: number
-    outletName: string
-    outletAddressId: number
     createdAt?: Date | string
     updatedAt?: Date | string
     isDeleted?: boolean
     deletedAt?: Date | string | null
-    Order?: OrderUncheckedCreateNestedManyWithoutOutletInput
+    isAttended?: boolean
+    canClockIn?: boolean
+    AttendanceRecord?: AttendanceRecordUncheckedCreateNestedManyWithoutEmployeeAttendanceInput
   }
 
-  export type OutletCreateOrConnectWithoutEmployeeInput = {
-    where: OutletWhereUniqueInput
-    create: XOR<OutletCreateWithoutEmployeeInput, OutletUncheckedCreateWithoutEmployeeInput>
+  export type EmployeeAttendanceCreateOrConnectWithoutEmployeeInput = {
+    where: EmployeeAttendanceWhereUniqueInput
+    create: XOR<EmployeeAttendanceCreateWithoutEmployeeInput, EmployeeAttendanceUncheckedCreateWithoutEmployeeInput>
+  }
+
+  export type EmployeeAttendanceCreateManyEmployeeInputEnvelope = {
+    data: EmployeeAttendanceCreateManyEmployeeInput | EmployeeAttendanceCreateManyEmployeeInput[]
+    skipDuplicates?: boolean
   }
 
   export type LaundryJobCreateWithoutWorkerInput = {
-    station: $Enums.WorkerStation
-    isByPassRequested?: boolean
     isCompleted?: boolean
     byPassNote?: string | null
-    byPassStatus?: $Enums.ByPassStatus | null
     createdAt?: Date | string
     updatedAt?: Date | string
     isDeleted?: boolean
     deletedAt?: Date | string | null
+    byPassStatus?: $Enums.ByPassStatus | null
+    isByPassRequested?: boolean
+    station: $Enums.WorkerStation
     order: OrderCreateNestedOneWithoutLaundryJobInput
   }
 
   export type LaundryJobUncheckedCreateWithoutWorkerInput = {
     id?: number
-    station: $Enums.WorkerStation
-    isByPassRequested?: boolean
     isCompleted?: boolean
     byPassNote?: string | null
-    byPassStatus?: $Enums.ByPassStatus | null
-    orderId: number
     createdAt?: Date | string
     updatedAt?: Date | string
     isDeleted?: boolean
     deletedAt?: Date | string | null
+    orderId: number
+    byPassStatus?: $Enums.ByPassStatus | null
+    isByPassRequested?: boolean
+    station: $Enums.WorkerStation
   }
 
   export type LaundryJobCreateOrConnectWithoutWorkerInput = {
@@ -21988,35 +21990,36 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
-  export type EmployeeAttendanceCreateWithoutEmployeeInput = {
-    isAttended?: boolean
-    canClockIn?: boolean
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    isDeleted?: boolean
-    deletedAt?: Date | string | null
-    AttendanceRecord?: AttendanceRecordCreateNestedManyWithoutEmployeeAttendanceInput
+  export type OutletUpsertWithoutEmployeeInput = {
+    update: XOR<OutletUpdateWithoutEmployeeInput, OutletUncheckedUpdateWithoutEmployeeInput>
+    create: XOR<OutletCreateWithoutEmployeeInput, OutletUncheckedCreateWithoutEmployeeInput>
+    where?: OutletWhereInput
   }
 
-  export type EmployeeAttendanceUncheckedCreateWithoutEmployeeInput = {
-    id?: number
-    isAttended?: boolean
-    canClockIn?: boolean
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    isDeleted?: boolean
-    deletedAt?: Date | string | null
-    AttendanceRecord?: AttendanceRecordUncheckedCreateNestedManyWithoutEmployeeAttendanceInput
+  export type OutletUpdateToOneWithWhereWithoutEmployeeInput = {
+    where?: OutletWhereInput
+    data: XOR<OutletUpdateWithoutEmployeeInput, OutletUncheckedUpdateWithoutEmployeeInput>
   }
 
-  export type EmployeeAttendanceCreateOrConnectWithoutEmployeeInput = {
-    where: EmployeeAttendanceWhereUniqueInput
-    create: XOR<EmployeeAttendanceCreateWithoutEmployeeInput, EmployeeAttendanceUncheckedCreateWithoutEmployeeInput>
+  export type OutletUpdateWithoutEmployeeInput = {
+    outletName?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    isDeleted?: BoolFieldUpdateOperationsInput | boolean
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    Order?: OrderUpdateManyWithoutOutletNestedInput
+    outletAddress?: AddressUpdateOneRequiredWithoutOutletNestedInput
   }
 
-  export type EmployeeAttendanceCreateManyEmployeeInputEnvelope = {
-    data: EmployeeAttendanceCreateManyEmployeeInput | EmployeeAttendanceCreateManyEmployeeInput[]
-    skipDuplicates?: boolean
+  export type OutletUncheckedUpdateWithoutEmployeeInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    outletName?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    isDeleted?: BoolFieldUpdateOperationsInput | boolean
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    outletAddressId?: IntFieldUpdateOperationsInput | number
+    Order?: OrderUncheckedUpdateManyWithoutOutletNestedInput
   }
 
   export type UserUpsertWithoutEmployeeInput = {
@@ -22065,36 +22068,34 @@ export namespace Prisma {
     Notification?: NotificationUncheckedUpdateManyWithoutUserNestedInput
   }
 
-  export type OutletUpsertWithoutEmployeeInput = {
-    update: XOR<OutletUpdateWithoutEmployeeInput, OutletUncheckedUpdateWithoutEmployeeInput>
-    create: XOR<OutletCreateWithoutEmployeeInput, OutletUncheckedCreateWithoutEmployeeInput>
-    where?: OutletWhereInput
+  export type EmployeeAttendanceUpsertWithWhereUniqueWithoutEmployeeInput = {
+    where: EmployeeAttendanceWhereUniqueInput
+    update: XOR<EmployeeAttendanceUpdateWithoutEmployeeInput, EmployeeAttendanceUncheckedUpdateWithoutEmployeeInput>
+    create: XOR<EmployeeAttendanceCreateWithoutEmployeeInput, EmployeeAttendanceUncheckedCreateWithoutEmployeeInput>
   }
 
-  export type OutletUpdateToOneWithWhereWithoutEmployeeInput = {
-    where?: OutletWhereInput
-    data: XOR<OutletUpdateWithoutEmployeeInput, OutletUncheckedUpdateWithoutEmployeeInput>
+  export type EmployeeAttendanceUpdateWithWhereUniqueWithoutEmployeeInput = {
+    where: EmployeeAttendanceWhereUniqueInput
+    data: XOR<EmployeeAttendanceUpdateWithoutEmployeeInput, EmployeeAttendanceUncheckedUpdateWithoutEmployeeInput>
   }
 
-  export type OutletUpdateWithoutEmployeeInput = {
-    outletName?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    isDeleted?: BoolFieldUpdateOperationsInput | boolean
-    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    outletAddress?: AddressUpdateOneRequiredWithoutOutletNestedInput
-    Order?: OrderUpdateManyWithoutOutletNestedInput
+  export type EmployeeAttendanceUpdateManyWithWhereWithoutEmployeeInput = {
+    where: EmployeeAttendanceScalarWhereInput
+    data: XOR<EmployeeAttendanceUpdateManyMutationInput, EmployeeAttendanceUncheckedUpdateManyWithoutEmployeeInput>
   }
 
-  export type OutletUncheckedUpdateWithoutEmployeeInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    outletName?: StringFieldUpdateOperationsInput | string
-    outletAddressId?: IntFieldUpdateOperationsInput | number
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    isDeleted?: BoolFieldUpdateOperationsInput | boolean
-    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    Order?: OrderUncheckedUpdateManyWithoutOutletNestedInput
+  export type EmployeeAttendanceScalarWhereInput = {
+    AND?: EmployeeAttendanceScalarWhereInput | EmployeeAttendanceScalarWhereInput[]
+    OR?: EmployeeAttendanceScalarWhereInput[]
+    NOT?: EmployeeAttendanceScalarWhereInput | EmployeeAttendanceScalarWhereInput[]
+    id?: IntFilter<"EmployeeAttendance"> | number
+    createdAt?: DateTimeFilter<"EmployeeAttendance"> | Date | string
+    updatedAt?: DateTimeFilter<"EmployeeAttendance"> | Date | string
+    isDeleted?: BoolFilter<"EmployeeAttendance"> | boolean
+    deletedAt?: DateTimeNullableFilter<"EmployeeAttendance"> | Date | string | null
+    employeeId?: IntFilter<"EmployeeAttendance"> | number
+    isAttended?: BoolFilter<"EmployeeAttendance"> | boolean
+    canClockIn?: BoolFilter<"EmployeeAttendance"> | boolean
   }
 
   export type LaundryJobUpsertWithWhereUniqueWithoutWorkerInput = {
@@ -22118,17 +22119,17 @@ export namespace Prisma {
     OR?: LaundryJobScalarWhereInput[]
     NOT?: LaundryJobScalarWhereInput | LaundryJobScalarWhereInput[]
     id?: IntFilter<"LaundryJob"> | number
-    station?: EnumWorkerStationFilter<"LaundryJob"> | $Enums.WorkerStation
-    isByPassRequested?: BoolFilter<"LaundryJob"> | boolean
     isCompleted?: BoolFilter<"LaundryJob"> | boolean
     byPassNote?: StringNullableFilter<"LaundryJob"> | string | null
-    byPassStatus?: EnumByPassStatusNullableFilter<"LaundryJob"> | $Enums.ByPassStatus | null
-    orderId?: IntFilter<"LaundryJob"> | number
-    workerId?: IntNullableFilter<"LaundryJob"> | number | null
     createdAt?: DateTimeFilter<"LaundryJob"> | Date | string
     updatedAt?: DateTimeFilter<"LaundryJob"> | Date | string
     isDeleted?: BoolFilter<"LaundryJob"> | boolean
     deletedAt?: DateTimeNullableFilter<"LaundryJob"> | Date | string | null
+    orderId?: IntFilter<"LaundryJob"> | number
+    workerId?: IntNullableFilter<"LaundryJob"> | number | null
+    byPassStatus?: EnumByPassStatusNullableFilter<"LaundryJob"> | $Enums.ByPassStatus | null
+    isByPassRequested?: BoolFilter<"LaundryJob"> | boolean
+    station?: EnumWorkerStationFilter<"LaundryJob"> | $Enums.WorkerStation
   }
 
   export type TransportJobUpsertWithWhereUniqueWithoutDriverInput = {
@@ -22161,36 +22162,6 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"TransportJob"> | Date | string
     isDeleted?: BoolFilter<"TransportJob"> | boolean
     deletedAt?: DateTimeNullableFilter<"TransportJob"> | Date | string | null
-  }
-
-  export type EmployeeAttendanceUpsertWithWhereUniqueWithoutEmployeeInput = {
-    where: EmployeeAttendanceWhereUniqueInput
-    update: XOR<EmployeeAttendanceUpdateWithoutEmployeeInput, EmployeeAttendanceUncheckedUpdateWithoutEmployeeInput>
-    create: XOR<EmployeeAttendanceCreateWithoutEmployeeInput, EmployeeAttendanceUncheckedCreateWithoutEmployeeInput>
-  }
-
-  export type EmployeeAttendanceUpdateWithWhereUniqueWithoutEmployeeInput = {
-    where: EmployeeAttendanceWhereUniqueInput
-    data: XOR<EmployeeAttendanceUpdateWithoutEmployeeInput, EmployeeAttendanceUncheckedUpdateWithoutEmployeeInput>
-  }
-
-  export type EmployeeAttendanceUpdateManyWithWhereWithoutEmployeeInput = {
-    where: EmployeeAttendanceScalarWhereInput
-    data: XOR<EmployeeAttendanceUpdateManyMutationInput, EmployeeAttendanceUncheckedUpdateManyWithoutEmployeeInput>
-  }
-
-  export type EmployeeAttendanceScalarWhereInput = {
-    AND?: EmployeeAttendanceScalarWhereInput | EmployeeAttendanceScalarWhereInput[]
-    OR?: EmployeeAttendanceScalarWhereInput[]
-    NOT?: EmployeeAttendanceScalarWhereInput | EmployeeAttendanceScalarWhereInput[]
-    id?: IntFilter<"EmployeeAttendance"> | number
-    isAttended?: BoolFilter<"EmployeeAttendance"> | boolean
-    canClockIn?: BoolFilter<"EmployeeAttendance"> | boolean
-    employeeId?: IntFilter<"EmployeeAttendance"> | number
-    createdAt?: DateTimeFilter<"EmployeeAttendance"> | Date | string
-    updatedAt?: DateTimeFilter<"EmployeeAttendance"> | Date | string
-    isDeleted?: BoolFilter<"EmployeeAttendance"> | boolean
-    deletedAt?: DateTimeNullableFilter<"EmployeeAttendance"> | Date | string | null
   }
 
   export type UserCreateWithoutAddressInput = {
@@ -22233,63 +22204,37 @@ export namespace Prisma {
     create: XOR<UserCreateWithoutAddressInput, UserUncheckedCreateWithoutAddressInput>
   }
 
-  export type OutletCreateWithoutOutletAddressInput = {
-    outletName: string
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    isDeleted?: boolean
-    deletedAt?: Date | string | null
-    Order?: OrderCreateNestedManyWithoutOutletInput
-    Employee?: EmployeeCreateNestedManyWithoutOutletInput
-  }
-
-  export type OutletUncheckedCreateWithoutOutletAddressInput = {
-    id?: number
-    outletName: string
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    isDeleted?: boolean
-    deletedAt?: Date | string | null
-    Order?: OrderUncheckedCreateNestedManyWithoutOutletInput
-    Employee?: EmployeeUncheckedCreateNestedManyWithoutOutletInput
-  }
-
-  export type OutletCreateOrConnectWithoutOutletAddressInput = {
-    where: OutletWhereUniqueInput
-    create: XOR<OutletCreateWithoutOutletAddressInput, OutletUncheckedCreateWithoutOutletAddressInput>
-  }
-
   export type OrderCreateWithoutCustomerAddressInput = {
     orderStatus?: $Enums.OrderStatus
-    laundryWeight?: number | null
-    laundryPrice?: number | null
     isPaid?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     isDeleted?: boolean
     deletedAt?: Date | string | null
+    laundryPrice?: number | null
+    laundryWeight?: number | null
+    LaundryJob?: LaundryJobCreateNestedManyWithoutOrderInput
     outlet: OutletCreateNestedOneWithoutOrderInput
     OrderItem?: OrderItemCreateNestedManyWithoutOrderInput
-    LaundryJob?: LaundryJobCreateNestedManyWithoutOrderInput
+    Payment?: PaymentCreateNestedOneWithoutOrderInput
     TransportJob?: TransportJobCreateNestedManyWithoutOrderInput
-    Payment?: PaymentCreateNestedManyWithoutOrderInput
   }
 
   export type OrderUncheckedCreateWithoutCustomerAddressInput = {
     id?: number
     orderStatus?: $Enums.OrderStatus
-    outletId: number
-    laundryWeight?: number | null
-    laundryPrice?: number | null
     isPaid?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     isDeleted?: boolean
     deletedAt?: Date | string | null
-    OrderItem?: OrderItemUncheckedCreateNestedManyWithoutOrderInput
+    laundryPrice?: number | null
+    laundryWeight?: number | null
+    outletId: number
     LaundryJob?: LaundryJobUncheckedCreateNestedManyWithoutOrderInput
+    OrderItem?: OrderItemUncheckedCreateNestedManyWithoutOrderInput
+    Payment?: PaymentUncheckedCreateNestedOneWithoutOrderInput
     TransportJob?: TransportJobUncheckedCreateNestedManyWithoutOrderInput
-    Payment?: PaymentUncheckedCreateNestedManyWithoutOrderInput
   }
 
   export type OrderCreateOrConnectWithoutCustomerAddressInput = {
@@ -22300,6 +22245,32 @@ export namespace Prisma {
   export type OrderCreateManyCustomerAddressInputEnvelope = {
     data: OrderCreateManyCustomerAddressInput | OrderCreateManyCustomerAddressInput[]
     skipDuplicates?: boolean
+  }
+
+  export type OutletCreateWithoutOutletAddressInput = {
+    outletName: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    isDeleted?: boolean
+    deletedAt?: Date | string | null
+    Employee?: EmployeeCreateNestedManyWithoutOutletInput
+    Order?: OrderCreateNestedManyWithoutOutletInput
+  }
+
+  export type OutletUncheckedCreateWithoutOutletAddressInput = {
+    id?: number
+    outletName: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    isDeleted?: boolean
+    deletedAt?: Date | string | null
+    Employee?: EmployeeUncheckedCreateNestedManyWithoutOutletInput
+    Order?: OrderUncheckedCreateNestedManyWithoutOutletInput
+  }
+
+  export type OutletCreateOrConnectWithoutOutletAddressInput = {
+    where: OutletWhereUniqueInput
+    create: XOR<OutletCreateWithoutOutletAddressInput, OutletUncheckedCreateWithoutOutletAddressInput>
   }
 
   export type UserUpsertWithoutAddressInput = {
@@ -22348,38 +22319,6 @@ export namespace Prisma {
     Notification?: NotificationUncheckedUpdateManyWithoutUserNestedInput
   }
 
-  export type OutletUpsertWithoutOutletAddressInput = {
-    update: XOR<OutletUpdateWithoutOutletAddressInput, OutletUncheckedUpdateWithoutOutletAddressInput>
-    create: XOR<OutletCreateWithoutOutletAddressInput, OutletUncheckedCreateWithoutOutletAddressInput>
-    where?: OutletWhereInput
-  }
-
-  export type OutletUpdateToOneWithWhereWithoutOutletAddressInput = {
-    where?: OutletWhereInput
-    data: XOR<OutletUpdateWithoutOutletAddressInput, OutletUncheckedUpdateWithoutOutletAddressInput>
-  }
-
-  export type OutletUpdateWithoutOutletAddressInput = {
-    outletName?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    isDeleted?: BoolFieldUpdateOperationsInput | boolean
-    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    Order?: OrderUpdateManyWithoutOutletNestedInput
-    Employee?: EmployeeUpdateManyWithoutOutletNestedInput
-  }
-
-  export type OutletUncheckedUpdateWithoutOutletAddressInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    outletName?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    isDeleted?: BoolFieldUpdateOperationsInput | boolean
-    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    Order?: OrderUncheckedUpdateManyWithoutOutletNestedInput
-    Employee?: EmployeeUncheckedUpdateManyWithoutOutletNestedInput
-  }
-
   export type OrderUpsertWithWhereUniqueWithoutCustomerAddressInput = {
     where: OrderWhereUniqueInput
     update: XOR<OrderUpdateWithoutCustomerAddressInput, OrderUncheckedUpdateWithoutCustomerAddressInput>
@@ -22402,15 +22341,133 @@ export namespace Prisma {
     NOT?: OrderScalarWhereInput | OrderScalarWhereInput[]
     id?: IntFilter<"Order"> | number
     orderStatus?: EnumOrderStatusFilter<"Order"> | $Enums.OrderStatus
-    customerAddressId?: IntFilter<"Order"> | number
-    outletId?: IntFilter<"Order"> | number
-    laundryWeight?: IntNullableFilter<"Order"> | number | null
-    laundryPrice?: IntNullableFilter<"Order"> | number | null
     isPaid?: BoolFilter<"Order"> | boolean
     createdAt?: DateTimeFilter<"Order"> | Date | string
     updatedAt?: DateTimeFilter<"Order"> | Date | string
     isDeleted?: BoolFilter<"Order"> | boolean
     deletedAt?: DateTimeNullableFilter<"Order"> | Date | string | null
+    customerAddressId?: IntFilter<"Order"> | number
+    laundryPrice?: IntNullableFilter<"Order"> | number | null
+    laundryWeight?: IntNullableFilter<"Order"> | number | null
+    outletId?: IntFilter<"Order"> | number
+  }
+
+  export type OutletUpsertWithoutOutletAddressInput = {
+    update: XOR<OutletUpdateWithoutOutletAddressInput, OutletUncheckedUpdateWithoutOutletAddressInput>
+    create: XOR<OutletCreateWithoutOutletAddressInput, OutletUncheckedCreateWithoutOutletAddressInput>
+    where?: OutletWhereInput
+  }
+
+  export type OutletUpdateToOneWithWhereWithoutOutletAddressInput = {
+    where?: OutletWhereInput
+    data: XOR<OutletUpdateWithoutOutletAddressInput, OutletUncheckedUpdateWithoutOutletAddressInput>
+  }
+
+  export type OutletUpdateWithoutOutletAddressInput = {
+    outletName?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    isDeleted?: BoolFieldUpdateOperationsInput | boolean
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    Employee?: EmployeeUpdateManyWithoutOutletNestedInput
+    Order?: OrderUpdateManyWithoutOutletNestedInput
+  }
+
+  export type OutletUncheckedUpdateWithoutOutletAddressInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    outletName?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    isDeleted?: BoolFieldUpdateOperationsInput | boolean
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    Employee?: EmployeeUncheckedUpdateManyWithoutOutletNestedInput
+    Order?: OrderUncheckedUpdateManyWithoutOutletNestedInput
+  }
+
+  export type EmployeeCreateWithoutOutletInput = {
+    workShift?: $Enums.EmployeeWorkShift | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    isDeleted?: boolean
+    deletedAt?: Date | string | null
+    station?: $Enums.WorkerStation | null
+    isWorking?: boolean
+    employmentStatus?: $Enums.EmploymentStatus
+    isPresent?: boolean
+    user: UserCreateNestedOneWithoutEmployeeInput
+    EmployeeAttendance?: EmployeeAttendanceCreateNestedManyWithoutEmployeeInput
+    LaundryJob?: LaundryJobCreateNestedManyWithoutWorkerInput
+    TransportJob?: TransportJobCreateNestedManyWithoutDriverInput
+  }
+
+  export type EmployeeUncheckedCreateWithoutOutletInput = {
+    id?: number
+    workShift?: $Enums.EmployeeWorkShift | null
+    userId: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    isDeleted?: boolean
+    deletedAt?: Date | string | null
+    station?: $Enums.WorkerStation | null
+    isWorking?: boolean
+    employmentStatus?: $Enums.EmploymentStatus
+    isPresent?: boolean
+    EmployeeAttendance?: EmployeeAttendanceUncheckedCreateNestedManyWithoutEmployeeInput
+    LaundryJob?: LaundryJobUncheckedCreateNestedManyWithoutWorkerInput
+    TransportJob?: TransportJobUncheckedCreateNestedManyWithoutDriverInput
+  }
+
+  export type EmployeeCreateOrConnectWithoutOutletInput = {
+    where: EmployeeWhereUniqueInput
+    create: XOR<EmployeeCreateWithoutOutletInput, EmployeeUncheckedCreateWithoutOutletInput>
+  }
+
+  export type EmployeeCreateManyOutletInputEnvelope = {
+    data: EmployeeCreateManyOutletInput | EmployeeCreateManyOutletInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type OrderCreateWithoutOutletInput = {
+    orderStatus?: $Enums.OrderStatus
+    isPaid?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    isDeleted?: boolean
+    deletedAt?: Date | string | null
+    laundryPrice?: number | null
+    laundryWeight?: number | null
+    LaundryJob?: LaundryJobCreateNestedManyWithoutOrderInput
+    customerAddress: AddressCreateNestedOneWithoutOrderInput
+    OrderItem?: OrderItemCreateNestedManyWithoutOrderInput
+    Payment?: PaymentCreateNestedOneWithoutOrderInput
+    TransportJob?: TransportJobCreateNestedManyWithoutOrderInput
+  }
+
+  export type OrderUncheckedCreateWithoutOutletInput = {
+    id?: number
+    orderStatus?: $Enums.OrderStatus
+    isPaid?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    isDeleted?: boolean
+    deletedAt?: Date | string | null
+    customerAddressId: number
+    laundryPrice?: number | null
+    laundryWeight?: number | null
+    LaundryJob?: LaundryJobUncheckedCreateNestedManyWithoutOrderInput
+    OrderItem?: OrderItemUncheckedCreateNestedManyWithoutOrderInput
+    Payment?: PaymentUncheckedCreateNestedOneWithoutOrderInput
+    TransportJob?: TransportJobUncheckedCreateNestedManyWithoutOrderInput
+  }
+
+  export type OrderCreateOrConnectWithoutOutletInput = {
+    where: OrderWhereUniqueInput
+    create: XOR<OrderCreateWithoutOutletInput, OrderUncheckedCreateWithoutOutletInput>
+  }
+
+  export type OrderCreateManyOutletInputEnvelope = {
+    data: OrderCreateManyOutletInput | OrderCreateManyOutletInput[]
+    skipDuplicates?: boolean
   }
 
   export type AddressCreateWithoutOutletInput = {
@@ -22440,11 +22497,11 @@ export namespace Prisma {
     village: string
     latitude: string
     longitude: string
-    customerId?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
     isDeleted?: boolean
     deletedAt?: Date | string | null
+    customerId?: number | null
     Order?: OrderUncheckedCreateNestedManyWithoutCustomerAddressInput
   }
 
@@ -22453,90 +22510,54 @@ export namespace Prisma {
     create: XOR<AddressCreateWithoutOutletInput, AddressUncheckedCreateWithoutOutletInput>
   }
 
-  export type OrderCreateWithoutOutletInput = {
-    orderStatus?: $Enums.OrderStatus
-    laundryWeight?: number | null
-    laundryPrice?: number | null
-    isPaid?: boolean
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    isDeleted?: boolean
-    deletedAt?: Date | string | null
-    customerAddress: AddressCreateNestedOneWithoutOrderInput
-    OrderItem?: OrderItemCreateNestedManyWithoutOrderInput
-    LaundryJob?: LaundryJobCreateNestedManyWithoutOrderInput
-    TransportJob?: TransportJobCreateNestedManyWithoutOrderInput
-    Payment?: PaymentCreateNestedManyWithoutOrderInput
-  }
-
-  export type OrderUncheckedCreateWithoutOutletInput = {
-    id?: number
-    orderStatus?: $Enums.OrderStatus
-    customerAddressId: number
-    laundryWeight?: number | null
-    laundryPrice?: number | null
-    isPaid?: boolean
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    isDeleted?: boolean
-    deletedAt?: Date | string | null
-    OrderItem?: OrderItemUncheckedCreateNestedManyWithoutOrderInput
-    LaundryJob?: LaundryJobUncheckedCreateNestedManyWithoutOrderInput
-    TransportJob?: TransportJobUncheckedCreateNestedManyWithoutOrderInput
-    Payment?: PaymentUncheckedCreateNestedManyWithoutOrderInput
-  }
-
-  export type OrderCreateOrConnectWithoutOutletInput = {
-    where: OrderWhereUniqueInput
-    create: XOR<OrderCreateWithoutOutletInput, OrderUncheckedCreateWithoutOutletInput>
-  }
-
-  export type OrderCreateManyOutletInputEnvelope = {
-    data: OrderCreateManyOutletInput | OrderCreateManyOutletInput[]
-    skipDuplicates?: boolean
-  }
-
-  export type EmployeeCreateWithoutOutletInput = {
-    workShift?: $Enums.EmployeeWorkShift | null
-    station?: $Enums.WorkerStation | null
-    isPresent?: boolean
-    isWorking?: boolean
-    employmentStatus?: $Enums.EmploymentStatus
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    isDeleted?: boolean
-    deletedAt?: Date | string | null
-    user: UserCreateNestedOneWithoutEmployeeInput
-    LaundryJob?: LaundryJobCreateNestedManyWithoutWorkerInput
-    TransportJob?: TransportJobCreateNestedManyWithoutDriverInput
-    EmployeeAttendance?: EmployeeAttendanceCreateNestedManyWithoutEmployeeInput
-  }
-
-  export type EmployeeUncheckedCreateWithoutOutletInput = {
-    id?: number
-    workShift?: $Enums.EmployeeWorkShift | null
-    station?: $Enums.WorkerStation | null
-    isPresent?: boolean
-    isWorking?: boolean
-    employmentStatus?: $Enums.EmploymentStatus
-    userId: number
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    isDeleted?: boolean
-    deletedAt?: Date | string | null
-    LaundryJob?: LaundryJobUncheckedCreateNestedManyWithoutWorkerInput
-    TransportJob?: TransportJobUncheckedCreateNestedManyWithoutDriverInput
-    EmployeeAttendance?: EmployeeAttendanceUncheckedCreateNestedManyWithoutEmployeeInput
-  }
-
-  export type EmployeeCreateOrConnectWithoutOutletInput = {
+  export type EmployeeUpsertWithWhereUniqueWithoutOutletInput = {
     where: EmployeeWhereUniqueInput
+    update: XOR<EmployeeUpdateWithoutOutletInput, EmployeeUncheckedUpdateWithoutOutletInput>
     create: XOR<EmployeeCreateWithoutOutletInput, EmployeeUncheckedCreateWithoutOutletInput>
   }
 
-  export type EmployeeCreateManyOutletInputEnvelope = {
-    data: EmployeeCreateManyOutletInput | EmployeeCreateManyOutletInput[]
-    skipDuplicates?: boolean
+  export type EmployeeUpdateWithWhereUniqueWithoutOutletInput = {
+    where: EmployeeWhereUniqueInput
+    data: XOR<EmployeeUpdateWithoutOutletInput, EmployeeUncheckedUpdateWithoutOutletInput>
+  }
+
+  export type EmployeeUpdateManyWithWhereWithoutOutletInput = {
+    where: EmployeeScalarWhereInput
+    data: XOR<EmployeeUpdateManyMutationInput, EmployeeUncheckedUpdateManyWithoutOutletInput>
+  }
+
+  export type EmployeeScalarWhereInput = {
+    AND?: EmployeeScalarWhereInput | EmployeeScalarWhereInput[]
+    OR?: EmployeeScalarWhereInput[]
+    NOT?: EmployeeScalarWhereInput | EmployeeScalarWhereInput[]
+    id?: IntFilter<"Employee"> | number
+    workShift?: EnumEmployeeWorkShiftNullableFilter<"Employee"> | $Enums.EmployeeWorkShift | null
+    userId?: IntFilter<"Employee"> | number
+    createdAt?: DateTimeFilter<"Employee"> | Date | string
+    updatedAt?: DateTimeFilter<"Employee"> | Date | string
+    isDeleted?: BoolFilter<"Employee"> | boolean
+    deletedAt?: DateTimeNullableFilter<"Employee"> | Date | string | null
+    station?: EnumWorkerStationNullableFilter<"Employee"> | $Enums.WorkerStation | null
+    isWorking?: BoolFilter<"Employee"> | boolean
+    employmentStatus?: EnumEmploymentStatusFilter<"Employee"> | $Enums.EmploymentStatus
+    outletId?: IntFilter<"Employee"> | number
+    isPresent?: BoolFilter<"Employee"> | boolean
+  }
+
+  export type OrderUpsertWithWhereUniqueWithoutOutletInput = {
+    where: OrderWhereUniqueInput
+    update: XOR<OrderUpdateWithoutOutletInput, OrderUncheckedUpdateWithoutOutletInput>
+    create: XOR<OrderCreateWithoutOutletInput, OrderUncheckedCreateWithoutOutletInput>
+  }
+
+  export type OrderUpdateWithWhereUniqueWithoutOutletInput = {
+    where: OrderWhereUniqueInput
+    data: XOR<OrderUpdateWithoutOutletInput, OrderUncheckedUpdateWithoutOutletInput>
+  }
+
+  export type OrderUpdateManyWithWhereWithoutOutletInput = {
+    where: OrderScalarWhereInput
+    data: XOR<OrderUpdateManyMutationInput, OrderUncheckedUpdateManyWithoutOutletInput>
   }
 
   export type AddressUpsertWithoutOutletInput = {
@@ -22577,62 +22598,49 @@ export namespace Prisma {
     village?: StringFieldUpdateOperationsInput | string
     latitude?: StringFieldUpdateOperationsInput | string
     longitude?: StringFieldUpdateOperationsInput | string
-    customerId?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isDeleted?: BoolFieldUpdateOperationsInput | boolean
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    customerId?: NullableIntFieldUpdateOperationsInput | number | null
     Order?: OrderUncheckedUpdateManyWithoutCustomerAddressNestedInput
   }
 
-  export type OrderUpsertWithWhereUniqueWithoutOutletInput = {
-    where: OrderWhereUniqueInput
-    update: XOR<OrderUpdateWithoutOutletInput, OrderUncheckedUpdateWithoutOutletInput>
-    create: XOR<OrderCreateWithoutOutletInput, OrderUncheckedCreateWithoutOutletInput>
+  export type LaundryJobCreateWithoutOrderInput = {
+    isCompleted?: boolean
+    byPassNote?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    isDeleted?: boolean
+    deletedAt?: Date | string | null
+    byPassStatus?: $Enums.ByPassStatus | null
+    isByPassRequested?: boolean
+    station: $Enums.WorkerStation
+    worker?: EmployeeCreateNestedOneWithoutLaundryJobInput
   }
 
-  export type OrderUpdateWithWhereUniqueWithoutOutletInput = {
-    where: OrderWhereUniqueInput
-    data: XOR<OrderUpdateWithoutOutletInput, OrderUncheckedUpdateWithoutOutletInput>
+  export type LaundryJobUncheckedCreateWithoutOrderInput = {
+    id?: number
+    isCompleted?: boolean
+    byPassNote?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    isDeleted?: boolean
+    deletedAt?: Date | string | null
+    workerId?: number | null
+    byPassStatus?: $Enums.ByPassStatus | null
+    isByPassRequested?: boolean
+    station: $Enums.WorkerStation
   }
 
-  export type OrderUpdateManyWithWhereWithoutOutletInput = {
-    where: OrderScalarWhereInput
-    data: XOR<OrderUpdateManyMutationInput, OrderUncheckedUpdateManyWithoutOutletInput>
+  export type LaundryJobCreateOrConnectWithoutOrderInput = {
+    where: LaundryJobWhereUniqueInput
+    create: XOR<LaundryJobCreateWithoutOrderInput, LaundryJobUncheckedCreateWithoutOrderInput>
   }
 
-  export type EmployeeUpsertWithWhereUniqueWithoutOutletInput = {
-    where: EmployeeWhereUniqueInput
-    update: XOR<EmployeeUpdateWithoutOutletInput, EmployeeUncheckedUpdateWithoutOutletInput>
-    create: XOR<EmployeeCreateWithoutOutletInput, EmployeeUncheckedCreateWithoutOutletInput>
-  }
-
-  export type EmployeeUpdateWithWhereUniqueWithoutOutletInput = {
-    where: EmployeeWhereUniqueInput
-    data: XOR<EmployeeUpdateWithoutOutletInput, EmployeeUncheckedUpdateWithoutOutletInput>
-  }
-
-  export type EmployeeUpdateManyWithWhereWithoutOutletInput = {
-    where: EmployeeScalarWhereInput
-    data: XOR<EmployeeUpdateManyMutationInput, EmployeeUncheckedUpdateManyWithoutOutletInput>
-  }
-
-  export type EmployeeScalarWhereInput = {
-    AND?: EmployeeScalarWhereInput | EmployeeScalarWhereInput[]
-    OR?: EmployeeScalarWhereInput[]
-    NOT?: EmployeeScalarWhereInput | EmployeeScalarWhereInput[]
-    id?: IntFilter<"Employee"> | number
-    workShift?: EnumEmployeeWorkShiftNullableFilter<"Employee"> | $Enums.EmployeeWorkShift | null
-    station?: EnumWorkerStationNullableFilter<"Employee"> | $Enums.WorkerStation | null
-    isPresent?: BoolFilter<"Employee"> | boolean
-    isWorking?: BoolFilter<"Employee"> | boolean
-    employmentStatus?: EnumEmploymentStatusFilter<"Employee"> | $Enums.EmploymentStatus
-    userId?: IntFilter<"Employee"> | number
-    outletId?: IntFilter<"Employee"> | number
-    createdAt?: DateTimeFilter<"Employee"> | Date | string
-    updatedAt?: DateTimeFilter<"Employee"> | Date | string
-    isDeleted?: BoolFilter<"Employee"> | boolean
-    deletedAt?: DateTimeNullableFilter<"Employee"> | Date | string | null
+  export type LaundryJobCreateManyOrderInputEnvelope = {
+    data: LaundryJobCreateManyOrderInput | LaundryJobCreateManyOrderInput[]
+    skipDuplicates?: boolean
   }
 
   export type AddressCreateWithoutOrderInput = {
@@ -22662,11 +22670,11 @@ export namespace Prisma {
     village: string
     latitude: string
     longitude: string
-    customerId?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
     isDeleted?: boolean
     deletedAt?: Date | string | null
+    customerId?: number | null
     Outlet?: OutletUncheckedCreateNestedOneWithoutOutletAddressInput
   }
 
@@ -22681,18 +22689,18 @@ export namespace Prisma {
     updatedAt?: Date | string
     isDeleted?: boolean
     deletedAt?: Date | string | null
-    outletAddress: AddressCreateNestedOneWithoutOutletInput
     Employee?: EmployeeCreateNestedManyWithoutOutletInput
+    outletAddress: AddressCreateNestedOneWithoutOutletInput
   }
 
   export type OutletUncheckedCreateWithoutOrderInput = {
     id?: number
     outletName: string
-    outletAddressId: number
     createdAt?: Date | string
     updatedAt?: Date | string
     isDeleted?: boolean
     deletedAt?: Date | string | null
+    outletAddressId: number
     Employee?: EmployeeUncheckedCreateNestedManyWithoutOutletInput
   }
 
@@ -22703,21 +22711,21 @@ export namespace Prisma {
 
   export type OrderItemCreateWithoutOrderInput = {
     qty?: number | null
-    orderItemName: string
     createdAt?: Date | string
     updatedAt?: Date | string
     isDeleted?: boolean
     deletedAt?: Date | string | null
+    orderItemName: string
   }
 
   export type OrderItemUncheckedCreateWithoutOrderInput = {
     id?: number
     qty?: number | null
-    orderItemName: string
     createdAt?: Date | string
     updatedAt?: Date | string
     isDeleted?: boolean
     deletedAt?: Date | string | null
+    orderItemName: string
   }
 
   export type OrderItemCreateOrConnectWithoutOrderInput = {
@@ -22730,41 +22738,34 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
-  export type LaundryJobCreateWithoutOrderInput = {
-    station: $Enums.WorkerStation
-    isByPassRequested?: boolean
-    isCompleted?: boolean
-    byPassNote?: string | null
-    byPassStatus?: $Enums.ByPassStatus | null
+  export type PaymentCreateWithoutOrderInput = {
+    totalPrice: number
+    paymentStatus?: $Enums.PaymentStatus
+    paymentMethod?: string | null
+    snapToken?: string | null
+    snapRedirectURL?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     isDeleted?: boolean
     deletedAt?: Date | string | null
-    worker?: EmployeeCreateNestedOneWithoutLaundryJobInput
   }
 
-  export type LaundryJobUncheckedCreateWithoutOrderInput = {
+  export type PaymentUncheckedCreateWithoutOrderInput = {
     id?: number
-    station: $Enums.WorkerStation
-    isByPassRequested?: boolean
-    isCompleted?: boolean
-    byPassNote?: string | null
-    byPassStatus?: $Enums.ByPassStatus | null
-    workerId?: number | null
+    totalPrice: number
+    paymentStatus?: $Enums.PaymentStatus
+    paymentMethod?: string | null
+    snapToken?: string | null
+    snapRedirectURL?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     isDeleted?: boolean
     deletedAt?: Date | string | null
   }
 
-  export type LaundryJobCreateOrConnectWithoutOrderInput = {
-    where: LaundryJobWhereUniqueInput
-    create: XOR<LaundryJobCreateWithoutOrderInput, LaundryJobUncheckedCreateWithoutOrderInput>
-  }
-
-  export type LaundryJobCreateManyOrderInputEnvelope = {
-    data: LaundryJobCreateManyOrderInput | LaundryJobCreateManyOrderInput[]
-    skipDuplicates?: boolean
+  export type PaymentCreateOrConnectWithoutOrderInput = {
+    where: PaymentWhereUniqueInput
+    create: XOR<PaymentCreateWithoutOrderInput, PaymentUncheckedCreateWithoutOrderInput>
   }
 
   export type TransportJobCreateWithoutOrderInput = {
@@ -22800,39 +22801,20 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
-  export type PaymentCreateWithoutOrderInput = {
-    totalPrice: number
-    paymentStatus?: $Enums.PaymentStatus
-    paymentMethod?: string | null
-    snapToken?: string | null
-    snapRedirectURL?: string | null
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    isDeleted?: boolean
-    deletedAt?: Date | string | null
+  export type LaundryJobUpsertWithWhereUniqueWithoutOrderInput = {
+    where: LaundryJobWhereUniqueInput
+    update: XOR<LaundryJobUpdateWithoutOrderInput, LaundryJobUncheckedUpdateWithoutOrderInput>
+    create: XOR<LaundryJobCreateWithoutOrderInput, LaundryJobUncheckedCreateWithoutOrderInput>
   }
 
-  export type PaymentUncheckedCreateWithoutOrderInput = {
-    id?: number
-    totalPrice: number
-    paymentStatus?: $Enums.PaymentStatus
-    paymentMethod?: string | null
-    snapToken?: string | null
-    snapRedirectURL?: string | null
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    isDeleted?: boolean
-    deletedAt?: Date | string | null
+  export type LaundryJobUpdateWithWhereUniqueWithoutOrderInput = {
+    where: LaundryJobWhereUniqueInput
+    data: XOR<LaundryJobUpdateWithoutOrderInput, LaundryJobUncheckedUpdateWithoutOrderInput>
   }
 
-  export type PaymentCreateOrConnectWithoutOrderInput = {
-    where: PaymentWhereUniqueInput
-    create: XOR<PaymentCreateWithoutOrderInput, PaymentUncheckedCreateWithoutOrderInput>
-  }
-
-  export type PaymentCreateManyOrderInputEnvelope = {
-    data: PaymentCreateManyOrderInput | PaymentCreateManyOrderInput[]
-    skipDuplicates?: boolean
+  export type LaundryJobUpdateManyWithWhereWithoutOrderInput = {
+    where: LaundryJobScalarWhereInput
+    data: XOR<LaundryJobUpdateManyMutationInput, LaundryJobUncheckedUpdateManyWithoutOrderInput>
   }
 
   export type AddressUpsertWithoutOrderInput = {
@@ -22873,11 +22855,11 @@ export namespace Prisma {
     village?: StringFieldUpdateOperationsInput | string
     latitude?: StringFieldUpdateOperationsInput | string
     longitude?: StringFieldUpdateOperationsInput | string
-    customerId?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isDeleted?: BoolFieldUpdateOperationsInput | boolean
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    customerId?: NullableIntFieldUpdateOperationsInput | number | null
     Outlet?: OutletUncheckedUpdateOneWithoutOutletAddressNestedInput
   }
 
@@ -22898,18 +22880,18 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isDeleted?: BoolFieldUpdateOperationsInput | boolean
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    outletAddress?: AddressUpdateOneRequiredWithoutOutletNestedInput
     Employee?: EmployeeUpdateManyWithoutOutletNestedInput
+    outletAddress?: AddressUpdateOneRequiredWithoutOutletNestedInput
   }
 
   export type OutletUncheckedUpdateWithoutOrderInput = {
     id?: IntFieldUpdateOperationsInput | number
     outletName?: StringFieldUpdateOperationsInput | string
-    outletAddressId?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isDeleted?: BoolFieldUpdateOperationsInput | boolean
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    outletAddressId?: IntFieldUpdateOperationsInput | number
     Employee?: EmployeeUncheckedUpdateManyWithoutOutletNestedInput
   }
 
@@ -22935,28 +22917,48 @@ export namespace Prisma {
     NOT?: OrderItemScalarWhereInput | OrderItemScalarWhereInput[]
     id?: IntFilter<"OrderItem"> | number
     qty?: IntNullableFilter<"OrderItem"> | number | null
-    orderItemName?: StringFilter<"OrderItem"> | string
-    orderId?: IntNullableFilter<"OrderItem"> | number | null
     createdAt?: DateTimeFilter<"OrderItem"> | Date | string
     updatedAt?: DateTimeFilter<"OrderItem"> | Date | string
     isDeleted?: BoolFilter<"OrderItem"> | boolean
     deletedAt?: DateTimeNullableFilter<"OrderItem"> | Date | string | null
+    orderId?: IntNullableFilter<"OrderItem"> | number | null
+    orderItemName?: StringFilter<"OrderItem"> | string
   }
 
-  export type LaundryJobUpsertWithWhereUniqueWithoutOrderInput = {
-    where: LaundryJobWhereUniqueInput
-    update: XOR<LaundryJobUpdateWithoutOrderInput, LaundryJobUncheckedUpdateWithoutOrderInput>
-    create: XOR<LaundryJobCreateWithoutOrderInput, LaundryJobUncheckedCreateWithoutOrderInput>
+  export type PaymentUpsertWithoutOrderInput = {
+    update: XOR<PaymentUpdateWithoutOrderInput, PaymentUncheckedUpdateWithoutOrderInput>
+    create: XOR<PaymentCreateWithoutOrderInput, PaymentUncheckedCreateWithoutOrderInput>
+    where?: PaymentWhereInput
   }
 
-  export type LaundryJobUpdateWithWhereUniqueWithoutOrderInput = {
-    where: LaundryJobWhereUniqueInput
-    data: XOR<LaundryJobUpdateWithoutOrderInput, LaundryJobUncheckedUpdateWithoutOrderInput>
+  export type PaymentUpdateToOneWithWhereWithoutOrderInput = {
+    where?: PaymentWhereInput
+    data: XOR<PaymentUpdateWithoutOrderInput, PaymentUncheckedUpdateWithoutOrderInput>
   }
 
-  export type LaundryJobUpdateManyWithWhereWithoutOrderInput = {
-    where: LaundryJobScalarWhereInput
-    data: XOR<LaundryJobUpdateManyMutationInput, LaundryJobUncheckedUpdateManyWithoutOrderInput>
+  export type PaymentUpdateWithoutOrderInput = {
+    totalPrice?: IntFieldUpdateOperationsInput | number
+    paymentStatus?: EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
+    paymentMethod?: NullableStringFieldUpdateOperationsInput | string | null
+    snapToken?: NullableStringFieldUpdateOperationsInput | string | null
+    snapRedirectURL?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    isDeleted?: BoolFieldUpdateOperationsInput | boolean
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type PaymentUncheckedUpdateWithoutOrderInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    totalPrice?: IntFieldUpdateOperationsInput | number
+    paymentStatus?: EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
+    paymentMethod?: NullableStringFieldUpdateOperationsInput | string | null
+    snapToken?: NullableStringFieldUpdateOperationsInput | string | null
+    snapRedirectURL?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    isDeleted?: BoolFieldUpdateOperationsInput | boolean
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type TransportJobUpsertWithWhereUniqueWithoutOrderInput = {
@@ -22975,70 +22977,37 @@ export namespace Prisma {
     data: XOR<TransportJobUpdateManyMutationInput, TransportJobUncheckedUpdateManyWithoutOrderInput>
   }
 
-  export type PaymentUpsertWithWhereUniqueWithoutOrderInput = {
-    where: PaymentWhereUniqueInput
-    update: XOR<PaymentUpdateWithoutOrderInput, PaymentUncheckedUpdateWithoutOrderInput>
-    create: XOR<PaymentCreateWithoutOrderInput, PaymentUncheckedCreateWithoutOrderInput>
-  }
-
-  export type PaymentUpdateWithWhereUniqueWithoutOrderInput = {
-    where: PaymentWhereUniqueInput
-    data: XOR<PaymentUpdateWithoutOrderInput, PaymentUncheckedUpdateWithoutOrderInput>
-  }
-
-  export type PaymentUpdateManyWithWhereWithoutOrderInput = {
-    where: PaymentScalarWhereInput
-    data: XOR<PaymentUpdateManyMutationInput, PaymentUncheckedUpdateManyWithoutOrderInput>
-  }
-
-  export type PaymentScalarWhereInput = {
-    AND?: PaymentScalarWhereInput | PaymentScalarWhereInput[]
-    OR?: PaymentScalarWhereInput[]
-    NOT?: PaymentScalarWhereInput | PaymentScalarWhereInput[]
-    id?: IntFilter<"Payment"> | number
-    totalPrice?: IntFilter<"Payment"> | number
-    paymentStatus?: EnumPaymentStatusFilter<"Payment"> | $Enums.PaymentStatus
-    paymentMethod?: StringNullableFilter<"Payment"> | string | null
-    snapToken?: StringNullableFilter<"Payment"> | string | null
-    snapRedirectURL?: StringNullableFilter<"Payment"> | string | null
-    orderId?: IntFilter<"Payment"> | number
-    createdAt?: DateTimeFilter<"Payment"> | Date | string
-    updatedAt?: DateTimeFilter<"Payment"> | Date | string
-    isDeleted?: BoolFilter<"Payment"> | boolean
-    deletedAt?: DateTimeNullableFilter<"Payment"> | Date | string | null
-  }
-
   export type OrderCreateWithoutOrderItemInput = {
     orderStatus?: $Enums.OrderStatus
-    laundryWeight?: number | null
-    laundryPrice?: number | null
     isPaid?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     isDeleted?: boolean
     deletedAt?: Date | string | null
+    laundryPrice?: number | null
+    laundryWeight?: number | null
+    LaundryJob?: LaundryJobCreateNestedManyWithoutOrderInput
     customerAddress: AddressCreateNestedOneWithoutOrderInput
     outlet: OutletCreateNestedOneWithoutOrderInput
-    LaundryJob?: LaundryJobCreateNestedManyWithoutOrderInput
+    Payment?: PaymentCreateNestedOneWithoutOrderInput
     TransportJob?: TransportJobCreateNestedManyWithoutOrderInput
-    Payment?: PaymentCreateNestedManyWithoutOrderInput
   }
 
   export type OrderUncheckedCreateWithoutOrderItemInput = {
     id?: number
     orderStatus?: $Enums.OrderStatus
-    customerAddressId: number
-    outletId: number
-    laundryWeight?: number | null
-    laundryPrice?: number | null
     isPaid?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     isDeleted?: boolean
     deletedAt?: Date | string | null
+    customerAddressId: number
+    laundryPrice?: number | null
+    laundryWeight?: number | null
+    outletId: number
     LaundryJob?: LaundryJobUncheckedCreateNestedManyWithoutOrderInput
+    Payment?: PaymentUncheckedCreateNestedOneWithoutOrderInput
     TransportJob?: TransportJobUncheckedCreateNestedManyWithoutOrderInput
-    Payment?: PaymentUncheckedCreateNestedManyWithoutOrderInput
   }
 
   export type OrderCreateOrConnectWithoutOrderItemInput = {
@@ -23059,68 +23028,68 @@ export namespace Prisma {
 
   export type OrderUpdateWithoutOrderItemInput = {
     orderStatus?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
-    laundryWeight?: NullableIntFieldUpdateOperationsInput | number | null
-    laundryPrice?: NullableIntFieldUpdateOperationsInput | number | null
     isPaid?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isDeleted?: BoolFieldUpdateOperationsInput | boolean
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    laundryPrice?: NullableIntFieldUpdateOperationsInput | number | null
+    laundryWeight?: NullableIntFieldUpdateOperationsInput | number | null
+    LaundryJob?: LaundryJobUpdateManyWithoutOrderNestedInput
     customerAddress?: AddressUpdateOneRequiredWithoutOrderNestedInput
     outlet?: OutletUpdateOneRequiredWithoutOrderNestedInput
-    LaundryJob?: LaundryJobUpdateManyWithoutOrderNestedInput
+    Payment?: PaymentUpdateOneWithoutOrderNestedInput
     TransportJob?: TransportJobUpdateManyWithoutOrderNestedInput
-    Payment?: PaymentUpdateManyWithoutOrderNestedInput
   }
 
   export type OrderUncheckedUpdateWithoutOrderItemInput = {
     id?: IntFieldUpdateOperationsInput | number
     orderStatus?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
-    customerAddressId?: IntFieldUpdateOperationsInput | number
-    outletId?: IntFieldUpdateOperationsInput | number
-    laundryWeight?: NullableIntFieldUpdateOperationsInput | number | null
-    laundryPrice?: NullableIntFieldUpdateOperationsInput | number | null
     isPaid?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isDeleted?: BoolFieldUpdateOperationsInput | boolean
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    customerAddressId?: IntFieldUpdateOperationsInput | number
+    laundryPrice?: NullableIntFieldUpdateOperationsInput | number | null
+    laundryWeight?: NullableIntFieldUpdateOperationsInput | number | null
+    outletId?: IntFieldUpdateOperationsInput | number
     LaundryJob?: LaundryJobUncheckedUpdateManyWithoutOrderNestedInput
+    Payment?: PaymentUncheckedUpdateOneWithoutOrderNestedInput
     TransportJob?: TransportJobUncheckedUpdateManyWithoutOrderNestedInput
-    Payment?: PaymentUncheckedUpdateManyWithoutOrderNestedInput
   }
 
   export type OrderCreateWithoutLaundryJobInput = {
     orderStatus?: $Enums.OrderStatus
-    laundryWeight?: number | null
-    laundryPrice?: number | null
     isPaid?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     isDeleted?: boolean
     deletedAt?: Date | string | null
+    laundryPrice?: number | null
+    laundryWeight?: number | null
     customerAddress: AddressCreateNestedOneWithoutOrderInput
     outlet: OutletCreateNestedOneWithoutOrderInput
     OrderItem?: OrderItemCreateNestedManyWithoutOrderInput
+    Payment?: PaymentCreateNestedOneWithoutOrderInput
     TransportJob?: TransportJobCreateNestedManyWithoutOrderInput
-    Payment?: PaymentCreateNestedManyWithoutOrderInput
   }
 
   export type OrderUncheckedCreateWithoutLaundryJobInput = {
     id?: number
     orderStatus?: $Enums.OrderStatus
-    customerAddressId: number
-    outletId: number
-    laundryWeight?: number | null
-    laundryPrice?: number | null
     isPaid?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     isDeleted?: boolean
     deletedAt?: Date | string | null
+    customerAddressId: number
+    laundryPrice?: number | null
+    laundryWeight?: number | null
+    outletId: number
     OrderItem?: OrderItemUncheckedCreateNestedManyWithoutOrderInput
+    Payment?: PaymentUncheckedCreateNestedOneWithoutOrderInput
     TransportJob?: TransportJobUncheckedCreateNestedManyWithoutOrderInput
-    Payment?: PaymentUncheckedCreateNestedManyWithoutOrderInput
   }
 
   export type OrderCreateOrConnectWithoutLaundryJobInput = {
@@ -23130,35 +23099,35 @@ export namespace Prisma {
 
   export type EmployeeCreateWithoutLaundryJobInput = {
     workShift?: $Enums.EmployeeWorkShift | null
-    station?: $Enums.WorkerStation | null
-    isPresent?: boolean
-    isWorking?: boolean
-    employmentStatus?: $Enums.EmploymentStatus
     createdAt?: Date | string
     updatedAt?: Date | string
     isDeleted?: boolean
     deletedAt?: Date | string | null
-    user: UserCreateNestedOneWithoutEmployeeInput
+    station?: $Enums.WorkerStation | null
+    isWorking?: boolean
+    employmentStatus?: $Enums.EmploymentStatus
+    isPresent?: boolean
     outlet: OutletCreateNestedOneWithoutEmployeeInput
-    TransportJob?: TransportJobCreateNestedManyWithoutDriverInput
+    user: UserCreateNestedOneWithoutEmployeeInput
     EmployeeAttendance?: EmployeeAttendanceCreateNestedManyWithoutEmployeeInput
+    TransportJob?: TransportJobCreateNestedManyWithoutDriverInput
   }
 
   export type EmployeeUncheckedCreateWithoutLaundryJobInput = {
     id?: number
     workShift?: $Enums.EmployeeWorkShift | null
-    station?: $Enums.WorkerStation | null
-    isPresent?: boolean
-    isWorking?: boolean
-    employmentStatus?: $Enums.EmploymentStatus
     userId: number
-    outletId: number
     createdAt?: Date | string
     updatedAt?: Date | string
     isDeleted?: boolean
     deletedAt?: Date | string | null
-    TransportJob?: TransportJobUncheckedCreateNestedManyWithoutDriverInput
+    station?: $Enums.WorkerStation | null
+    isWorking?: boolean
+    employmentStatus?: $Enums.EmploymentStatus
+    outletId: number
+    isPresent?: boolean
     EmployeeAttendance?: EmployeeAttendanceUncheckedCreateNestedManyWithoutEmployeeInput
+    TransportJob?: TransportJobUncheckedCreateNestedManyWithoutDriverInput
   }
 
   export type EmployeeCreateOrConnectWithoutLaundryJobInput = {
@@ -23179,35 +23148,35 @@ export namespace Prisma {
 
   export type OrderUpdateWithoutLaundryJobInput = {
     orderStatus?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
-    laundryWeight?: NullableIntFieldUpdateOperationsInput | number | null
-    laundryPrice?: NullableIntFieldUpdateOperationsInput | number | null
     isPaid?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isDeleted?: BoolFieldUpdateOperationsInput | boolean
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    laundryPrice?: NullableIntFieldUpdateOperationsInput | number | null
+    laundryWeight?: NullableIntFieldUpdateOperationsInput | number | null
     customerAddress?: AddressUpdateOneRequiredWithoutOrderNestedInput
     outlet?: OutletUpdateOneRequiredWithoutOrderNestedInput
     OrderItem?: OrderItemUpdateManyWithoutOrderNestedInput
+    Payment?: PaymentUpdateOneWithoutOrderNestedInput
     TransportJob?: TransportJobUpdateManyWithoutOrderNestedInput
-    Payment?: PaymentUpdateManyWithoutOrderNestedInput
   }
 
   export type OrderUncheckedUpdateWithoutLaundryJobInput = {
     id?: IntFieldUpdateOperationsInput | number
     orderStatus?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
-    customerAddressId?: IntFieldUpdateOperationsInput | number
-    outletId?: IntFieldUpdateOperationsInput | number
-    laundryWeight?: NullableIntFieldUpdateOperationsInput | number | null
-    laundryPrice?: NullableIntFieldUpdateOperationsInput | number | null
     isPaid?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isDeleted?: BoolFieldUpdateOperationsInput | boolean
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    customerAddressId?: IntFieldUpdateOperationsInput | number
+    laundryPrice?: NullableIntFieldUpdateOperationsInput | number | null
+    laundryWeight?: NullableIntFieldUpdateOperationsInput | number | null
+    outletId?: IntFieldUpdateOperationsInput | number
     OrderItem?: OrderItemUncheckedUpdateManyWithoutOrderNestedInput
+    Payment?: PaymentUncheckedUpdateOneWithoutOrderNestedInput
     TransportJob?: TransportJobUncheckedUpdateManyWithoutOrderNestedInput
-    Payment?: PaymentUncheckedUpdateManyWithoutOrderNestedInput
   }
 
   export type EmployeeUpsertWithoutLaundryJobInput = {
@@ -23223,106 +23192,68 @@ export namespace Prisma {
 
   export type EmployeeUpdateWithoutLaundryJobInput = {
     workShift?: NullableEnumEmployeeWorkShiftFieldUpdateOperationsInput | $Enums.EmployeeWorkShift | null
-    station?: NullableEnumWorkerStationFieldUpdateOperationsInput | $Enums.WorkerStation | null
-    isPresent?: BoolFieldUpdateOperationsInput | boolean
-    isWorking?: BoolFieldUpdateOperationsInput | boolean
-    employmentStatus?: EnumEmploymentStatusFieldUpdateOperationsInput | $Enums.EmploymentStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isDeleted?: BoolFieldUpdateOperationsInput | boolean
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    user?: UserUpdateOneRequiredWithoutEmployeeNestedInput
+    station?: NullableEnumWorkerStationFieldUpdateOperationsInput | $Enums.WorkerStation | null
+    isWorking?: BoolFieldUpdateOperationsInput | boolean
+    employmentStatus?: EnumEmploymentStatusFieldUpdateOperationsInput | $Enums.EmploymentStatus
+    isPresent?: BoolFieldUpdateOperationsInput | boolean
     outlet?: OutletUpdateOneRequiredWithoutEmployeeNestedInput
-    TransportJob?: TransportJobUpdateManyWithoutDriverNestedInput
+    user?: UserUpdateOneRequiredWithoutEmployeeNestedInput
     EmployeeAttendance?: EmployeeAttendanceUpdateManyWithoutEmployeeNestedInput
+    TransportJob?: TransportJobUpdateManyWithoutDriverNestedInput
   }
 
   export type EmployeeUncheckedUpdateWithoutLaundryJobInput = {
     id?: IntFieldUpdateOperationsInput | number
     workShift?: NullableEnumEmployeeWorkShiftFieldUpdateOperationsInput | $Enums.EmployeeWorkShift | null
-    station?: NullableEnumWorkerStationFieldUpdateOperationsInput | $Enums.WorkerStation | null
-    isPresent?: BoolFieldUpdateOperationsInput | boolean
-    isWorking?: BoolFieldUpdateOperationsInput | boolean
-    employmentStatus?: EnumEmploymentStatusFieldUpdateOperationsInput | $Enums.EmploymentStatus
     userId?: IntFieldUpdateOperationsInput | number
-    outletId?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isDeleted?: BoolFieldUpdateOperationsInput | boolean
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    TransportJob?: TransportJobUncheckedUpdateManyWithoutDriverNestedInput
+    station?: NullableEnumWorkerStationFieldUpdateOperationsInput | $Enums.WorkerStation | null
+    isWorking?: BoolFieldUpdateOperationsInput | boolean
+    employmentStatus?: EnumEmploymentStatusFieldUpdateOperationsInput | $Enums.EmploymentStatus
+    outletId?: IntFieldUpdateOperationsInput | number
+    isPresent?: BoolFieldUpdateOperationsInput | boolean
     EmployeeAttendance?: EmployeeAttendanceUncheckedUpdateManyWithoutEmployeeNestedInput
-  }
-
-  export type OrderCreateWithoutTransportJobInput = {
-    orderStatus?: $Enums.OrderStatus
-    laundryWeight?: number | null
-    laundryPrice?: number | null
-    isPaid?: boolean
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    isDeleted?: boolean
-    deletedAt?: Date | string | null
-    customerAddress: AddressCreateNestedOneWithoutOrderInput
-    outlet: OutletCreateNestedOneWithoutOrderInput
-    OrderItem?: OrderItemCreateNestedManyWithoutOrderInput
-    LaundryJob?: LaundryJobCreateNestedManyWithoutOrderInput
-    Payment?: PaymentCreateNestedManyWithoutOrderInput
-  }
-
-  export type OrderUncheckedCreateWithoutTransportJobInput = {
-    id?: number
-    orderStatus?: $Enums.OrderStatus
-    customerAddressId: number
-    outletId: number
-    laundryWeight?: number | null
-    laundryPrice?: number | null
-    isPaid?: boolean
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    isDeleted?: boolean
-    deletedAt?: Date | string | null
-    OrderItem?: OrderItemUncheckedCreateNestedManyWithoutOrderInput
-    LaundryJob?: LaundryJobUncheckedCreateNestedManyWithoutOrderInput
-    Payment?: PaymentUncheckedCreateNestedManyWithoutOrderInput
-  }
-
-  export type OrderCreateOrConnectWithoutTransportJobInput = {
-    where: OrderWhereUniqueInput
-    create: XOR<OrderCreateWithoutTransportJobInput, OrderUncheckedCreateWithoutTransportJobInput>
+    TransportJob?: TransportJobUncheckedUpdateManyWithoutDriverNestedInput
   }
 
   export type EmployeeCreateWithoutTransportJobInput = {
     workShift?: $Enums.EmployeeWorkShift | null
-    station?: $Enums.WorkerStation | null
-    isPresent?: boolean
-    isWorking?: boolean
-    employmentStatus?: $Enums.EmploymentStatus
     createdAt?: Date | string
     updatedAt?: Date | string
     isDeleted?: boolean
     deletedAt?: Date | string | null
-    user: UserCreateNestedOneWithoutEmployeeInput
+    station?: $Enums.WorkerStation | null
+    isWorking?: boolean
+    employmentStatus?: $Enums.EmploymentStatus
+    isPresent?: boolean
     outlet: OutletCreateNestedOneWithoutEmployeeInput
-    LaundryJob?: LaundryJobCreateNestedManyWithoutWorkerInput
+    user: UserCreateNestedOneWithoutEmployeeInput
     EmployeeAttendance?: EmployeeAttendanceCreateNestedManyWithoutEmployeeInput
+    LaundryJob?: LaundryJobCreateNestedManyWithoutWorkerInput
   }
 
   export type EmployeeUncheckedCreateWithoutTransportJobInput = {
     id?: number
     workShift?: $Enums.EmployeeWorkShift | null
-    station?: $Enums.WorkerStation | null
-    isPresent?: boolean
-    isWorking?: boolean
-    employmentStatus?: $Enums.EmploymentStatus
     userId: number
-    outletId: number
     createdAt?: Date | string
     updatedAt?: Date | string
     isDeleted?: boolean
     deletedAt?: Date | string | null
-    LaundryJob?: LaundryJobUncheckedCreateNestedManyWithoutWorkerInput
+    station?: $Enums.WorkerStation | null
+    isWorking?: boolean
+    employmentStatus?: $Enums.EmploymentStatus
+    outletId: number
+    isPresent?: boolean
     EmployeeAttendance?: EmployeeAttendanceUncheckedCreateNestedManyWithoutEmployeeInput
+    LaundryJob?: LaundryJobUncheckedCreateNestedManyWithoutWorkerInput
   }
 
   export type EmployeeCreateOrConnectWithoutTransportJobInput = {
@@ -23330,48 +23261,42 @@ export namespace Prisma {
     create: XOR<EmployeeCreateWithoutTransportJobInput, EmployeeUncheckedCreateWithoutTransportJobInput>
   }
 
-  export type OrderUpsertWithoutTransportJobInput = {
-    update: XOR<OrderUpdateWithoutTransportJobInput, OrderUncheckedUpdateWithoutTransportJobInput>
+  export type OrderCreateWithoutTransportJobInput = {
+    orderStatus?: $Enums.OrderStatus
+    isPaid?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    isDeleted?: boolean
+    deletedAt?: Date | string | null
+    laundryPrice?: number | null
+    laundryWeight?: number | null
+    LaundryJob?: LaundryJobCreateNestedManyWithoutOrderInput
+    customerAddress: AddressCreateNestedOneWithoutOrderInput
+    outlet: OutletCreateNestedOneWithoutOrderInput
+    OrderItem?: OrderItemCreateNestedManyWithoutOrderInput
+    Payment?: PaymentCreateNestedOneWithoutOrderInput
+  }
+
+  export type OrderUncheckedCreateWithoutTransportJobInput = {
+    id?: number
+    orderStatus?: $Enums.OrderStatus
+    isPaid?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    isDeleted?: boolean
+    deletedAt?: Date | string | null
+    customerAddressId: number
+    laundryPrice?: number | null
+    laundryWeight?: number | null
+    outletId: number
+    LaundryJob?: LaundryJobUncheckedCreateNestedManyWithoutOrderInput
+    OrderItem?: OrderItemUncheckedCreateNestedManyWithoutOrderInput
+    Payment?: PaymentUncheckedCreateNestedOneWithoutOrderInput
+  }
+
+  export type OrderCreateOrConnectWithoutTransportJobInput = {
+    where: OrderWhereUniqueInput
     create: XOR<OrderCreateWithoutTransportJobInput, OrderUncheckedCreateWithoutTransportJobInput>
-    where?: OrderWhereInput
-  }
-
-  export type OrderUpdateToOneWithWhereWithoutTransportJobInput = {
-    where?: OrderWhereInput
-    data: XOR<OrderUpdateWithoutTransportJobInput, OrderUncheckedUpdateWithoutTransportJobInput>
-  }
-
-  export type OrderUpdateWithoutTransportJobInput = {
-    orderStatus?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
-    laundryWeight?: NullableIntFieldUpdateOperationsInput | number | null
-    laundryPrice?: NullableIntFieldUpdateOperationsInput | number | null
-    isPaid?: BoolFieldUpdateOperationsInput | boolean
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    isDeleted?: BoolFieldUpdateOperationsInput | boolean
-    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    customerAddress?: AddressUpdateOneRequiredWithoutOrderNestedInput
-    outlet?: OutletUpdateOneRequiredWithoutOrderNestedInput
-    OrderItem?: OrderItemUpdateManyWithoutOrderNestedInput
-    LaundryJob?: LaundryJobUpdateManyWithoutOrderNestedInput
-    Payment?: PaymentUpdateManyWithoutOrderNestedInput
-  }
-
-  export type OrderUncheckedUpdateWithoutTransportJobInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    orderStatus?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
-    customerAddressId?: IntFieldUpdateOperationsInput | number
-    outletId?: IntFieldUpdateOperationsInput | number
-    laundryWeight?: NullableIntFieldUpdateOperationsInput | number | null
-    laundryPrice?: NullableIntFieldUpdateOperationsInput | number | null
-    isPaid?: BoolFieldUpdateOperationsInput | boolean
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    isDeleted?: BoolFieldUpdateOperationsInput | boolean
-    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    OrderItem?: OrderItemUncheckedUpdateManyWithoutOrderNestedInput
-    LaundryJob?: LaundryJobUncheckedUpdateManyWithoutOrderNestedInput
-    Payment?: PaymentUncheckedUpdateManyWithoutOrderNestedInput
   }
 
   export type EmployeeUpsertWithoutTransportJobInput = {
@@ -23387,35 +23312,79 @@ export namespace Prisma {
 
   export type EmployeeUpdateWithoutTransportJobInput = {
     workShift?: NullableEnumEmployeeWorkShiftFieldUpdateOperationsInput | $Enums.EmployeeWorkShift | null
-    station?: NullableEnumWorkerStationFieldUpdateOperationsInput | $Enums.WorkerStation | null
-    isPresent?: BoolFieldUpdateOperationsInput | boolean
-    isWorking?: BoolFieldUpdateOperationsInput | boolean
-    employmentStatus?: EnumEmploymentStatusFieldUpdateOperationsInput | $Enums.EmploymentStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isDeleted?: BoolFieldUpdateOperationsInput | boolean
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    user?: UserUpdateOneRequiredWithoutEmployeeNestedInput
+    station?: NullableEnumWorkerStationFieldUpdateOperationsInput | $Enums.WorkerStation | null
+    isWorking?: BoolFieldUpdateOperationsInput | boolean
+    employmentStatus?: EnumEmploymentStatusFieldUpdateOperationsInput | $Enums.EmploymentStatus
+    isPresent?: BoolFieldUpdateOperationsInput | boolean
     outlet?: OutletUpdateOneRequiredWithoutEmployeeNestedInput
-    LaundryJob?: LaundryJobUpdateManyWithoutWorkerNestedInput
+    user?: UserUpdateOneRequiredWithoutEmployeeNestedInput
     EmployeeAttendance?: EmployeeAttendanceUpdateManyWithoutEmployeeNestedInput
+    LaundryJob?: LaundryJobUpdateManyWithoutWorkerNestedInput
   }
 
   export type EmployeeUncheckedUpdateWithoutTransportJobInput = {
     id?: IntFieldUpdateOperationsInput | number
     workShift?: NullableEnumEmployeeWorkShiftFieldUpdateOperationsInput | $Enums.EmployeeWorkShift | null
-    station?: NullableEnumWorkerStationFieldUpdateOperationsInput | $Enums.WorkerStation | null
-    isPresent?: BoolFieldUpdateOperationsInput | boolean
-    isWorking?: BoolFieldUpdateOperationsInput | boolean
-    employmentStatus?: EnumEmploymentStatusFieldUpdateOperationsInput | $Enums.EmploymentStatus
     userId?: IntFieldUpdateOperationsInput | number
-    outletId?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isDeleted?: BoolFieldUpdateOperationsInput | boolean
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    LaundryJob?: LaundryJobUncheckedUpdateManyWithoutWorkerNestedInput
+    station?: NullableEnumWorkerStationFieldUpdateOperationsInput | $Enums.WorkerStation | null
+    isWorking?: BoolFieldUpdateOperationsInput | boolean
+    employmentStatus?: EnumEmploymentStatusFieldUpdateOperationsInput | $Enums.EmploymentStatus
+    outletId?: IntFieldUpdateOperationsInput | number
+    isPresent?: BoolFieldUpdateOperationsInput | boolean
     EmployeeAttendance?: EmployeeAttendanceUncheckedUpdateManyWithoutEmployeeNestedInput
+    LaundryJob?: LaundryJobUncheckedUpdateManyWithoutWorkerNestedInput
+  }
+
+  export type OrderUpsertWithoutTransportJobInput = {
+    update: XOR<OrderUpdateWithoutTransportJobInput, OrderUncheckedUpdateWithoutTransportJobInput>
+    create: XOR<OrderCreateWithoutTransportJobInput, OrderUncheckedCreateWithoutTransportJobInput>
+    where?: OrderWhereInput
+  }
+
+  export type OrderUpdateToOneWithWhereWithoutTransportJobInput = {
+    where?: OrderWhereInput
+    data: XOR<OrderUpdateWithoutTransportJobInput, OrderUncheckedUpdateWithoutTransportJobInput>
+  }
+
+  export type OrderUpdateWithoutTransportJobInput = {
+    orderStatus?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+    isPaid?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    isDeleted?: BoolFieldUpdateOperationsInput | boolean
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    laundryPrice?: NullableIntFieldUpdateOperationsInput | number | null
+    laundryWeight?: NullableIntFieldUpdateOperationsInput | number | null
+    LaundryJob?: LaundryJobUpdateManyWithoutOrderNestedInput
+    customerAddress?: AddressUpdateOneRequiredWithoutOrderNestedInput
+    outlet?: OutletUpdateOneRequiredWithoutOrderNestedInput
+    OrderItem?: OrderItemUpdateManyWithoutOrderNestedInput
+    Payment?: PaymentUpdateOneWithoutOrderNestedInput
+  }
+
+  export type OrderUncheckedUpdateWithoutTransportJobInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    orderStatus?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+    isPaid?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    isDeleted?: BoolFieldUpdateOperationsInput | boolean
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    customerAddressId?: IntFieldUpdateOperationsInput | number
+    laundryPrice?: NullableIntFieldUpdateOperationsInput | number | null
+    laundryWeight?: NullableIntFieldUpdateOperationsInput | number | null
+    outletId?: IntFieldUpdateOperationsInput | number
+    LaundryJob?: LaundryJobUncheckedUpdateManyWithoutOrderNestedInput
+    OrderItem?: OrderItemUncheckedUpdateManyWithoutOrderNestedInput
+    Payment?: PaymentUncheckedUpdateOneWithoutOrderNestedInput
   }
 
   export type UserCreateWithoutNotificationInput = {
@@ -23431,8 +23400,8 @@ export namespace Prisma {
     updatedAt?: Date | string
     isDeleted?: boolean
     deletedAt?: Date | string | null
-    Employee?: EmployeeCreateNestedOneWithoutUserInput
     Address?: AddressCreateNestedManyWithoutCustomerInput
+    Employee?: EmployeeCreateNestedOneWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutNotificationInput = {
@@ -23449,8 +23418,8 @@ export namespace Prisma {
     updatedAt?: Date | string
     isDeleted?: boolean
     deletedAt?: Date | string | null
-    Employee?: EmployeeUncheckedCreateNestedOneWithoutUserInput
     Address?: AddressUncheckedCreateNestedManyWithoutCustomerInput
+    Employee?: EmployeeUncheckedCreateNestedOneWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutNotificationInput = {
@@ -23482,8 +23451,8 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isDeleted?: BoolFieldUpdateOperationsInput | boolean
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    Employee?: EmployeeUpdateOneWithoutUserNestedInput
     Address?: AddressUpdateManyWithoutCustomerNestedInput
+    Employee?: EmployeeUpdateOneWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutNotificationInput = {
@@ -23500,40 +23469,40 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isDeleted?: BoolFieldUpdateOperationsInput | boolean
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    Employee?: EmployeeUncheckedUpdateOneWithoutUserNestedInput
     Address?: AddressUncheckedUpdateManyWithoutCustomerNestedInput
+    Employee?: EmployeeUncheckedUpdateOneWithoutUserNestedInput
   }
 
   export type OrderCreateWithoutPaymentInput = {
     orderStatus?: $Enums.OrderStatus
-    laundryWeight?: number | null
-    laundryPrice?: number | null
     isPaid?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     isDeleted?: boolean
     deletedAt?: Date | string | null
+    laundryPrice?: number | null
+    laundryWeight?: number | null
+    LaundryJob?: LaundryJobCreateNestedManyWithoutOrderInput
     customerAddress: AddressCreateNestedOneWithoutOrderInput
     outlet: OutletCreateNestedOneWithoutOrderInput
     OrderItem?: OrderItemCreateNestedManyWithoutOrderInput
-    LaundryJob?: LaundryJobCreateNestedManyWithoutOrderInput
     TransportJob?: TransportJobCreateNestedManyWithoutOrderInput
   }
 
   export type OrderUncheckedCreateWithoutPaymentInput = {
     id?: number
     orderStatus?: $Enums.OrderStatus
-    customerAddressId: number
-    outletId: number
-    laundryWeight?: number | null
-    laundryPrice?: number | null
     isPaid?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     isDeleted?: boolean
     deletedAt?: Date | string | null
-    OrderItem?: OrderItemUncheckedCreateNestedManyWithoutOrderInput
+    customerAddressId: number
+    laundryPrice?: number | null
+    laundryWeight?: number | null
+    outletId: number
     LaundryJob?: LaundryJobUncheckedCreateNestedManyWithoutOrderInput
+    OrderItem?: OrderItemUncheckedCreateNestedManyWithoutOrderInput
     TransportJob?: TransportJobUncheckedCreateNestedManyWithoutOrderInput
   }
 
@@ -23555,73 +23524,35 @@ export namespace Prisma {
 
   export type OrderUpdateWithoutPaymentInput = {
     orderStatus?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
-    laundryWeight?: NullableIntFieldUpdateOperationsInput | number | null
-    laundryPrice?: NullableIntFieldUpdateOperationsInput | number | null
     isPaid?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isDeleted?: BoolFieldUpdateOperationsInput | boolean
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    laundryPrice?: NullableIntFieldUpdateOperationsInput | number | null
+    laundryWeight?: NullableIntFieldUpdateOperationsInput | number | null
+    LaundryJob?: LaundryJobUpdateManyWithoutOrderNestedInput
     customerAddress?: AddressUpdateOneRequiredWithoutOrderNestedInput
     outlet?: OutletUpdateOneRequiredWithoutOrderNestedInput
     OrderItem?: OrderItemUpdateManyWithoutOrderNestedInput
-    LaundryJob?: LaundryJobUpdateManyWithoutOrderNestedInput
     TransportJob?: TransportJobUpdateManyWithoutOrderNestedInput
   }
 
   export type OrderUncheckedUpdateWithoutPaymentInput = {
     id?: IntFieldUpdateOperationsInput | number
     orderStatus?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
-    customerAddressId?: IntFieldUpdateOperationsInput | number
-    outletId?: IntFieldUpdateOperationsInput | number
-    laundryWeight?: NullableIntFieldUpdateOperationsInput | number | null
-    laundryPrice?: NullableIntFieldUpdateOperationsInput | number | null
     isPaid?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isDeleted?: BoolFieldUpdateOperationsInput | boolean
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    OrderItem?: OrderItemUncheckedUpdateManyWithoutOrderNestedInput
+    customerAddressId?: IntFieldUpdateOperationsInput | number
+    laundryPrice?: NullableIntFieldUpdateOperationsInput | number | null
+    laundryWeight?: NullableIntFieldUpdateOperationsInput | number | null
+    outletId?: IntFieldUpdateOperationsInput | number
     LaundryJob?: LaundryJobUncheckedUpdateManyWithoutOrderNestedInput
+    OrderItem?: OrderItemUncheckedUpdateManyWithoutOrderNestedInput
     TransportJob?: TransportJobUncheckedUpdateManyWithoutOrderNestedInput
-  }
-
-  export type EmployeeCreateWithoutEmployeeAttendanceInput = {
-    workShift?: $Enums.EmployeeWorkShift | null
-    station?: $Enums.WorkerStation | null
-    isPresent?: boolean
-    isWorking?: boolean
-    employmentStatus?: $Enums.EmploymentStatus
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    isDeleted?: boolean
-    deletedAt?: Date | string | null
-    user: UserCreateNestedOneWithoutEmployeeInput
-    outlet: OutletCreateNestedOneWithoutEmployeeInput
-    LaundryJob?: LaundryJobCreateNestedManyWithoutWorkerInput
-    TransportJob?: TransportJobCreateNestedManyWithoutDriverInput
-  }
-
-  export type EmployeeUncheckedCreateWithoutEmployeeAttendanceInput = {
-    id?: number
-    workShift?: $Enums.EmployeeWorkShift | null
-    station?: $Enums.WorkerStation | null
-    isPresent?: boolean
-    isWorking?: boolean
-    employmentStatus?: $Enums.EmploymentStatus
-    userId: number
-    outletId: number
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    isDeleted?: boolean
-    deletedAt?: Date | string | null
-    LaundryJob?: LaundryJobUncheckedCreateNestedManyWithoutWorkerInput
-    TransportJob?: TransportJobUncheckedCreateNestedManyWithoutDriverInput
-  }
-
-  export type EmployeeCreateOrConnectWithoutEmployeeAttendanceInput = {
-    where: EmployeeWhereUniqueInput
-    create: XOR<EmployeeCreateWithoutEmployeeAttendanceInput, EmployeeUncheckedCreateWithoutEmployeeAttendanceInput>
   }
 
   export type AttendanceRecordCreateWithoutEmployeeAttendanceInput = {
@@ -23651,48 +23582,42 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
-  export type EmployeeUpsertWithoutEmployeeAttendanceInput = {
-    update: XOR<EmployeeUpdateWithoutEmployeeAttendanceInput, EmployeeUncheckedUpdateWithoutEmployeeAttendanceInput>
+  export type EmployeeCreateWithoutEmployeeAttendanceInput = {
+    workShift?: $Enums.EmployeeWorkShift | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    isDeleted?: boolean
+    deletedAt?: Date | string | null
+    station?: $Enums.WorkerStation | null
+    isWorking?: boolean
+    employmentStatus?: $Enums.EmploymentStatus
+    isPresent?: boolean
+    outlet: OutletCreateNestedOneWithoutEmployeeInput
+    user: UserCreateNestedOneWithoutEmployeeInput
+    LaundryJob?: LaundryJobCreateNestedManyWithoutWorkerInput
+    TransportJob?: TransportJobCreateNestedManyWithoutDriverInput
+  }
+
+  export type EmployeeUncheckedCreateWithoutEmployeeAttendanceInput = {
+    id?: number
+    workShift?: $Enums.EmployeeWorkShift | null
+    userId: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    isDeleted?: boolean
+    deletedAt?: Date | string | null
+    station?: $Enums.WorkerStation | null
+    isWorking?: boolean
+    employmentStatus?: $Enums.EmploymentStatus
+    outletId: number
+    isPresent?: boolean
+    LaundryJob?: LaundryJobUncheckedCreateNestedManyWithoutWorkerInput
+    TransportJob?: TransportJobUncheckedCreateNestedManyWithoutDriverInput
+  }
+
+  export type EmployeeCreateOrConnectWithoutEmployeeAttendanceInput = {
+    where: EmployeeWhereUniqueInput
     create: XOR<EmployeeCreateWithoutEmployeeAttendanceInput, EmployeeUncheckedCreateWithoutEmployeeAttendanceInput>
-    where?: EmployeeWhereInput
-  }
-
-  export type EmployeeUpdateToOneWithWhereWithoutEmployeeAttendanceInput = {
-    where?: EmployeeWhereInput
-    data: XOR<EmployeeUpdateWithoutEmployeeAttendanceInput, EmployeeUncheckedUpdateWithoutEmployeeAttendanceInput>
-  }
-
-  export type EmployeeUpdateWithoutEmployeeAttendanceInput = {
-    workShift?: NullableEnumEmployeeWorkShiftFieldUpdateOperationsInput | $Enums.EmployeeWorkShift | null
-    station?: NullableEnumWorkerStationFieldUpdateOperationsInput | $Enums.WorkerStation | null
-    isPresent?: BoolFieldUpdateOperationsInput | boolean
-    isWorking?: BoolFieldUpdateOperationsInput | boolean
-    employmentStatus?: EnumEmploymentStatusFieldUpdateOperationsInput | $Enums.EmploymentStatus
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    isDeleted?: BoolFieldUpdateOperationsInput | boolean
-    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    user?: UserUpdateOneRequiredWithoutEmployeeNestedInput
-    outlet?: OutletUpdateOneRequiredWithoutEmployeeNestedInput
-    LaundryJob?: LaundryJobUpdateManyWithoutWorkerNestedInput
-    TransportJob?: TransportJobUpdateManyWithoutDriverNestedInput
-  }
-
-  export type EmployeeUncheckedUpdateWithoutEmployeeAttendanceInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    workShift?: NullableEnumEmployeeWorkShiftFieldUpdateOperationsInput | $Enums.EmployeeWorkShift | null
-    station?: NullableEnumWorkerStationFieldUpdateOperationsInput | $Enums.WorkerStation | null
-    isPresent?: BoolFieldUpdateOperationsInput | boolean
-    isWorking?: BoolFieldUpdateOperationsInput | boolean
-    employmentStatus?: EnumEmploymentStatusFieldUpdateOperationsInput | $Enums.EmploymentStatus
-    userId?: IntFieldUpdateOperationsInput | number
-    outletId?: IntFieldUpdateOperationsInput | number
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    isDeleted?: BoolFieldUpdateOperationsInput | boolean
-    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    LaundryJob?: LaundryJobUncheckedUpdateManyWithoutWorkerNestedInput
-    TransportJob?: TransportJobUncheckedUpdateManyWithoutDriverNestedInput
   }
 
   export type AttendanceRecordUpsertWithWhereUniqueWithoutEmployeeAttendanceInput = {
@@ -23724,25 +23649,69 @@ export namespace Prisma {
     deletedAt?: DateTimeNullableFilter<"AttendanceRecord"> | Date | string | null
   }
 
+  export type EmployeeUpsertWithoutEmployeeAttendanceInput = {
+    update: XOR<EmployeeUpdateWithoutEmployeeAttendanceInput, EmployeeUncheckedUpdateWithoutEmployeeAttendanceInput>
+    create: XOR<EmployeeCreateWithoutEmployeeAttendanceInput, EmployeeUncheckedCreateWithoutEmployeeAttendanceInput>
+    where?: EmployeeWhereInput
+  }
+
+  export type EmployeeUpdateToOneWithWhereWithoutEmployeeAttendanceInput = {
+    where?: EmployeeWhereInput
+    data: XOR<EmployeeUpdateWithoutEmployeeAttendanceInput, EmployeeUncheckedUpdateWithoutEmployeeAttendanceInput>
+  }
+
+  export type EmployeeUpdateWithoutEmployeeAttendanceInput = {
+    workShift?: NullableEnumEmployeeWorkShiftFieldUpdateOperationsInput | $Enums.EmployeeWorkShift | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    isDeleted?: BoolFieldUpdateOperationsInput | boolean
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    station?: NullableEnumWorkerStationFieldUpdateOperationsInput | $Enums.WorkerStation | null
+    isWorking?: BoolFieldUpdateOperationsInput | boolean
+    employmentStatus?: EnumEmploymentStatusFieldUpdateOperationsInput | $Enums.EmploymentStatus
+    isPresent?: BoolFieldUpdateOperationsInput | boolean
+    outlet?: OutletUpdateOneRequiredWithoutEmployeeNestedInput
+    user?: UserUpdateOneRequiredWithoutEmployeeNestedInput
+    LaundryJob?: LaundryJobUpdateManyWithoutWorkerNestedInput
+    TransportJob?: TransportJobUpdateManyWithoutDriverNestedInput
+  }
+
+  export type EmployeeUncheckedUpdateWithoutEmployeeAttendanceInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    workShift?: NullableEnumEmployeeWorkShiftFieldUpdateOperationsInput | $Enums.EmployeeWorkShift | null
+    userId?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    isDeleted?: BoolFieldUpdateOperationsInput | boolean
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    station?: NullableEnumWorkerStationFieldUpdateOperationsInput | $Enums.WorkerStation | null
+    isWorking?: BoolFieldUpdateOperationsInput | boolean
+    employmentStatus?: EnumEmploymentStatusFieldUpdateOperationsInput | $Enums.EmploymentStatus
+    outletId?: IntFieldUpdateOperationsInput | number
+    isPresent?: BoolFieldUpdateOperationsInput | boolean
+    LaundryJob?: LaundryJobUncheckedUpdateManyWithoutWorkerNestedInput
+    TransportJob?: TransportJobUncheckedUpdateManyWithoutDriverNestedInput
+  }
+
   export type EmployeeAttendanceCreateWithoutAttendanceRecordInput = {
-    isAttended?: boolean
-    canClockIn?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     isDeleted?: boolean
     deletedAt?: Date | string | null
+    isAttended?: boolean
+    canClockIn?: boolean
     employee: EmployeeCreateNestedOneWithoutEmployeeAttendanceInput
   }
 
   export type EmployeeAttendanceUncheckedCreateWithoutAttendanceRecordInput = {
     id?: number
-    isAttended?: boolean
-    canClockIn?: boolean
-    employeeId: number
     createdAt?: Date | string
     updatedAt?: Date | string
     isDeleted?: boolean
     deletedAt?: Date | string | null
+    employeeId: number
+    isAttended?: boolean
+    canClockIn?: boolean
   }
 
   export type EmployeeAttendanceCreateOrConnectWithoutAttendanceRecordInput = {
@@ -23762,24 +23731,24 @@ export namespace Prisma {
   }
 
   export type EmployeeAttendanceUpdateWithoutAttendanceRecordInput = {
-    isAttended?: BoolFieldUpdateOperationsInput | boolean
-    canClockIn?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isDeleted?: BoolFieldUpdateOperationsInput | boolean
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    isAttended?: BoolFieldUpdateOperationsInput | boolean
+    canClockIn?: BoolFieldUpdateOperationsInput | boolean
     employee?: EmployeeUpdateOneRequiredWithoutEmployeeAttendanceNestedInput
   }
 
   export type EmployeeAttendanceUncheckedUpdateWithoutAttendanceRecordInput = {
     id?: IntFieldUpdateOperationsInput | number
-    isAttended?: BoolFieldUpdateOperationsInput | boolean
-    canClockIn?: BoolFieldUpdateOperationsInput | boolean
-    employeeId?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isDeleted?: BoolFieldUpdateOperationsInput | boolean
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    employeeId?: IntFieldUpdateOperationsInput | number
+    isAttended?: BoolFieldUpdateOperationsInput | boolean
+    canClockIn?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type AddressCreateManyCustomerInput = {
@@ -23800,14 +23769,14 @@ export namespace Prisma {
 
   export type NotificationCreateManyUserInput = {
     id?: number
+    isRead?: boolean
     title: string
     description: string
-    isRead?: boolean
-    url?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     isDeleted?: boolean
     deletedAt?: Date | string | null
+    url?: string | null
   }
 
   export type AddressUpdateWithoutCustomerInput = {
@@ -23823,8 +23792,8 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isDeleted?: BoolFieldUpdateOperationsInput | boolean
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    Outlet?: OutletUpdateOneWithoutOutletAddressNestedInput
     Order?: OrderUpdateManyWithoutCustomerAddressNestedInput
+    Outlet?: OutletUpdateOneWithoutOutletAddressNestedInput
   }
 
   export type AddressUncheckedUpdateWithoutCustomerInput = {
@@ -23841,8 +23810,8 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isDeleted?: BoolFieldUpdateOperationsInput | boolean
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    Outlet?: OutletUncheckedUpdateOneWithoutOutletAddressNestedInput
     Order?: OrderUncheckedUpdateManyWithoutCustomerAddressNestedInput
+    Outlet?: OutletUncheckedUpdateOneWithoutOutletAddressNestedInput
   }
 
   export type AddressUncheckedUpdateManyWithoutCustomerInput = {
@@ -23862,52 +23831,62 @@ export namespace Prisma {
   }
 
   export type NotificationUpdateWithoutUserInput = {
+    isRead?: BoolFieldUpdateOperationsInput | boolean
     title?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
-    isRead?: BoolFieldUpdateOperationsInput | boolean
-    url?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isDeleted?: BoolFieldUpdateOperationsInput | boolean
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    url?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type NotificationUncheckedUpdateWithoutUserInput = {
     id?: IntFieldUpdateOperationsInput | number
+    isRead?: BoolFieldUpdateOperationsInput | boolean
     title?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
-    isRead?: BoolFieldUpdateOperationsInput | boolean
-    url?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isDeleted?: BoolFieldUpdateOperationsInput | boolean
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    url?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type NotificationUncheckedUpdateManyWithoutUserInput = {
     id?: IntFieldUpdateOperationsInput | number
+    isRead?: BoolFieldUpdateOperationsInput | boolean
     title?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
-    isRead?: BoolFieldUpdateOperationsInput | boolean
-    url?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isDeleted?: BoolFieldUpdateOperationsInput | boolean
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    url?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
-  export type LaundryJobCreateManyWorkerInput = {
+  export type EmployeeAttendanceCreateManyEmployeeInput = {
     id?: number
-    station: $Enums.WorkerStation
-    isByPassRequested?: boolean
-    isCompleted?: boolean
-    byPassNote?: string | null
-    byPassStatus?: $Enums.ByPassStatus | null
-    orderId: number
     createdAt?: Date | string
     updatedAt?: Date | string
     isDeleted?: boolean
     deletedAt?: Date | string | null
+    isAttended?: boolean
+    canClockIn?: boolean
+  }
+
+  export type LaundryJobCreateManyWorkerInput = {
+    id?: number
+    isCompleted?: boolean
+    byPassNote?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    isDeleted?: boolean
+    deletedAt?: Date | string | null
+    orderId: number
+    byPassStatus?: $Enums.ByPassStatus | null
+    isByPassRequested?: boolean
+    station: $Enums.WorkerStation
   }
 
   export type TransportJobCreateManyDriverInput = {
@@ -23922,55 +23901,76 @@ export namespace Prisma {
     deletedAt?: Date | string | null
   }
 
-  export type EmployeeAttendanceCreateManyEmployeeInput = {
-    id?: number
-    isAttended?: boolean
-    canClockIn?: boolean
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    isDeleted?: boolean
-    deletedAt?: Date | string | null
-  }
-
-  export type LaundryJobUpdateWithoutWorkerInput = {
-    station?: EnumWorkerStationFieldUpdateOperationsInput | $Enums.WorkerStation
-    isByPassRequested?: BoolFieldUpdateOperationsInput | boolean
-    isCompleted?: BoolFieldUpdateOperationsInput | boolean
-    byPassNote?: NullableStringFieldUpdateOperationsInput | string | null
-    byPassStatus?: NullableEnumByPassStatusFieldUpdateOperationsInput | $Enums.ByPassStatus | null
+  export type EmployeeAttendanceUpdateWithoutEmployeeInput = {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isDeleted?: BoolFieldUpdateOperationsInput | boolean
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    isAttended?: BoolFieldUpdateOperationsInput | boolean
+    canClockIn?: BoolFieldUpdateOperationsInput | boolean
+    AttendanceRecord?: AttendanceRecordUpdateManyWithoutEmployeeAttendanceNestedInput
+  }
+
+  export type EmployeeAttendanceUncheckedUpdateWithoutEmployeeInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    isDeleted?: BoolFieldUpdateOperationsInput | boolean
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    isAttended?: BoolFieldUpdateOperationsInput | boolean
+    canClockIn?: BoolFieldUpdateOperationsInput | boolean
+    AttendanceRecord?: AttendanceRecordUncheckedUpdateManyWithoutEmployeeAttendanceNestedInput
+  }
+
+  export type EmployeeAttendanceUncheckedUpdateManyWithoutEmployeeInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    isDeleted?: BoolFieldUpdateOperationsInput | boolean
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    isAttended?: BoolFieldUpdateOperationsInput | boolean
+    canClockIn?: BoolFieldUpdateOperationsInput | boolean
+  }
+
+  export type LaundryJobUpdateWithoutWorkerInput = {
+    isCompleted?: BoolFieldUpdateOperationsInput | boolean
+    byPassNote?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    isDeleted?: BoolFieldUpdateOperationsInput | boolean
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    byPassStatus?: NullableEnumByPassStatusFieldUpdateOperationsInput | $Enums.ByPassStatus | null
+    isByPassRequested?: BoolFieldUpdateOperationsInput | boolean
+    station?: EnumWorkerStationFieldUpdateOperationsInput | $Enums.WorkerStation
     order?: OrderUpdateOneRequiredWithoutLaundryJobNestedInput
   }
 
   export type LaundryJobUncheckedUpdateWithoutWorkerInput = {
     id?: IntFieldUpdateOperationsInput | number
-    station?: EnumWorkerStationFieldUpdateOperationsInput | $Enums.WorkerStation
-    isByPassRequested?: BoolFieldUpdateOperationsInput | boolean
     isCompleted?: BoolFieldUpdateOperationsInput | boolean
     byPassNote?: NullableStringFieldUpdateOperationsInput | string | null
-    byPassStatus?: NullableEnumByPassStatusFieldUpdateOperationsInput | $Enums.ByPassStatus | null
-    orderId?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isDeleted?: BoolFieldUpdateOperationsInput | boolean
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    orderId?: IntFieldUpdateOperationsInput | number
+    byPassStatus?: NullableEnumByPassStatusFieldUpdateOperationsInput | $Enums.ByPassStatus | null
+    isByPassRequested?: BoolFieldUpdateOperationsInput | boolean
+    station?: EnumWorkerStationFieldUpdateOperationsInput | $Enums.WorkerStation
   }
 
   export type LaundryJobUncheckedUpdateManyWithoutWorkerInput = {
     id?: IntFieldUpdateOperationsInput | number
-    station?: EnumWorkerStationFieldUpdateOperationsInput | $Enums.WorkerStation
-    isByPassRequested?: BoolFieldUpdateOperationsInput | boolean
     isCompleted?: BoolFieldUpdateOperationsInput | boolean
     byPassNote?: NullableStringFieldUpdateOperationsInput | string | null
-    byPassStatus?: NullableEnumByPassStatusFieldUpdateOperationsInput | $Enums.ByPassStatus | null
-    orderId?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isDeleted?: BoolFieldUpdateOperationsInput | boolean
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    orderId?: IntFieldUpdateOperationsInput | number
+    byPassStatus?: NullableEnumByPassStatusFieldUpdateOperationsInput | $Enums.ByPassStatus | null
+    isByPassRequested?: BoolFieldUpdateOperationsInput | boolean
+    station?: EnumWorkerStationFieldUpdateOperationsInput | $Enums.WorkerStation
   }
 
   export type TransportJobUpdateWithoutDriverInput = {
@@ -24008,238 +24008,207 @@ export namespace Prisma {
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
-  export type EmployeeAttendanceUpdateWithoutEmployeeInput = {
-    isAttended?: BoolFieldUpdateOperationsInput | boolean
-    canClockIn?: BoolFieldUpdateOperationsInput | boolean
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    isDeleted?: BoolFieldUpdateOperationsInput | boolean
-    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    AttendanceRecord?: AttendanceRecordUpdateManyWithoutEmployeeAttendanceNestedInput
-  }
-
-  export type EmployeeAttendanceUncheckedUpdateWithoutEmployeeInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    isAttended?: BoolFieldUpdateOperationsInput | boolean
-    canClockIn?: BoolFieldUpdateOperationsInput | boolean
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    isDeleted?: BoolFieldUpdateOperationsInput | boolean
-    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    AttendanceRecord?: AttendanceRecordUncheckedUpdateManyWithoutEmployeeAttendanceNestedInput
-  }
-
-  export type EmployeeAttendanceUncheckedUpdateManyWithoutEmployeeInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    isAttended?: BoolFieldUpdateOperationsInput | boolean
-    canClockIn?: BoolFieldUpdateOperationsInput | boolean
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    isDeleted?: BoolFieldUpdateOperationsInput | boolean
-    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  }
-
   export type OrderCreateManyCustomerAddressInput = {
     id?: number
     orderStatus?: $Enums.OrderStatus
-    outletId: number
-    laundryWeight?: number | null
-    laundryPrice?: number | null
     isPaid?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     isDeleted?: boolean
     deletedAt?: Date | string | null
+    laundryPrice?: number | null
+    laundryWeight?: number | null
+    outletId: number
   }
 
   export type OrderUpdateWithoutCustomerAddressInput = {
     orderStatus?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
-    laundryWeight?: NullableIntFieldUpdateOperationsInput | number | null
-    laundryPrice?: NullableIntFieldUpdateOperationsInput | number | null
     isPaid?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isDeleted?: BoolFieldUpdateOperationsInput | boolean
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    laundryPrice?: NullableIntFieldUpdateOperationsInput | number | null
+    laundryWeight?: NullableIntFieldUpdateOperationsInput | number | null
+    LaundryJob?: LaundryJobUpdateManyWithoutOrderNestedInput
     outlet?: OutletUpdateOneRequiredWithoutOrderNestedInput
     OrderItem?: OrderItemUpdateManyWithoutOrderNestedInput
-    LaundryJob?: LaundryJobUpdateManyWithoutOrderNestedInput
+    Payment?: PaymentUpdateOneWithoutOrderNestedInput
     TransportJob?: TransportJobUpdateManyWithoutOrderNestedInput
-    Payment?: PaymentUpdateManyWithoutOrderNestedInput
   }
 
   export type OrderUncheckedUpdateWithoutCustomerAddressInput = {
     id?: IntFieldUpdateOperationsInput | number
     orderStatus?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
-    outletId?: IntFieldUpdateOperationsInput | number
-    laundryWeight?: NullableIntFieldUpdateOperationsInput | number | null
-    laundryPrice?: NullableIntFieldUpdateOperationsInput | number | null
     isPaid?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isDeleted?: BoolFieldUpdateOperationsInput | boolean
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    OrderItem?: OrderItemUncheckedUpdateManyWithoutOrderNestedInput
+    laundryPrice?: NullableIntFieldUpdateOperationsInput | number | null
+    laundryWeight?: NullableIntFieldUpdateOperationsInput | number | null
+    outletId?: IntFieldUpdateOperationsInput | number
     LaundryJob?: LaundryJobUncheckedUpdateManyWithoutOrderNestedInput
+    OrderItem?: OrderItemUncheckedUpdateManyWithoutOrderNestedInput
+    Payment?: PaymentUncheckedUpdateOneWithoutOrderNestedInput
     TransportJob?: TransportJobUncheckedUpdateManyWithoutOrderNestedInput
-    Payment?: PaymentUncheckedUpdateManyWithoutOrderNestedInput
   }
 
   export type OrderUncheckedUpdateManyWithoutCustomerAddressInput = {
     id?: IntFieldUpdateOperationsInput | number
     orderStatus?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
-    outletId?: IntFieldUpdateOperationsInput | number
-    laundryWeight?: NullableIntFieldUpdateOperationsInput | number | null
-    laundryPrice?: NullableIntFieldUpdateOperationsInput | number | null
     isPaid?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isDeleted?: BoolFieldUpdateOperationsInput | boolean
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  }
-
-  export type OrderCreateManyOutletInput = {
-    id?: number
-    orderStatus?: $Enums.OrderStatus
-    customerAddressId: number
-    laundryWeight?: number | null
-    laundryPrice?: number | null
-    isPaid?: boolean
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    isDeleted?: boolean
-    deletedAt?: Date | string | null
+    laundryPrice?: NullableIntFieldUpdateOperationsInput | number | null
+    laundryWeight?: NullableIntFieldUpdateOperationsInput | number | null
+    outletId?: IntFieldUpdateOperationsInput | number
   }
 
   export type EmployeeCreateManyOutletInput = {
     id?: number
     workShift?: $Enums.EmployeeWorkShift | null
-    station?: $Enums.WorkerStation | null
-    isPresent?: boolean
-    isWorking?: boolean
-    employmentStatus?: $Enums.EmploymentStatus
     userId: number
     createdAt?: Date | string
     updatedAt?: Date | string
     isDeleted?: boolean
     deletedAt?: Date | string | null
+    station?: $Enums.WorkerStation | null
+    isWorking?: boolean
+    employmentStatus?: $Enums.EmploymentStatus
+    isPresent?: boolean
   }
 
-  export type OrderUpdateWithoutOutletInput = {
-    orderStatus?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
-    laundryWeight?: NullableIntFieldUpdateOperationsInput | number | null
-    laundryPrice?: NullableIntFieldUpdateOperationsInput | number | null
-    isPaid?: BoolFieldUpdateOperationsInput | boolean
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    isDeleted?: BoolFieldUpdateOperationsInput | boolean
-    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    customerAddress?: AddressUpdateOneRequiredWithoutOrderNestedInput
-    OrderItem?: OrderItemUpdateManyWithoutOrderNestedInput
-    LaundryJob?: LaundryJobUpdateManyWithoutOrderNestedInput
-    TransportJob?: TransportJobUpdateManyWithoutOrderNestedInput
-    Payment?: PaymentUpdateManyWithoutOrderNestedInput
-  }
-
-  export type OrderUncheckedUpdateWithoutOutletInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    orderStatus?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
-    customerAddressId?: IntFieldUpdateOperationsInput | number
-    laundryWeight?: NullableIntFieldUpdateOperationsInput | number | null
-    laundryPrice?: NullableIntFieldUpdateOperationsInput | number | null
-    isPaid?: BoolFieldUpdateOperationsInput | boolean
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    isDeleted?: BoolFieldUpdateOperationsInput | boolean
-    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    OrderItem?: OrderItemUncheckedUpdateManyWithoutOrderNestedInput
-    LaundryJob?: LaundryJobUncheckedUpdateManyWithoutOrderNestedInput
-    TransportJob?: TransportJobUncheckedUpdateManyWithoutOrderNestedInput
-    Payment?: PaymentUncheckedUpdateManyWithoutOrderNestedInput
-  }
-
-  export type OrderUncheckedUpdateManyWithoutOutletInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    orderStatus?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
-    customerAddressId?: IntFieldUpdateOperationsInput | number
-    laundryWeight?: NullableIntFieldUpdateOperationsInput | number | null
-    laundryPrice?: NullableIntFieldUpdateOperationsInput | number | null
-    isPaid?: BoolFieldUpdateOperationsInput | boolean
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    isDeleted?: BoolFieldUpdateOperationsInput | boolean
-    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  export type OrderCreateManyOutletInput = {
+    id?: number
+    orderStatus?: $Enums.OrderStatus
+    isPaid?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    isDeleted?: boolean
+    deletedAt?: Date | string | null
+    customerAddressId: number
+    laundryPrice?: number | null
+    laundryWeight?: number | null
   }
 
   export type EmployeeUpdateWithoutOutletInput = {
     workShift?: NullableEnumEmployeeWorkShiftFieldUpdateOperationsInput | $Enums.EmployeeWorkShift | null
-    station?: NullableEnumWorkerStationFieldUpdateOperationsInput | $Enums.WorkerStation | null
-    isPresent?: BoolFieldUpdateOperationsInput | boolean
-    isWorking?: BoolFieldUpdateOperationsInput | boolean
-    employmentStatus?: EnumEmploymentStatusFieldUpdateOperationsInput | $Enums.EmploymentStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isDeleted?: BoolFieldUpdateOperationsInput | boolean
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    station?: NullableEnumWorkerStationFieldUpdateOperationsInput | $Enums.WorkerStation | null
+    isWorking?: BoolFieldUpdateOperationsInput | boolean
+    employmentStatus?: EnumEmploymentStatusFieldUpdateOperationsInput | $Enums.EmploymentStatus
+    isPresent?: BoolFieldUpdateOperationsInput | boolean
     user?: UserUpdateOneRequiredWithoutEmployeeNestedInput
+    EmployeeAttendance?: EmployeeAttendanceUpdateManyWithoutEmployeeNestedInput
     LaundryJob?: LaundryJobUpdateManyWithoutWorkerNestedInput
     TransportJob?: TransportJobUpdateManyWithoutDriverNestedInput
-    EmployeeAttendance?: EmployeeAttendanceUpdateManyWithoutEmployeeNestedInput
   }
 
   export type EmployeeUncheckedUpdateWithoutOutletInput = {
     id?: IntFieldUpdateOperationsInput | number
     workShift?: NullableEnumEmployeeWorkShiftFieldUpdateOperationsInput | $Enums.EmployeeWorkShift | null
-    station?: NullableEnumWorkerStationFieldUpdateOperationsInput | $Enums.WorkerStation | null
-    isPresent?: BoolFieldUpdateOperationsInput | boolean
-    isWorking?: BoolFieldUpdateOperationsInput | boolean
-    employmentStatus?: EnumEmploymentStatusFieldUpdateOperationsInput | $Enums.EmploymentStatus
     userId?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isDeleted?: BoolFieldUpdateOperationsInput | boolean
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    station?: NullableEnumWorkerStationFieldUpdateOperationsInput | $Enums.WorkerStation | null
+    isWorking?: BoolFieldUpdateOperationsInput | boolean
+    employmentStatus?: EnumEmploymentStatusFieldUpdateOperationsInput | $Enums.EmploymentStatus
+    isPresent?: BoolFieldUpdateOperationsInput | boolean
+    EmployeeAttendance?: EmployeeAttendanceUncheckedUpdateManyWithoutEmployeeNestedInput
     LaundryJob?: LaundryJobUncheckedUpdateManyWithoutWorkerNestedInput
     TransportJob?: TransportJobUncheckedUpdateManyWithoutDriverNestedInput
-    EmployeeAttendance?: EmployeeAttendanceUncheckedUpdateManyWithoutEmployeeNestedInput
   }
 
   export type EmployeeUncheckedUpdateManyWithoutOutletInput = {
     id?: IntFieldUpdateOperationsInput | number
     workShift?: NullableEnumEmployeeWorkShiftFieldUpdateOperationsInput | $Enums.EmployeeWorkShift | null
-    station?: NullableEnumWorkerStationFieldUpdateOperationsInput | $Enums.WorkerStation | null
-    isPresent?: BoolFieldUpdateOperationsInput | boolean
-    isWorking?: BoolFieldUpdateOperationsInput | boolean
-    employmentStatus?: EnumEmploymentStatusFieldUpdateOperationsInput | $Enums.EmploymentStatus
     userId?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isDeleted?: BoolFieldUpdateOperationsInput | boolean
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    station?: NullableEnumWorkerStationFieldUpdateOperationsInput | $Enums.WorkerStation | null
+    isWorking?: BoolFieldUpdateOperationsInput | boolean
+    employmentStatus?: EnumEmploymentStatusFieldUpdateOperationsInput | $Enums.EmploymentStatus
+    isPresent?: BoolFieldUpdateOperationsInput | boolean
+  }
+
+  export type OrderUpdateWithoutOutletInput = {
+    orderStatus?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+    isPaid?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    isDeleted?: BoolFieldUpdateOperationsInput | boolean
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    laundryPrice?: NullableIntFieldUpdateOperationsInput | number | null
+    laundryWeight?: NullableIntFieldUpdateOperationsInput | number | null
+    LaundryJob?: LaundryJobUpdateManyWithoutOrderNestedInput
+    customerAddress?: AddressUpdateOneRequiredWithoutOrderNestedInput
+    OrderItem?: OrderItemUpdateManyWithoutOrderNestedInput
+    Payment?: PaymentUpdateOneWithoutOrderNestedInput
+    TransportJob?: TransportJobUpdateManyWithoutOrderNestedInput
+  }
+
+  export type OrderUncheckedUpdateWithoutOutletInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    orderStatus?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+    isPaid?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    isDeleted?: BoolFieldUpdateOperationsInput | boolean
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    customerAddressId?: IntFieldUpdateOperationsInput | number
+    laundryPrice?: NullableIntFieldUpdateOperationsInput | number | null
+    laundryWeight?: NullableIntFieldUpdateOperationsInput | number | null
+    LaundryJob?: LaundryJobUncheckedUpdateManyWithoutOrderNestedInput
+    OrderItem?: OrderItemUncheckedUpdateManyWithoutOrderNestedInput
+    Payment?: PaymentUncheckedUpdateOneWithoutOrderNestedInput
+    TransportJob?: TransportJobUncheckedUpdateManyWithoutOrderNestedInput
+  }
+
+  export type OrderUncheckedUpdateManyWithoutOutletInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    orderStatus?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+    isPaid?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    isDeleted?: BoolFieldUpdateOperationsInput | boolean
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    customerAddressId?: IntFieldUpdateOperationsInput | number
+    laundryPrice?: NullableIntFieldUpdateOperationsInput | number | null
+    laundryWeight?: NullableIntFieldUpdateOperationsInput | number | null
+  }
+
+  export type LaundryJobCreateManyOrderInput = {
+    id?: number
+    isCompleted?: boolean
+    byPassNote?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    isDeleted?: boolean
+    deletedAt?: Date | string | null
+    workerId?: number | null
+    byPassStatus?: $Enums.ByPassStatus | null
+    isByPassRequested?: boolean
+    station: $Enums.WorkerStation
   }
 
   export type OrderItemCreateManyOrderInput = {
     id?: number
     qty?: number | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    isDeleted?: boolean
+    deletedAt?: Date | string | null
     orderItemName: string
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    isDeleted?: boolean
-    deletedAt?: Date | string | null
-  }
-
-  export type LaundryJobCreateManyOrderInput = {
-    id?: number
-    station: $Enums.WorkerStation
-    isByPassRequested?: boolean
-    isCompleted?: boolean
-    byPassNote?: string | null
-    byPassStatus?: $Enums.ByPassStatus | null
-    workerId?: number | null
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    isDeleted?: boolean
-    deletedAt?: Date | string | null
   }
 
   export type TransportJobCreateManyOrderInput = {
@@ -24254,87 +24223,74 @@ export namespace Prisma {
     deletedAt?: Date | string | null
   }
 
-  export type PaymentCreateManyOrderInput = {
-    id?: number
-    totalPrice: number
-    paymentStatus?: $Enums.PaymentStatus
-    paymentMethod?: string | null
-    snapToken?: string | null
-    snapRedirectURL?: string | null
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    isDeleted?: boolean
-    deletedAt?: Date | string | null
-  }
-
-  export type OrderItemUpdateWithoutOrderInput = {
-    qty?: NullableIntFieldUpdateOperationsInput | number | null
-    orderItemName?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    isDeleted?: BoolFieldUpdateOperationsInput | boolean
-    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  }
-
-  export type OrderItemUncheckedUpdateWithoutOrderInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    qty?: NullableIntFieldUpdateOperationsInput | number | null
-    orderItemName?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    isDeleted?: BoolFieldUpdateOperationsInput | boolean
-    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  }
-
-  export type OrderItemUncheckedUpdateManyWithoutOrderInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    qty?: NullableIntFieldUpdateOperationsInput | number | null
-    orderItemName?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    isDeleted?: BoolFieldUpdateOperationsInput | boolean
-    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  }
-
   export type LaundryJobUpdateWithoutOrderInput = {
-    station?: EnumWorkerStationFieldUpdateOperationsInput | $Enums.WorkerStation
-    isByPassRequested?: BoolFieldUpdateOperationsInput | boolean
     isCompleted?: BoolFieldUpdateOperationsInput | boolean
     byPassNote?: NullableStringFieldUpdateOperationsInput | string | null
-    byPassStatus?: NullableEnumByPassStatusFieldUpdateOperationsInput | $Enums.ByPassStatus | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isDeleted?: BoolFieldUpdateOperationsInput | boolean
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    byPassStatus?: NullableEnumByPassStatusFieldUpdateOperationsInput | $Enums.ByPassStatus | null
+    isByPassRequested?: BoolFieldUpdateOperationsInput | boolean
+    station?: EnumWorkerStationFieldUpdateOperationsInput | $Enums.WorkerStation
     worker?: EmployeeUpdateOneWithoutLaundryJobNestedInput
   }
 
   export type LaundryJobUncheckedUpdateWithoutOrderInput = {
     id?: IntFieldUpdateOperationsInput | number
-    station?: EnumWorkerStationFieldUpdateOperationsInput | $Enums.WorkerStation
-    isByPassRequested?: BoolFieldUpdateOperationsInput | boolean
     isCompleted?: BoolFieldUpdateOperationsInput | boolean
     byPassNote?: NullableStringFieldUpdateOperationsInput | string | null
-    byPassStatus?: NullableEnumByPassStatusFieldUpdateOperationsInput | $Enums.ByPassStatus | null
-    workerId?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isDeleted?: BoolFieldUpdateOperationsInput | boolean
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    workerId?: NullableIntFieldUpdateOperationsInput | number | null
+    byPassStatus?: NullableEnumByPassStatusFieldUpdateOperationsInput | $Enums.ByPassStatus | null
+    isByPassRequested?: BoolFieldUpdateOperationsInput | boolean
+    station?: EnumWorkerStationFieldUpdateOperationsInput | $Enums.WorkerStation
   }
 
   export type LaundryJobUncheckedUpdateManyWithoutOrderInput = {
     id?: IntFieldUpdateOperationsInput | number
-    station?: EnumWorkerStationFieldUpdateOperationsInput | $Enums.WorkerStation
-    isByPassRequested?: BoolFieldUpdateOperationsInput | boolean
     isCompleted?: BoolFieldUpdateOperationsInput | boolean
     byPassNote?: NullableStringFieldUpdateOperationsInput | string | null
-    byPassStatus?: NullableEnumByPassStatusFieldUpdateOperationsInput | $Enums.ByPassStatus | null
-    workerId?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isDeleted?: BoolFieldUpdateOperationsInput | boolean
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    workerId?: NullableIntFieldUpdateOperationsInput | number | null
+    byPassStatus?: NullableEnumByPassStatusFieldUpdateOperationsInput | $Enums.ByPassStatus | null
+    isByPassRequested?: BoolFieldUpdateOperationsInput | boolean
+    station?: EnumWorkerStationFieldUpdateOperationsInput | $Enums.WorkerStation
+  }
+
+  export type OrderItemUpdateWithoutOrderInput = {
+    qty?: NullableIntFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    isDeleted?: BoolFieldUpdateOperationsInput | boolean
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    orderItemName?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type OrderItemUncheckedUpdateWithoutOrderInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    qty?: NullableIntFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    isDeleted?: BoolFieldUpdateOperationsInput | boolean
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    orderItemName?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type OrderItemUncheckedUpdateManyWithoutOrderInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    qty?: NullableIntFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    isDeleted?: BoolFieldUpdateOperationsInput | boolean
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    orderItemName?: StringFieldUpdateOperationsInput | string
   }
 
   export type TransportJobUpdateWithoutOrderInput = {
@@ -24366,44 +24322,6 @@ export namespace Prisma {
     isCompleted?: BoolFieldUpdateOperationsInput | boolean
     distance?: IntFieldUpdateOperationsInput | number
     driverId?: NullableIntFieldUpdateOperationsInput | number | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    isDeleted?: BoolFieldUpdateOperationsInput | boolean
-    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  }
-
-  export type PaymentUpdateWithoutOrderInput = {
-    totalPrice?: IntFieldUpdateOperationsInput | number
-    paymentStatus?: EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
-    paymentMethod?: NullableStringFieldUpdateOperationsInput | string | null
-    snapToken?: NullableStringFieldUpdateOperationsInput | string | null
-    snapRedirectURL?: NullableStringFieldUpdateOperationsInput | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    isDeleted?: BoolFieldUpdateOperationsInput | boolean
-    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  }
-
-  export type PaymentUncheckedUpdateWithoutOrderInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    totalPrice?: IntFieldUpdateOperationsInput | number
-    paymentStatus?: EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
-    paymentMethod?: NullableStringFieldUpdateOperationsInput | string | null
-    snapToken?: NullableStringFieldUpdateOperationsInput | string | null
-    snapRedirectURL?: NullableStringFieldUpdateOperationsInput | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    isDeleted?: BoolFieldUpdateOperationsInput | boolean
-    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  }
-
-  export type PaymentUncheckedUpdateManyWithoutOrderInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    totalPrice?: IntFieldUpdateOperationsInput | number
-    paymentStatus?: EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
-    paymentMethod?: NullableStringFieldUpdateOperationsInput | string | null
-    snapToken?: NullableStringFieldUpdateOperationsInput | string | null
-    snapRedirectURL?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isDeleted?: BoolFieldUpdateOperationsInput | boolean
