@@ -74,8 +74,7 @@ export const createPickupOrderService = async (req: Request, res: Response): Pro
       });
 
       const driverIds = await getIdleEmployees(nearestOutlet.id, "DRIVER");
-      const distance = Math.round(nearestOutlet.distance * 10) * 100 
-      console.log(distance)
+      const distance = Math.round(nearestOutlet.distance);
 
       const transportJobId = (
         await tx.transportJob.create({
@@ -89,7 +88,7 @@ export const createPickupOrderService = async (req: Request, res: Response): Pro
             driverIds,
             "Pickup Job alert",
             " A new pickup job is available!",
-            `${process.env.BASE_URL_FE!}/transport-job/${transportJobId}`
+            `${process.env.BASE_URL_FE!}/employee-dashboard/driver/${transportJobId}`
           ),
         });
       }

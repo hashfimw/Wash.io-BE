@@ -85,14 +85,14 @@ export const updateLaundryJobByIdService = async (laundryJobId: number, userId: 
       if (newOrderStatus == "WAITING_FOR_DELIVERY_DRIVER") {
         const transportJobId = (await tx.transportJob.create({ data: { transportType: "DELIVERY", orderId, distance } })).id;
         notificationData = notificationData.map((item) => {
-          return { ...item, url: `${process.env.BASE_URL_FE!}/transport-job/${transportJobId}` };
+          return { ...item, url: `/employee-dashboard/driver/${transportJobId}` };
         });
         await tx.notification.createMany({ data: notificationData });
       }
       if (currentOrderStatus == "BEING_WASHED" || currentOrderStatus == "BEING_IRONED") {
         const laundryJobId = (await tx.laundryJob.create({ data: newLaundryJobData })).id;
         notificationData = notificationData.map((item) => {
-          return { ...item, url: `${process.env.BASE_URL_FE!}/laundry-job/${laundryJobId}` };
+          return { ...item, url: `/employee-dashboard/worker/${laundryJobId}` };
         });
         await tx.notification.createMany({ data: notificationData });
       }
@@ -104,7 +104,7 @@ export const updateLaundryJobByIdService = async (laundryJobId: number, userId: 
             userId: customerId,
             title: "Order payment alert",
             description: "Your fresh laundry has been packed and waiting to be paid before being delivered. Pay your order now!",
-            url: `${process.env.BASE_URL_FE!}/order/${orderId}`,
+            url: `/order/${orderId}`,
           },
         });
       }

@@ -3,6 +3,7 @@ import { find } from "geo-tz";
 import { DateTime } from "luxon";
 import { Request, Response } from "express";
 import { EmployeeWorkShift } from "../../../prisma/generated/client";
+import { updateDeliveredOrderStatus } from "../pickupOrder/updatePickupOrder.service";
 
 const shiftStartScheduler = async (ids: number[], workShift: EmployeeWorkShift) => {
   try {
@@ -114,6 +115,7 @@ const attendanceSchedule = async () => {
       if (currentHour == 21) await shiftStartScheduler(item.ids, "NIGHT");
       if (currentHour == 22) await shiftEndScheduler(item.ids, "NOON");
     }
+    await updateDeliveredOrderStatus();
     // console.log(`running cron job at ${new Date().toLocaleString()}`);
   } catch (error) {
     console.log(error);
@@ -150,5 +152,23 @@ export const forceAlterEmployeeAttendances = async (req: Request, res: Response)
   } catch (error) {
     console.log(error);
     res.status(400).send(error);
+  }
+};
+
+export const getOutletTzo = async (outletId: number) => {
+  try {
+    const outletData = await prisma.outlet.findUnique({
+      where: { id: outletId },
+      select: {
+        id: true,
+        outletAddress: { select: { latitude: true, longitude: true } },
+      },
+    });
+
+    if (outletData) {
+      return groupByOffset([outletData])[0].offset * -1;
+    } else throw { message: "Invalid outlet Id!" };
+  } catch (error) {
+    throw error;
   }
 };

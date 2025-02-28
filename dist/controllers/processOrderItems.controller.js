@@ -9,13 +9,13 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.SuperAdmEmployeeController = void 0;
-const superAdmEmployee_service_1 = require("../services/employee/superAdmEmployee.service");
-class SuperAdmEmployeeController {
+exports.processOrderItemController = void 0;
+const processOrderItems_service_1 = require("../services/outlets/processOrderItems.service");
+class processOrderItemController {
     constructor() {
-        this.createEmployeeController = (req, res) => __awaiter(this, void 0, void 0, function* () {
+        this.processOrders = (req, res) => __awaiter(this, void 0, void 0, function* () {
             try {
-                const result = yield (0, superAdmEmployee_service_1.createEmployeeService)(req, res);
+                const result = yield (0, processOrderItems_service_1.processOrderService)(req, res);
                 res.status(201).json(result);
             }
             catch (error) {
@@ -23,9 +23,19 @@ class SuperAdmEmployeeController {
                 res.status(500).json({ message: "Internal server error" });
             }
         });
-        this.getAllEmployeesController = (req, res) => __awaiter(this, void 0, void 0, function* () {
+        this.createLaundryItemController = (req, res) => __awaiter(this, void 0, void 0, function* () {
             try {
-                const result = yield (0, superAdmEmployee_service_1.getAllEmployeesService)(req, res);
+                const result = yield (0, processOrderItems_service_1.createOrderItemService)(req, res);
+                res.status(201).json(result);
+            }
+            catch (error) {
+                console.log(error);
+                res.status(500).json({ message: "Internal server error" });
+            }
+        });
+        this.updateLaundryItemController = (req, res) => __awaiter(this, void 0, void 0, function* () {
+            try {
+                const result = yield (0, processOrderItems_service_1.updateOrderItemService)(req, res);
                 res.status(200).json(result);
             }
             catch (error) {
@@ -33,9 +43,9 @@ class SuperAdmEmployeeController {
                 res.status(500).json({ message: "Internal server error" });
             }
         });
-        this.updateEmployeeController = (req, res) => __awaiter(this, void 0, void 0, function* () {
+        this.deleteLaundryItemController = (req, res) => __awaiter(this, void 0, void 0, function* () {
             try {
-                const result = yield (0, superAdmEmployee_service_1.updateEmployeeService)(req, res);
+                const result = yield (0, processOrderItems_service_1.deleteOrderItemService)(req, res);
                 res.status(200).json(result);
             }
             catch (error) {
@@ -43,19 +53,9 @@ class SuperAdmEmployeeController {
                 res.status(500).json({ message: "Internal server error" });
             }
         });
-        this.deleteEmployeeController = (req, res) => __awaiter(this, void 0, void 0, function* () {
+        this.geOrdersItemsByOutletController = (req, res) => __awaiter(this, void 0, void 0, function* () {
             try {
-                const result = yield (0, superAdmEmployee_service_1.deleteEmployeeService)(req, res);
-                res.status(200).json(result);
-            }
-            catch (error) {
-                console.log(error);
-                res.status(500).json({ message: "Internal server error" });
-            }
-        });
-        this.getAllUsersController = (req, res) => __awaiter(this, void 0, void 0, function* () {
-            try {
-                const result = yield (0, superAdmEmployee_service_1.getAllUsersService)(req, res);
+                const result = yield (0, processOrderItems_service_1.getOrderItemService)(req, res);
                 res.status(200).json(result);
             }
             catch (error) {
@@ -65,4 +65,4 @@ class SuperAdmEmployeeController {
         });
     }
 }
-exports.SuperAdmEmployeeController = SuperAdmEmployeeController;
+exports.processOrderItemController = processOrderItemController;

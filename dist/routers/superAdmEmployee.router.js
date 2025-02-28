@@ -2,24 +2,26 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.SuperAdmEmployeeRouter = void 0;
 const express_1 = require("express");
-const employeeValidation_middleware_1 = require("../middlewares/employeeValidation.middleware");
-const assignValidation_middleware_1 = require("../middlewares/assignValidation.middleware");
+const employeeValidation_middleware_1 = require("../middlewares/validation/employeeValidation.middleware");
 const superAdmEmployee_controller_1 = require("../controllers/superAdmEmployee.controller");
-const superAdminAuth_middleware_1 = require("../middlewares/superAdminAuth.middleware");
+const verifyToken_1 = require("../middlewares/verifyToken");
+const AdminAuth_middleware_1 = require("../middlewares/validation/AdminAuth.middleware");
+const client_1 = require("../../prisma/generated/client");
 class SuperAdmEmployeeRouter {
     constructor() {
         this.router = (0, express_1.Router)();
         this.controller = new superAdmEmployee_controller_1.SuperAdmEmployeeController();
         this.initializeRoutes();
     }
+    // validaton di matiin sementara buat testing doang
     initializeRoutes() {
-        this.router.post("/", superAdminAuth_middleware_1.isSuperAdmin, employeeValidation_middleware_1.validateCreateEmployee, this.controller.createEmployeeController); //yang ini nambahin isSuperAdmin nunggu req.user dari fitur kemal
-        this.router.get("/", superAdminAuth_middleware_1.isSuperAdmin, this.controller.getAllEmployeesController);
-        this.router.put("/:id", superAdminAuth_middleware_1.isSuperAdmin, employeeValidation_middleware_1.validateUpdateEmployee, this.controller.updateEmployeeController); //yang ini nambahin isSuperAdmin nunggu req.user dari fitur kemal
-        this.router.delete("/:id", superAdminAuth_middleware_1.isSuperAdmin, employeeValidation_middleware_1.validateDeleteEmployee, this.controller.deleteEmployeeController); //yang ini nambahin isSuperAdmin nunggu req.user dari fitur kemal
-        this.router.get("/allusers", superAdminAuth_middleware_1.isSuperAdmin, this.controller.getAllUsersController);
-        this.router.post("/assign", superAdminAuth_middleware_1.isSuperAdmin, assignValidation_middleware_1.validateAssignEmployee, this.controller.assignEmployeeToOutletController); //yang ini nambahin isSuperAdmin nunggu req.user dari fitur kemal
-        this.router.post("/assign-multiple", superAdminAuth_middleware_1.isSuperAdmin, assignValidation_middleware_1.validateMultipleAssignments, this.controller.reassignMultipleEmployeesController);
+        this.router.post("/", 
+        // isSuperAdmin,
+        verifyToken_1.verifyToken, (0, AdminAuth_middleware_1.AdminAuth)([client_1.Role.SUPER_ADMIN]), employeeValidation_middleware_1.validateCreateEmployee, this.controller.createEmployeeController);
+        this.router.get("/", verifyToken_1.verifyToken, (0, AdminAuth_middleware_1.AdminAuth)([client_1.Role.SUPER_ADMIN]), this.controller.getAllEmployeesController);
+        this.router.put("/:id", verifyToken_1.verifyToken, (0, AdminAuth_middleware_1.AdminAuth)([client_1.Role.SUPER_ADMIN]), employeeValidation_middleware_1.validateUpdateEmployee, this.controller.updateEmployeeController);
+        this.router.delete("/:id", verifyToken_1.verifyToken, (0, AdminAuth_middleware_1.AdminAuth)([client_1.Role.SUPER_ADMIN]), employeeValidation_middleware_1.validateDeleteEmployee, this.controller.deleteEmployeeController);
+        this.router.get("/allusers", verifyToken_1.verifyToken, (0, AdminAuth_middleware_1.AdminAuth)([client_1.Role.SUPER_ADMIN]), this.controller.getAllUsersController);
     }
     getRouter() {
         return this.router;

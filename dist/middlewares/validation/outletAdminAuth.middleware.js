@@ -12,33 +12,43 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.isSuperAdmin = void 0;
-const prisma_1 = __importDefault(require("../prisma"));
-const client_1 = require("../../prisma/generated/client");
-const isSuperAdmin = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a;
+exports.isOutletAdmin = void 0;
+const client_1 = require("../../../prisma/generated/client");
+const prisma_1 = __importDefault(require("../../prisma"));
+const isOutletAdmin = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a, _b;
     try {
-        // Ambil user id dari token
         const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.id;
         if (!userId) {
             res.status(401).json({ message: "Unauthorized - Please login first" });
             return;
         }
-        // Check user role - Convert userId to number
+        // Check user role dan include Employee untuk dapat outletId
         const user = yield prisma_1.default.user.findUnique({
-            where: { id: Number(userId) }, // Convert to number
+            where: { id: Number(userId) },
+            include: {
+                Employee: true,
+            },
         });
-        if (!user || user.role !== client_1.Role.SUPER_ADMIN) {
+        if (!user || user.role !== client_1.Role.OUTLET_ADMIN) {
             res.status(403).json({
-                message: "Access denied - Super Admin only",
+                message: "Access denied - Outlet Admin only",
             });
             return;
         }
+        if (!((_b = user.Employee) === null || _b === void 0 ? void 0 : _b.outletId)) {
+            res.status(403).json({
+                message: "Outlet Admin not assigned to any outlet",
+            });
+            return;
+        }
+        // Simpan outletId ke request untuk digunakan di service
+        req.outletId = user.Employee.outletId;
         next();
     }
     catch (error) {
-        console.error("Super admin auth error:", error);
+        console.error("Outlet admin auth error:", error);
         res.status(500).json({ message: "Authorization error" });
     }
 });
-exports.isSuperAdmin = isSuperAdmin;
+exports.isOutletAdmin = isOutletAdmin;

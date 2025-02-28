@@ -6,8 +6,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const cors_1 = __importDefault(require("cors"));
 const dotenv_1 = __importDefault(require("dotenv"));
-const superAdmOutlet_router_1 = require("./routers/superAdmOutlet.router");
-const superAdmEmployee_router_1 = require("./routers/superAdmEmployee.router");
 const node_cron_1 = __importDefault(require("node-cron"));
 const path_1 = __importDefault(require("path"));
 const auth_router_1 = require("./routers/auth.router");
@@ -15,6 +13,12 @@ const user_router_1 = require("./routers/user.router");
 const address_router_1 = require("./routers/address.router");
 const pickupOrder_router_1 = require("./routers/pickupOrder.router");
 const payment_router_1 = require("./routers/payment.router");
+const superAdmOutlet_router_1 = require("./routers/superAdmOutlet.router");
+const superAdmEmployee_router_1 = require("./routers/superAdmEmployee.router");
+const showOrderOutlets_router_1 = require("./routers/showOrderOutlets.router");
+const processOrder_routes_1 = require("./routers/processOrder.routes");
+const bypassProcess_router_1 = require("./routers/bypassProcess.router");
+const report_router_1 = require("./routers/report.router");
 const attendance_router_1 = __importDefault(require("./routers/attendance.router"));
 const attendanceScheduler_service_1 = __importDefault(require("./services/attendance/attendanceScheduler.service"));
 const transportJob_router_1 = __importDefault(require("./routers/transportJob.router"));
@@ -25,7 +29,7 @@ const PORT = 8000;
 const app = (0, express_1.default)();
 app.use(express_1.default.json());
 app.use((0, cors_1.default)({
-    methods: "GET, POST, PUT, PATCH, DELETE, OPTIONS",
+    methods: "GET, POST, PATCH, PUT, DELETE, OPTIONS",
     optionsSuccessStatus: 200,
     origin: `${process.env.BASE_URL_FE}`,
     credentials: true,
@@ -43,6 +47,10 @@ const paymentRouter = new payment_router_1.PaymentRouter();
 const superAdmEmployee = new superAdmEmployee_router_1.SuperAdmEmployeeRouter();
 const superAdmOutlets = new superAdmOutlet_router_1.SuperAdmOutletRouter();
 const attendanceRouter = new attendance_router_1.default();
+const orderItemsRouter = new processOrder_routes_1.OrderItemsRouter();
+const showOrder = new showOrderOutlets_router_1.showOrderRouter();
+const bypassProcess = new bypassProcess_router_1.BypassRequestRouter();
+const reportRouter = new report_router_1.ReportRouter();
 const transportJobRouter = new transportJob_router_1.default();
 const laundryJobRouter = new laundryJob_router_1.default();
 const notificationRouter = new notification_router_1.default();
@@ -51,8 +59,12 @@ app.use("/api/users", userRouter.getRouter());
 app.use("/api/address", addressRouter.getRouter());
 app.use("/api/pickup-orders", pickupOrderRouter.getRouter());
 app.use("/api/payments", paymentRouter.getRouter());
-app.use("/api/adm-employee", superAdmEmployee.getRouter());
+app.use("/api/adm-employees", superAdmEmployee.getRouter());
 app.use("/api/adm-outlets", superAdmOutlets.getRouter());
+app.use("/api/orders", orderItemsRouter.getRouter());
+app.use("/api/orders/show-order", showOrder.getRouter());
+app.use("/api/bypass", bypassProcess.getRouter());
+app.use("/api/reports", reportRouter.getRouter());
 app.use("/api/attendances", attendanceRouter.getRouter());
 app.use("/api/transport-jobs", transportJobRouter.getRouter());
 app.use("/api/laundry-jobs", laundryJobRouter.getRouter());

@@ -27,7 +27,7 @@ const getUserIdService = (req, res) => __awaiter(void 0, void 0, void 0, functio
             res.status(404).json({ message: "User not found !" });
             return;
         }
-        res.status(200).send({ user });
+        return { user };
     }
     catch (error) {
         throw error;

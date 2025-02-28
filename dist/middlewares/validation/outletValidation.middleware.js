@@ -13,7 +13,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.validateDeleteOutlet = exports.validateUpdateOutlet = exports.validateCreateOutlet = void 0;
-const prisma_1 = __importDefault(require("../prisma"));
+const prisma_1 = __importDefault(require("../../prisma"));
 const validateCreateOutlet = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { outletName, addressLine, province, regency, district, village, latitude, longitude, } = req.body;

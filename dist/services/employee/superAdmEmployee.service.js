@@ -23,49 +23,126 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.reassignMultipleEmployeesService = exports.assignEmployeeToOutletService = exports.getAllUsersService = exports.deleteEmployeeService = exports.updateEmployeeService = exports.getAllEmployeesService = exports.createEmployeeService = void 0;
+exports.getAllUsersService = exports.deleteEmployeeService = exports.updateEmployeeService = exports.getAllEmployeesService = exports.createEmployeeService = void 0;
 const bcrypt_1 = require("bcrypt");
 const prisma_1 = __importDefault(require("../../prisma"));
+const client_1 = require("../../../prisma/generated/client");
+const attendanceScheduler_service_1 = require("../attendance/attendanceScheduler.service");
+const dateTime_service_1 = require("../helpers/dateTime.service");
 const createEmployeeService = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
+    // Pastikan hanya super admin yang bisa membuat employee
+    const user = yield prisma_1.default.user.findUnique({
+        where: { id: Number((_a = req.user) === null || _a === void 0 ? void 0 : _a.id) },
+    });
+    if (!user || user.role !== client_1.Role.SUPER_ADMIN) {
+        throw new Error("Only Super Admin can create employees");
+    }
     const { fullName, email, password, role, workShift, station, outletId } = req.body;
-    // Hash password
     const salt = yield (0, bcrypt_1.genSalt)(10);
     const hashedPassword = yield (0, bcrypt_1.hash)(password, salt);
-    const employee = yield prisma_1.default.user.create({
-        data: {
-            fullName,
-            email,
-            password: hashedPassword,
-            role,
-            Employee: {
-                create: { workShift, station, outletId },
+    const outletTzo = yield (0, attendanceScheduler_service_1.getOutletTzo)(outletId);
+    const localWorkShift = (0, dateTime_service_1.shiftChecker)(outletTzo);
+    yield prisma_1.default.$transaction((tx) => __awaiter(void 0, void 0, void 0, function* () {
+        const employee = yield tx.user.create({
+            data: {
+                fullName,
+                email,
+                password: hashedPassword,
+                role,
+                Employee: {
+                    create: { workShift, station, outletId },
+                },
+                isVerified: true,
             },
-        },
-        include: { Employee: true },
-    });
-    // Hapus password dari response
-    const { password: _ } = employee, employeeWithoutPassword = __rest(employee, ["password"]);
-    return {
-        message: "Employee created successfully! ✅",
-        data: employeeWithoutPassword,
-    };
+            include: { Employee: true },
+        });
+        if (localWorkShift === workShift) {
+            yield tx.employeeAttendance.create({
+                data: { canClockIn: true, employeeId: employee.id },
+            });
+        }
+        const { password: _ } = employee, employeeWithoutPassword = __rest(employee, ["password"]);
+        return {
+            message: "Employee created successfully! ✅",
+            data: employeeWithoutPassword,
+        };
+    }));
 });
 exports.createEmployeeService = createEmployeeService;
 const getAllEmployeesService = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const employees = yield prisma_1.default.user.findMany({
-        where: {
-            isDeleted: false,
-            role: { in: ["WORKER", "DRIVER", "OUTLET_ADMIN"] },
-        },
-        include: { Employee: true },
+    var _a;
+    // Pastikan hanya super admin yang bisa melihat semua employees
+    const user = yield prisma_1.default.user.findUnique({
+        where: { id: Number((_a = req.user) === null || _a === void 0 ? void 0 : _a.id) },
     });
+    if (!user || user.role !== client_1.Role.SUPER_ADMIN) {
+        throw new Error("Only Super Admin can view all employees");
+    }
+    const filter = {
+        isDeleted: false,
+        role: { in: [client_1.Role.WORKER, client_1.Role.DRIVER, client_1.Role.OUTLET_ADMIN] },
+    };
+    const { page = 1, limit = 10, sortOrder = "asc", role, outletName, } = req.query;
+    const search = req.query.search;
+    let sortBy = req.query.sortBy;
+    if (!sortBy)
+        sortBy = "fullName";
+    if (search) {
+        filter.OR = [
+            { fullName: { contains: search, mode: "insensitive" } },
+            { email: { contains: search, mode: "insensitive" } },
+        ];
+    }
+    if (role && role !== "ALL Role") {
+        filter.role = role;
+    }
+    if (outletName) {
+        const outlet = yield prisma_1.default.outlet.findFirst({
+            where: { outletName: outletName },
+        });
+        if (outlet) {
+            const employeeIds = (yield prisma_1.default.employee.findMany({
+                where: { outletId: outlet.id },
+            })).map((item) => item.userId);
+            filter.id = { in: employeeIds };
+        }
+    }
+    const employees = yield prisma_1.default.user.findMany({
+        where: filter,
+        include: {
+            Employee: {
+                include: { outlet: true },
+            },
+        },
+        take: +limit,
+        skip: (+page - 1) * +limit,
+        orderBy: { [sortBy]: sortOrder },
+    });
+    const count = yield prisma_1.default.user.count({
+        where: filter,
+    });
+    const total = Math.ceil(count / +limit);
     return {
         message: "Employees fetched successfully",
         data: employees,
+        meta: {
+            page,
+            limit,
+            total,
+        },
     };
 });
 exports.getAllEmployeesService = getAllEmployeesService;
 const updateEmployeeService = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
+    // Pastikan hanya super admin yang bisa update employee
+    const user = yield prisma_1.default.user.findUnique({
+        where: { id: Number((_a = req.user) === null || _a === void 0 ? void 0 : _a.id) },
+    });
+    if (!user || user.role !== client_1.Role.SUPER_ADMIN) {
+        throw new Error("Only Super Admin can update employees");
+    }
     const { id } = req.params;
     const { fullName, email, workShift, station, outletId } = req.body;
     const employee = yield prisma_1.default.user.update({
@@ -90,6 +167,14 @@ const updateEmployeeService = (req, res) => __awaiter(void 0, void 0, void 0, fu
 });
 exports.updateEmployeeService = updateEmployeeService;
 const deleteEmployeeService = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
+    // Pastikan hanya super admin yang bisa delete employee
+    const user = yield prisma_1.default.user.findUnique({
+        where: { id: Number((_a = req.user) === null || _a === void 0 ? void 0 : _a.id) },
+    });
+    if (!user || user.role !== client_1.Role.SUPER_ADMIN) {
+        throw new Error("Only Super Admin can delete employees");
+    }
     const { id } = req.params;
     yield prisma_1.default.$transaction([
         prisma_1.default.employee.update({
@@ -107,6 +192,14 @@ const deleteEmployeeService = (req, res) => __awaiter(void 0, void 0, void 0, fu
 });
 exports.deleteEmployeeService = deleteEmployeeService;
 const getAllUsersService = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
+    // Pastikan hanya super admin yang bisa melihat semua users
+    const user = yield prisma_1.default.user.findUnique({
+        where: { id: Number((_a = req.user) === null || _a === void 0 ? void 0 : _a.id) },
+    });
+    if (!user || user.role !== client_1.Role.SUPER_ADMIN) {
+        throw new Error("Only Super Admin can view all users");
+    }
     const users = yield prisma_1.default.user.findMany({
         where: { isDeleted: false },
         include: { Employee: true },
@@ -117,35 +210,3 @@ const getAllUsersService = (req, res) => __awaiter(void 0, void 0, void 0, funct
     };
 });
 exports.getAllUsersService = getAllUsersService;
-const assignEmployeeToOutletService = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { id, outletId } = req.body;
-    const employee = yield prisma_1.default.employee.update({
-        where: {
-            id: Number(id),
-        },
-        data: {
-            outletId: Number(outletId),
-        },
-        include: {
-            user: true,
-            outlet: true,
-        },
-    });
-    return {
-        message: "Employee assigned to outlet successfully",
-        data: employee,
-    };
-});
-exports.assignEmployeeToOutletService = assignEmployeeToOutletService;
-const reassignMultipleEmployeesService = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { assignments } = req.body;
-    const results = yield prisma_1.default.$transaction(assignments.map((assign) => prisma_1.default.employee.update({
-        where: { id: assign.id },
-        data: { outletId: assign.outletId },
-    })));
-    return {
-        message: "Multiple employees reassigned successfully",
-        data: results,
-    };
-});
-exports.reassignMultipleEmployeesService = reassignMultipleEmployeesService;

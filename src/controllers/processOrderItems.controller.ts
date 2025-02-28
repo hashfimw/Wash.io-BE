@@ -1,19 +1,16 @@
 import { Request, Response } from "express";
 import {
-  createEmployeeService,
-  deleteEmployeeService,
-  getAllEmployeesService,
-  getAllUsersService,
-  updateEmployeeService,
-} from "../services/employee/superAdmEmployee.service";
+  createOrderItemService,
+  deleteOrderItemService,
+  getOrderItemService,
+  processOrderService,
+  updateOrderItemService,
+} from "../services/outlets/processOrderItems.service";
 
-export class SuperAdmEmployeeController {
-  createEmployeeController = async (
-    req: Request,
-    res: Response
-  ): Promise<void> => {
+export class processOrderItemController {
+  processOrders = async (req: Request, res: Response): Promise<void> => {
     try {
-      const result = await createEmployeeService(req, res);
+      const result = await processOrderService(req, res);
       res.status(201).json(result);
     } catch (error) {
       console.log(error);
@@ -21,12 +18,25 @@ export class SuperAdmEmployeeController {
     }
   };
 
-  getAllEmployeesController = async (
+  createLaundryItemController = async (
     req: Request,
     res: Response
   ): Promise<void> => {
     try {
-      const result = await getAllEmployeesService(req, res);
+      const result = await createOrderItemService(req, res);
+      res.status(201).json(result);
+    } catch (error) {
+      console.log(error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  };
+
+  updateLaundryItemController = async (
+    req: Request,
+    res: Response
+  ): Promise<void> => {
+    try {
+      const result = await updateOrderItemService(req, res);
       res.status(200).json(result);
     } catch (error) {
       console.log(error);
@@ -34,12 +44,12 @@ export class SuperAdmEmployeeController {
     }
   };
 
-  updateEmployeeController = async (
+  deleteLaundryItemController = async (
     req: Request,
     res: Response
   ): Promise<void> => {
     try {
-      const result = await updateEmployeeService(req, res);
+      const result = await deleteOrderItemService(req, res);
       res.status(200).json(result);
     } catch (error) {
       console.log(error);
@@ -47,25 +57,12 @@ export class SuperAdmEmployeeController {
     }
   };
 
-  deleteEmployeeController = async (
+  geOrdersItemsByOutletController = async (
     req: Request,
     res: Response
   ): Promise<void> => {
     try {
-      const result = await deleteEmployeeService(req, res);
-      res.status(200).json(result);
-    } catch (error) {
-      console.log(error);
-      res.status(500).json({ message: "Internal server error" });
-    }
-  };
-
-  getAllUsersController = async (
-    req: Request,
-    res: Response
-  ): Promise<void> => {
-    try {
-      const result = await getAllUsersService(req, res);
+      const result = await getOrderItemService(req, res);
       res.status(200).json(result);
     } catch (error) {
       console.log(error);

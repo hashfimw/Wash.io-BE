@@ -12,10 +12,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.forceAlterEmployeeAttendances = void 0;
+exports.getOutletTzo = exports.forceAlterEmployeeAttendances = void 0;
 const prisma_1 = __importDefault(require("../../prisma"));
 const geo_tz_1 = require("geo-tz");
 const luxon_1 = require("luxon");
+const updatePickupOrder_service_1 = require("../pickupOrder/updatePickupOrder.service");
 const shiftStartScheduler = (ids, workShift) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const getEmployeeIds = yield prisma_1.default.employee.findMany({
@@ -122,6 +123,7 @@ const attendanceSchedule = () => __awaiter(void 0, void 0, void 0, function* () 
             if (currentHour == 22)
                 yield shiftEndScheduler(item.ids, "NOON");
         }
+        yield (0, updatePickupOrder_service_1.updateDeliveredOrderStatus)();
         // console.log(`running cron job at ${new Date().toLocaleString()}`);
     }
     catch (error) {
@@ -169,3 +171,23 @@ const forceAlterEmployeeAttendances = (req, res) => __awaiter(void 0, void 0, vo
     }
 });
 exports.forceAlterEmployeeAttendances = forceAlterEmployeeAttendances;
+const getOutletTzo = (outletId) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const outletData = yield prisma_1.default.outlet.findUnique({
+            where: { id: outletId },
+            select: {
+                id: true,
+                outletAddress: { select: { latitude: true, longitude: true } },
+            },
+        });
+        if (outletData) {
+            return groupByOffset([outletData])[0].offset * -1;
+        }
+        else
+            throw { message: "Invalid outlet Id!" };
+    }
+    catch (error) {
+        throw error;
+    }
+});
+exports.getOutletTzo = getOutletTzo;
