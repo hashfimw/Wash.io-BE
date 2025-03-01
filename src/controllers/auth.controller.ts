@@ -53,15 +53,18 @@ export class AuthController {
       res.status(400).send(error);
     }
   }
-
-  async loginController(req: Request, res: Response) {
+  async loginController(req: Request, res: Response): Promise<void> {
     try {
-      const result = await loginService(req, res);
-
-      res.status(200).send(result);
+      const result = await loginService(req);
+      res.status(200).json(result);
     } catch (error) {
-      console.log(error);
-      res.status(400).send(error);
+      console.error(error);
+      const errorMessage =
+        error instanceof Error ? error.message : "An unexpected error occurred";
+
+      res.status(400).json({
+        message: errorMessage,
+      });
     }
   }
 
@@ -91,10 +94,10 @@ export class AuthController {
     try {
       const result = await getSessionService(req, res);
 
-      res.status(200).send(result);
+      res.status(200).json(result);
     } catch (error) {
       console.log(error);
-      res.status(400).send(error);
+      res.status(400);
     }
   }
 }
