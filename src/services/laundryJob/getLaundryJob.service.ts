@@ -22,6 +22,8 @@ export const getIdleWorker = async (id: number, tzo: number) => {
 
 const getLaundryJobs = async (filter: Prisma.LaundryJobWhereInput, meta: PaginationQueries) => {
   try {
+    if (meta.sortBy == "date") meta.sortBy = "createdAt";
+
     const laundryJobs = await prisma.laundryJob.findMany({
       where: filter,
       skip: (meta.page - 1) * meta.limit,

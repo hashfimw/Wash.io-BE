@@ -1,5 +1,8 @@
+import { getRuntime } from "@prisma/client/runtime/library";
 import { OrderStatus, Prisma, Role, WorkerStation } from "../../../prisma/generated/client";
 import prisma from "../../prisma";
+import { getOutletTzo } from "../attendance/attendanceScheduler.service";
+import { shiftChecker } from "./dateTime.service";
 
 export const findUser = async (id: number) => {
   try {
@@ -25,7 +28,10 @@ export const findUser = async (id: number) => {
 
 export const getIdleEmployees = async (outletId: number, role: Role, station: WorkerStation | null = null) => {
   try {
-    const filter: Prisma.EmployeeWhereInput = { outletId, isPresent: true, isWorking: false, isDeleted: false, user: { role } };
+    const tzo = await getOutletTzo(outletId);
+    const workShift = shiftChecker(tzo);
+
+    const filter: Prisma.EmployeeWhereInput = { outletId, isPresent: true, isWorking: false, isDeleted: false, user: { role }, workShift };
     if (station != null) filter.station = station as WorkerStation;
     const ids = await prisma.employee.findMany({
       where: filter,

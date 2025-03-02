@@ -26,9 +26,6 @@ export const dateValidator = (startDate: string, endDate: string) => {
     const origin = new Date("1970-01-01");
     if (!startDate) start = origin;
     if (!endDate) end = now;
-    if (start > now || end > now) throw { message: "Start/end date cannot be greater than current date" };
-    if (start >= end) throw { message: "End date cannot be greater than start date" };
-    if (start < origin || end < origin) throw { message: "Start/end date cannot be less than 1970-01-01" };
     return { start: start, end: end };
   } catch (error) {
     throw error;

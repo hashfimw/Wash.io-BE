@@ -23,12 +23,14 @@ export const getIdleDriver = async (userId: number, tzo: number) => {
 
 const getTransportJobs = async (filter: Prisma.TransportJobWhereInput, meta: PaginationQueries) => {
   try {
+    if (meta.sortBy == "date") meta.sortBy = "createdAt";
+
     const transportJobs = await prisma.transportJob.findMany({
       where: filter,
       skip: (meta.page - 1) * meta.limit,
       take: meta.limit,
       orderBy: { [meta.sortBy]: meta.sortOrder },
-      select: { id: true, orderId: true, createdAt: true },
+      select: { id: true, orderId: true, createdAt: true, transportType: true },
     });
     const total_data = await prisma.transportJob.count({ where: filter });
     const total_pages = Math.ceil(total_data / meta.limit);
