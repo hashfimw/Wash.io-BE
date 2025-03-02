@@ -1,7 +1,6 @@
 // src/routes/bypassRequest.routes.ts
 import { Router } from "express";
-
-import { Role } from "@prisma/client";
+import { Role } from "../../prisma/generated/client";
 import { BypassRequestController } from "../controllers/bypassProcess.controller";
 import { verifyToken } from "../middlewares/verifyToken";
 import { AdminAuth } from "../middlewares/validation/AdminAuth.middleware";

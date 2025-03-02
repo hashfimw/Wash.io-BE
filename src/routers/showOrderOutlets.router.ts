@@ -3,7 +3,7 @@ import { Router } from "express";
 import { showOrdersController } from "../controllers/showOrders.controller";
 import { verifyToken } from "../middlewares/verifyToken";
 import { AdminAuth } from "../middlewares/validation/AdminAuth.middleware";
-import { Role } from "@prisma/client";
+import { Role } from "../../prisma/generated/client";
 
 export class showOrderRouter {
   private router: Router;

@@ -1,7 +1,7 @@
 // src/services/bypassRequest.service.ts
 import { Request, Response } from "express";
 import prisma from "../../prisma";
-import { Role } from "@prisma/client";
+import { Role } from "../../../prisma/generated/client";
 import cron from "node-cron";
 
 // Service untuk worker request bypass
@@ -58,7 +58,7 @@ export const requestBypassService = async (req: Request, res: Response) => {
         userId: admin.userId,
         title: "Permintaan Bypass Baru",
         description: `Worker ${worker.fullName} meminta bypass untuk Order #${laundryJobId}. Alasan: ${byPassNote}`,
-        url: `/dashboard/bypass-requests/${laundryJobId}`,
+        url: `/dashboard/outlet-admin/bypass/${laundryJobId}`,
       },
     });
   }
@@ -70,7 +70,7 @@ export const requestBypassService = async (req: Request, res: Response) => {
         userId: admin.id,
         title: "Permintaan Bypass Baru",
         description: `Worker ${worker.fullName} meminta bypass untuk Order #${laundryJobId} di outlet ${worker.Employee.outletId}. Alasan: ${byPassNote}`,
-        url: `/dashboard/bypass-requests/${laundryJobId}`,
+        url: `/dashboard/super-admin/bypass/${laundryJobId}`,
       },
     });
   }
@@ -165,7 +165,7 @@ export const handleBypassRequestService = async (
                   ? `Catatan: ${adminNote}`
                   : "Harap lengkapi data yang kurang dalam 30 menit."
               }`,
-          url: `/dashboard/laundry-jobs/${laundryJobId}`,
+          url: `/employee-dashboard/worker/${laundryJobId}`,
         },
       });
 
@@ -186,7 +186,7 @@ export const handleBypassRequestService = async (
                   userId: job.worker!.userId,
                   title: "Waktu Habis!",
                   description: `30 menit telah berlalu. Harap segera update item yang kurang untuk Order #${job.order.id}`,
-                  url: `/dashboard/laundry-jobs/${laundryJobId}`,
+                  url: `/employee-dashboard/worker/${laundryJobId}`,
                 },
               });
             }

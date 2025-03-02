@@ -1,7 +1,7 @@
 // src/services/order.service.ts
 import { Request, Response } from "express";
 import prisma from "../../prisma";
-import { OrderStatus, Prisma, Role } from "@prisma/client";
+import { OrderStatus, Prisma, Role } from "../../../prisma/generated/client";
 
 export const getAllOrdersService = async (req: Request, res: Response) => {
   // Cek role pengguna

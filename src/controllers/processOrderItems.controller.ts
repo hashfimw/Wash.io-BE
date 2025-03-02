@@ -58,7 +58,7 @@ export class processOrderItemController {
     }
   };
 
-  geOrdersItemsByOutletController = async (
+  getOrdersItemsByOutletController = async (
     req: Request,
     res: Response
   ): Promise<void> => {

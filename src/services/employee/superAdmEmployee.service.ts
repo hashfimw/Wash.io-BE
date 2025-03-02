@@ -2,7 +2,9 @@
 import { Request, Response } from "express";
 import { genSalt, hash } from "bcrypt";
 import prisma from "../../prisma";
-import { Prisma, Role } from "@prisma/client";
+import { Prisma, Role } from "../../../prisma/generated/client";
+import { getOutletTzo } from "../attendance/attendanceScheduler.service";
+import { shiftChecker } from "../helpers/dateTime.service";
 
 export const createEmployeeService = async (req: Request, res: Response) => {
   // Pastikan hanya super admin yang bisa membuat employee
@@ -20,26 +22,37 @@ export const createEmployeeService = async (req: Request, res: Response) => {
   const salt = await genSalt(10);
   const hashedPassword = await hash(password, salt);
 
-  const employee = await prisma.user.create({
-    data: {
-      fullName,
-      email,
-      password: hashedPassword,
-      role,
-      Employee: {
-        create: { workShift, station, outletId },
+  const outletTzo = await getOutletTzo(outletId); 
+  const localWorkShift = shiftChecker(outletTzo);
+
+  await prisma.$transaction(async (tx) => {
+    const employee = await tx.user.create({
+      data: {
+        fullName,
+        email,
+        password: hashedPassword,
+        role,
+        Employee: {
+          create: { workShift, station, outletId },
+        },
+        isVerified: true,
       },
-      isVerified: true,
-    },
-    include: { Employee: true },
+      include: { Employee: true },
+    });
+
+    if (localWorkShift === workShift) {
+      await tx.employeeAttendance.create({
+        data: { canClockIn: true, employeeId: employee.id },
+      });
+    }
+
+    const { password: _, ...employeeWithoutPassword } = employee;
+
+    return {
+      message: "Employee created successfully! ✅",
+      data: employeeWithoutPassword,
+    };
   });
-
-  const { password: _, ...employeeWithoutPassword } = employee;
-
-  return {
-    message: "Employee created successfully! ✅",
-    data: employeeWithoutPassword,
-  };
 };
 
 export const getAllEmployeesService = async (req: Request, res: Response) => {

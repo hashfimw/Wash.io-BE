@@ -16,6 +16,7 @@ exports.loginService = void 0;
 const prisma_1 = __importDefault(require("../../prisma"));
 const bcrypt_1 = require("bcrypt");
 const jsonwebtoken_1 = require("jsonwebtoken");
+const config_1 = require("../../utils/config");
 const loginService = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { email, password } = req.body;
@@ -59,8 +60,8 @@ const loginService = (req, res) => __awaiter(void 0, void 0, void 0, function* (
                 .send({ message: "Incorrect email address or password!" });
         }
         // Generate JWT token
-        const payload = { id: user.id };
-        const token = (0, jsonwebtoken_1.sign)(payload, process.env.JWT_KEY, { expiresIn: "1d" });
+        const payload = { id: user.id, role: user.role };
+        const token = (0, jsonwebtoken_1.sign)(payload, config_1.appConfig.SecretKey, { expiresIn: "1d" });
         // Send response with token
         res.status(200).send({
             message: "Login Successfuly! ✅",

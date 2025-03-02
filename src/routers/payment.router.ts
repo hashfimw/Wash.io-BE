@@ -1,7 +1,6 @@
 import { Router } from "express";
 import { verifyToken } from "../middlewares/verifyToken";
 import { PaymentController } from "../controllers/payment.controller";
-import { Role } from "@prisma/client";
 
 export class PaymentRouter {
   private router: Router;
