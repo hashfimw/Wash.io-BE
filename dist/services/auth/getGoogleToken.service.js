@@ -17,20 +17,15 @@ const google_auth_library_1 = require("google-auth-library");
 const prisma_1 = __importDefault(require("../../prisma"));
 const jsonwebtoken_1 = require("jsonwebtoken");
 const config_1 = require("../../utils/config");
-const oAuth2Client = new google_auth_library_1.OAuth2Client(process.env.CLIENT_ID, process.env.CLIENT_SECRET, process.env.REDIRECT_URI // Update this based on your frontend redirect
-);
+const oAuth2Client = new google_auth_library_1.OAuth2Client(process.env.CLIENT_ID, process.env.CLIENT_SECRET, process.env.REDIRECT_URI);
 const getGoogleTokenService = (code) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a;
     try {
-        // Exchange authorization code for tokens
+        // 1️⃣ Tukar kode autentikasi dengan token dari Google
         const { tokens } = yield oAuth2Client.getToken(code);
-        console.log(code);
-        console.log("Client ID:", process.env.CLIENT_ID);
-        console.log("Client Secret:", process.env.CLIENT_SECRET);
         if (!tokens.id_token) {
             throw new Error("Failed to retrieve ID token from Google");
         }
-        // Verify and decode the ID token securely
+        // 2️⃣ Verifikasi ID token Google
         const ticket = yield oAuth2Client.verifyIdToken({
             idToken: tokens.id_token,
             audience: process.env.CLIENT_ID,
@@ -39,44 +34,48 @@ const getGoogleTokenService = (code) => __awaiter(void 0, void 0, void 0, functi
         if (!payload || !payload.email) {
             throw new Error("Invalid token payload");
         }
-        const decode = {
+        // 3️⃣ Ekstrak data user dari Google
+        const userData = {
             email: payload.email,
             name: payload.name || "",
             picture: payload.picture || "",
         };
-        // Check if the user already exists in the database
-        const existingUser = yield prisma_1.default.user.findFirst({
-            where: { email: decode.email },
+        // 4️⃣ Periksa apakah user sudah ada di database
+        let user = yield prisma_1.default.user.findUnique({
+            where: { email: userData.email },
         });
-        if (existingUser &&
-            ((_a = existingUser.avatar) === null || _a === void 0 ? void 0 : _a.includes("googleusercontent.com"))) {
-            const token = (0, jsonwebtoken_1.sign)({ id: existingUser.id }, config_1.appConfig.SecretKey, {
-                expiresIn: "2h",
+        if (user) {
+            if (user.password) {
+                throw new Error("Please login using email and password.");
+            }
+        }
+        else {
+            // 5️⃣ Jika user belum ada, buat user baru
+            user = yield prisma_1.default.user.create({
+                data: {
+                    email: userData.email,
+                    fullName: userData.name,
+                    avatar: userData.picture,
+                    isVerified: true,
+                },
             });
-            return {
-                message: "Login by Google Success",
-                data: existingUser,
-                token: token,
-            };
         }
-        if (existingUser === null || existingUser === void 0 ? void 0 : existingUser.password) {
-            throw new Error("Please login using email and password");
-        }
-        // Create a new user if they don't exist
-        const newUser = yield prisma_1.default.user.create({
-            data: {
-                email: decode.email,
-                fullName: decode.name,
-                avatar: decode.picture,
-                isVerified: true,
-            },
-        });
-        const token = (0, jsonwebtoken_1.sign)({ id: newUser.id }, config_1.appConfig.SecretKey, {
-            expiresIn: "2h",
-        });
+        // 6️⃣ Buatkan token JWT yang menyimpan lebih banyak informasi
+        const token = (0, jsonwebtoken_1.sign)({
+            id: user.id,
+            email: user.email,
+            fullName: user.fullName,
+            avatar: user.avatar,
+        }, config_1.appConfig.SecretKey, { expiresIn: "2h" });
+        console.log("🔹 Generated Google Token:", token);
         return {
-            message: "Login by Google Success ! ✅",
-            data: newUser,
+            message: "Login by Google Success! ✅",
+            data: {
+                id: user.id,
+                email: user.email,
+                fullName: user.fullName,
+                avatar: user.avatar,
+            },
             token: token,
         };
     }

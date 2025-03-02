@@ -212,7 +212,9 @@ const handlePaymentNotificationService = (req, res) => __awaiter(void 0, void 0,
                 paymentStatus = "SUCCEEDED";
             }
         }
-        else if (transactionStatus === "cancel" || transactionStatus === "deny" || transactionStatus === "failure") {
+        else if (transactionStatus === "cancel" ||
+            transactionStatus === "deny" ||
+            transactionStatus === "failure") {
             paymentStatus = "CANCELLED";
         }
         else if (transactionStatus === "expire") {
@@ -242,9 +244,14 @@ const handlePaymentNotificationService = (req, res) => __awaiter(void 0, void 0,
             });
             // If payment succeeded, mark order as paid and update order status
             if (paymentStatus === "SUCCEEDED") {
-                yield tx.order.update({ where: { id: payment.orderId }, data: updateData });
+                yield tx.order.update({
+                    where: { id: payment.orderId },
+                    data: updateData,
+                });
                 if (order.orderStatus == "AWAITING_PAYMENT") {
-                    const pickupOrder = yield prisma_1.default.transportJob.findFirst({ where: { orderId: order.id, transportType: "PICKUP" } });
+                    const pickupOrder = yield prisma_1.default.transportJob.findFirst({
+                        where: { orderId: order.id, transportType: "PICKUP" },
+                    });
                     const distance = pickupOrder.distance / 1000;
                     // Create delivery transport job automatically
                     const deliveryJob = yield tx.transportJob.create({
@@ -265,7 +272,9 @@ const handlePaymentNotificationService = (req, res) => __awaiter(void 0, void 0,
                     data: {
                         userId: payment.order.customerAddress.customerId,
                         title: "Pembayaran Berhasil",
-                        description: `Pembayaran untuk order #${payment.orderId} telah berhasil. ${(order === null || order === void 0 ? void 0 : order.orderStatus) == "AWAITING_PAYMENT" ? "Pesanan Anda akan segera dikirim" : ""}.`,
+                        description: `Pembayaran untuk order #${payment.orderId} telah berhasil. ${(order === null || order === void 0 ? void 0 : order.orderStatus) == "AWAITING_PAYMENT"
+                            ? "Pesanan Anda akan segera dikirim"
+                            : ""}.`,
                         url: `/order/${payment.orderId}`,
                     },
                 });

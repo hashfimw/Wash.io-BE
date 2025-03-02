@@ -17,71 +17,31 @@ const jsonwebtoken_1 = require("jsonwebtoken");
 const prisma_1 = __importDefault(require("../../prisma"));
 const config_1 = require("../../utils/config");
 const getSessionService = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a, _b, _c, _d;
     try {
         const authHeader = req.headers.authorization;
+        console.log("🔹 Received token:", authHeader); // ✅ Debugging token
         if (!(authHeader === null || authHeader === void 0 ? void 0 : authHeader.startsWith("Bearer "))) {
             res.status(401).send({ message: "Unauthorized: No token provided" });
             return;
         }
         const token = authHeader.split(" ")[1];
-        if (!token) {
-            res.status(401).send({ message: "Unauthorized: Token missing" });
-            return;
-        }
-        // Verify token
-        let decoded;
-        try {
-            decoded = (0, jsonwebtoken_1.verify)(token, config_1.appConfig.SecretKey);
-        }
-        catch (tokenError) {
-            res.status(403).send({ message: "Forbidden: Invalid token" });
-            return;
-        }
-        if (!(decoded === null || decoded === void 0 ? void 0 : decoded.role)) {
+        const decoded = (0, jsonwebtoken_1.verify)(token, config_1.appConfig.SecretKey);
+        if (!(decoded === null || decoded === void 0 ? void 0 : decoded.id)) {
             res.status(403).send({ message: "Forbidden: Invalid token payload" });
             return;
         }
-        // Fetch user session from database
         const user = yield prisma_1.default.user.findUnique({
-            where: {
-                id: decoded.id,
-                isDeleted: false
-            },
-            select: {
-                id: true,
-                fullName: true,
-                email: true,
-                avatar: true,
-                role: true,
-                isVerified: true,
-                Employee: {
-                    select: {
-                        id: true,
-                        outletId: true
-                    }
-                },
-            },
+            where: { id: decoded.id, isDeleted: false },
         });
         if (!user) {
             res.status(404).send({ message: "User not found" });
             return;
         }
-        // Create response data
-        const responseData = {
-            id: user.id,
-            fullName: user.fullName,
-            email: user.email,
-            avatar: user.avatar,
-            role: user.role,
-            isVerified: user.isVerified,
-            employeeId: (_b = (_a = user.Employee) === null || _a === void 0 ? void 0 : _a.id) !== null && _b !== void 0 ? _b : null,
-            outletId: (_d = (_c = user.Employee) === null || _c === void 0 ? void 0 : _c.outletId) !== null && _d !== void 0 ? _d : null,
-        };
-        res.status(200).send(responseData);
+        res.status(200).send(user);
     }
     catch (error) {
-        throw error;
+        console.error("🔴 Session Error:", error);
+        res.status(500).send({ message: "Internal Server Error" });
     }
 });
 exports.getSessionService = getSessionService;
