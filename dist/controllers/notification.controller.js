@@ -40,6 +40,16 @@ class NotificationController {
                 res.status(400).send(error);
             }
         });
+        this.getUnreadNotificationsCount = (req, res) => __awaiter(this, void 0, void 0, function* () {
+            try {
+                const count = yield prisma_1.default.notification.count({ where: { userId: req.user.id, isRead: false } });
+                res.status(200).send({ data: count });
+            }
+            catch (error) {
+                console.log(error);
+                res.status(400).send(error);
+            }
+        });
         this.markAllNotificationsAsRead = (req, res) => __awaiter(this, void 0, void 0, function* () {
             try {
                 yield prisma_1.default.notification.updateMany({

@@ -14,6 +14,7 @@ export default class NotificationRouter {
 
   private initializeRoutes() {
     this.router.get("/", verifyToken, this.controller.getNotifications);
+    this.router.get("/count-unread", verifyToken, this.controller.getUnreadNotificationsCount);
     this.router.patch("/", verifyToken, this.controller.markAllNotificationsAsRead);
     this.router.patch("/:id", verifyToken, this.controller.markNotificationAsReadById);
   }

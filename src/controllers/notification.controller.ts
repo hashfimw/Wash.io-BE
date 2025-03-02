@@ -30,6 +30,17 @@ export default class NotificationController {
     }
   };
 
+  getUnreadNotificationsCount = async (req: Request, res: Response) => {
+    try {
+      const count = await prisma.notification.count({ where: { userId: req.user!.id, isRead: false } });
+
+      res.status(200).send({ data: count });
+    } catch (error) {
+      console.log(error);
+      res.status(400).send(error);
+    }
+  };
+
   markAllNotificationsAsRead = async (req: Request, res: Response) => {
     try {
       await prisma.notification.updateMany({
