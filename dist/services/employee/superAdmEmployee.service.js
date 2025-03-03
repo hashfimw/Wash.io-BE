@@ -59,7 +59,7 @@ const createEmployeeService = (req, res) => __awaiter(void 0, void 0, void 0, fu
         });
         if (localWorkShift === workShift) {
             yield tx.employeeAttendance.create({
-                data: { canClockIn: true, employeeId: employee.id },
+                data: { canClockIn: true, employeeId: employee.id, updatedAt: Date() },
             });
         }
         const { password: _ } = employee, employeeWithoutPassword = __rest(employee, ["password"]);

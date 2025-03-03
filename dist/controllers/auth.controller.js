@@ -23,35 +23,35 @@ class AuthController {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const result = yield (0, register_service_1.registerService)(req, res);
-                res.status(200).send(result);
+                res.status(200).json(result);
             }
             catch (error) {
                 console.log(error);
-                res.status(400).send(error);
+                res.status(400);
             }
         });
     }
     verifyEmailController(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const result = yield (0, verifyEmail_service_1.verifEmailService)(req, res);
-                res.status(200).send(result);
+                const result = yield (0, verifyEmail_service_1.verifEmailService)(req);
+                res.status(result.status).json({ message: result.message });
             }
             catch (error) {
                 console.log(error);
-                res.status(400).send(error);
+                res.status(500).json({ message: "Internal Server Error" });
             }
         });
     }
     completeRegistController(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const result = yield (0, completeRegist_service_1.completeRegistService)(req, res);
-                res.status(200).send(result);
+                const result = yield (0, completeRegist_service_1.completeRegistService)(req);
+                res.status(result.status).json({ message: result.message });
             }
             catch (error) {
                 console.log(error);
-                res.status(400).send(error);
+                res.status(400).json({ message: "An error occurred" });
             }
         });
     }
@@ -60,23 +60,27 @@ class AuthController {
             try {
                 const { code } = req.body;
                 const result = yield (0, getGoogleToken_service_1.getGoogleTokenService)(code);
-                res.status(200).send(result);
+                res.status(200).json(result);
             }
             catch (error) {
-                console.log(error);
-                res.status(400).send(error);
+                console.error("Google Auth Error:", Error);
+                res.status(400).json({ message: "Google login failed", error: Error });
             }
         });
     }
     loginController(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const result = yield (0, login_service_1.loginService)(req, res);
-                res.status(200).send(result);
+                const result = yield (0, login_service_1.loginService)(req);
+                res.status(200).json(result);
             }
             catch (error) {
-                console.log(error);
-                res.status(400).send(error);
+                console.error(error);
+                // Safely extract error message
+                const errorMessage = error instanceof Error ? error.message : "An unexpected error occurred";
+                res.status(400).json({
+                    message: errorMessage,
+                });
             }
         });
     }
@@ -84,11 +88,11 @@ class AuthController {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const result = yield (0, forgotPassword_service_1.forgotPasswordService)(req, res);
-                res.status(200).send(result);
+                res.status(200).json(result);
             }
             catch (error) {
                 console.log(error);
-                res.status(400).send(error);
+                res.status(400);
             }
         });
     }
@@ -96,11 +100,11 @@ class AuthController {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const result = yield (0, resetPassword_service_1.resetPasswrodService)(req, res);
-                res.status(200).send(result);
+                res.status(200).json(result);
             }
             catch (error) {
                 console.log(error);
-                res.status(400).send(error);
+                res.status(400);
             }
         });
     }
@@ -108,11 +112,11 @@ class AuthController {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const result = yield (0, getSession_service_1.getSessionService)(req, res);
-                res.status(200).send(result);
+                res.status(200).json(result);
             }
             catch (error) {
                 console.log(error);
-                res.status(400).send(error);
+                res.status(400);
             }
         });
     }

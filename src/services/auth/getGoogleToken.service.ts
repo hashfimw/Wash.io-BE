@@ -6,7 +6,7 @@ import { appConfig } from "../../utils/config";
 const oAuth2Client = new OAuth2Client(
   process.env.CLIENT_ID,
   process.env.CLIENT_SECRET,
-  process.env.REDIRECT_URI // Update this based on your frontend redirect
+  process.env.REDIRECT_URI
 );
 
 interface LoginGoogleArgs {
@@ -17,17 +17,13 @@ interface LoginGoogleArgs {
 
 export const getGoogleTokenService = async (code: string) => {
   try {
-    // Exchange authorization code for tokens
+    // 1️⃣ Tukar kode autentikasi dengan token dari Google
     const { tokens } = await oAuth2Client.getToken(code);
-    console.log(code);
-    console.log("Client ID:", process.env.CLIENT_ID);
-    console.log("Client Secret:", process.env.CLIENT_SECRET);
-
     if (!tokens.id_token) {
       throw new Error("Failed to retrieve ID token from Google");
     }
 
-    // Verify and decode the ID token securely
+    // 2️⃣ Verifikasi ID token Google
     const ticket = await oAuth2Client.verifyIdToken({
       idToken: tokens.id_token,
       audience: process.env.CLIENT_ID,
@@ -38,53 +34,56 @@ export const getGoogleTokenService = async (code: string) => {
       throw new Error("Invalid token payload");
     }
 
-    const decode: LoginGoogleArgs = {
+    // 3️⃣ Ekstrak data user dari Google
+    const userData: LoginGoogleArgs = {
       email: payload.email,
       name: payload.name || "",
       picture: payload.picture || "",
     };
 
-    // Check if the user already exists in the database
-    const existingUser = await prisma.user.findFirst({
-      where: { email: decode.email },
+    // 4️⃣ Periksa apakah user sudah ada di database
+    let user = await prisma.user.findUnique({
+      where: { email: userData.email },
     });
 
-    if (
-      existingUser &&
-      existingUser.avatar?.includes("googleusercontent.com")
-    ) {
-      const token = sign({ id: existingUser.id }, appConfig.SecretKey, {
-        expiresIn: "2h",
+    if (user) {
+      if (user.password) {
+        throw new Error("Please login using email and password.");
+      }
+    } else {
+      // 5️⃣ Jika user belum ada, buat user baru
+      user = await prisma.user.create({
+        data: {
+          email: userData.email,
+          fullName: userData.name,
+          avatar: userData.picture,
+          isVerified: true,
+        },
       });
-
-      return {
-        message: "Login by Google Success",
-        data: existingUser,
-        token: token,
-      };
     }
 
-    if (existingUser?.password) {
-      throw new Error("Please login using email and password");
-    }
-
-    // Create a new user if they don't exist
-    const newUser = await prisma.user.create({
-      data: {
-        email: decode.email,
-        fullName: decode.name,
-        avatar: decode.picture,
-        isVerified: true,
+    // 6️⃣ Buatkan token JWT yang menyimpan lebih banyak informasi
+    const token = sign(
+      {
+        id: user.id,
+        email: user.email,
+        fullName: user.fullName,
+        avatar: user.avatar,
       },
-    });
+      appConfig.SecretKey,
+      { expiresIn: "2h" }
+    );
 
-    const token = sign({ id: newUser.id }, appConfig.SecretKey, {
-      expiresIn: "2h",
-    });
+    console.log("🔹 Generated Google Token:", token);
 
     return {
-      message: "Login by Google Success ! ✅",
-      data: newUser,
+      message: "Login by Google Success! ✅",
+      data: {
+        id: user.id,
+        email: user.email,
+        fullName: user.fullName,
+        avatar: user.avatar,
+      },
       token: token,
     };
   } catch (error) {

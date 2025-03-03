@@ -24,26 +24,36 @@ const attendanceScheduler_service_1 = __importDefault(require("./services/attend
 const transportJob_router_1 = __importDefault(require("./routers/transportJob.router"));
 const laundryJob_router_1 = __importDefault(require("./routers/laundryJob.router"));
 const notification_router_1 = __importDefault(require("./routers/notification.router"));
+const outlets_router_1 = require("./routers/outlets.router");
 dotenv_1.default.config();
 const PORT = 8000;
 const app = (0, express_1.default)();
-app.use(express_1.default.json());
+// ✅ Fix CORS & COOP
 app.use((0, cors_1.default)({
     methods: "GET, POST, PATCH, PUT, DELETE, OPTIONS",
     optionsSuccessStatus: 200,
-    origin: `${process.env.BASE_URL_FE}`,
+    origin: `${process.env.BASE_URL_FE}`, // Pastikan ini sudah benar di .env
     credentials: true,
 }));
-app.get("/api", (res) => {
+// ✅ Tambahkan Header COOP agar Google OAuth tidak terblokir
+app.use((req, res, next) => {
+    res.setHeader("Cross-Origin-Opener-Policy", "same-origin-allow-popups");
+    res.setHeader("Cross-Origin-Resource-Policy", "cross-origin");
+    next();
+});
+app.use(express_1.default.json());
+app.get("/api", (req, res) => {
     res.status(200).send("Welcome to my API");
 });
 node_cron_1.default.schedule("*/15 * * * *", attendanceScheduler_service_1.default);
 app.use("/api/public", express_1.default.static(path_1.default.join(__dirname, "../public")));
+// 🔥 Routing API
 const authRouter = new auth_router_1.AuthRouter();
 const userRouter = new user_router_1.UserRouter();
 const addressRouter = new address_router_1.AddressRouter();
 const pickupOrderRouter = new pickupOrder_router_1.PickupOrderRouter();
 const paymentRouter = new payment_router_1.PaymentRouter();
+const outletsRouter = new outlets_router_1.OutletsRouter();
 const superAdmEmployee = new superAdmEmployee_router_1.SuperAdmEmployeeRouter();
 const superAdmOutlets = new superAdmOutlet_router_1.SuperAdmOutletRouter();
 const attendanceRouter = new attendance_router_1.default();
@@ -59,6 +69,7 @@ app.use("/api/users", userRouter.getRouter());
 app.use("/api/address", addressRouter.getRouter());
 app.use("/api/pickup-orders", pickupOrderRouter.getRouter());
 app.use("/api/payments", paymentRouter.getRouter());
+app.use("/api/outlets", outletsRouter.getRouter());
 app.use("/api/adm-employees", superAdmEmployee.getRouter());
 app.use("/api/adm-outlets", superAdmOutlets.getRouter());
 app.use("/api/orders", orderItemsRouter.getRouter());
@@ -70,6 +81,6 @@ app.use("/api/transport-jobs", transportJobRouter.getRouter());
 app.use("/api/laundry-jobs", laundryJobRouter.getRouter());
 app.use("/api/notifications", notificationRouter.getRouter());
 app.listen(PORT, () => {
-    console.log(`server is running on => http://localhost:${PORT}/api`);
+    console.log(`🚀 Server is running on => http://localhost:${PORT}/api`);
 });
 exports.default = app;
