@@ -48,6 +48,8 @@ const getIdleWorker = (id, tzo) => __awaiter(void 0, void 0, void 0, function* (
 exports.getIdleWorker = getIdleWorker;
 const getLaundryJobs = (filter, meta) => __awaiter(void 0, void 0, void 0, function* () {
     try {
+        if (meta.sortBy == "date")
+            meta.sortBy = "createdAt";
         const laundryJobs = yield prisma_1.default.laundryJob.findMany({
             where: filter,
             skip: (meta.page - 1) * meta.limit,
@@ -82,6 +84,7 @@ const getLaundryJobsService = (queries) => __awaiter(void 0, void 0, void 0, fun
             const orderIds = yield (0, finder_service_1.findOutletsOrderIds)(outletId);
             filter.orderId = { in: orderIds };
             filter.workerId = { equals: null };
+            filter.isCompleted = false;
         }
         else if (queries.requestType == "history") {
             filter.workerId = worker.Employee.id;

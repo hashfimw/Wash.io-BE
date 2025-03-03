@@ -9,9 +9,7 @@ export const findUser = async (id: number) => {
     const user = await prisma.user.findFirst({
       where: { id: id },
       include: {
-        Address: true,
-        Employee: { include: { outlet: true, LaundryJob: true, TransportJob: true, EmployeeAttendance: true } },
-        Notification: true,
+        Employee: { include: { EmployeeAttendance: true } },
       },
     });
     if (!user) throw { message: "User not found!" };

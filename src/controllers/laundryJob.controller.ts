@@ -1,6 +1,8 @@
 import { Request, Response } from "express";
 import { getLaundryJobByIdService, getLaundryJobsService, getOngoingLaundryJobService } from "../services/laundryJob/getLaundryJob.service";
 import { updateLaundryJobByIdService } from "../services/laundryJob/updateLaundryJob.service";
+import { findUser } from "../services/helpers/finder.service";
+import prisma from "../prisma";
 
 export default class LaundryJobController {
   async getLaundryJobs(req: Request, res: Response) {
@@ -42,6 +44,27 @@ export default class LaundryJobController {
       const result = await getOngoingLaundryJobService(+req.user!.id);
 
       res.status(200).send({ data: result });
+    } catch (error) {
+      console.log(error);
+      res.status(400).send(error);
+    }
+  }
+
+  async countLaundryJobs(req: Request, res: Response) {
+    try {
+      const requestType = req.query.requestType as "request" | "history";
+      const worker = await findUser(req.user!.id);
+      if (worker.role != "WORKER") throw { message: "This user can't access this feature" };
+
+      let count;
+      if (requestType == "history") count = await prisma.laundryJob.count({ where: { workerId: worker.Employee!.id } });
+      else if (requestType == "request") {
+        count = await prisma.laundryJob.count({ where: { isCompleted: false, order: { outletId: worker.Employee!.outletId } } });
+      }
+
+      if (count != undefined) {
+        res.status(200).send({ data: !!count });
+      } else throw { message: "Invalid request" };
     } catch (error) {
       console.log(error);
       res.status(400).send(error);

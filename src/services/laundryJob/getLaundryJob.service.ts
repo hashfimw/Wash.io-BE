@@ -70,6 +70,7 @@ export const getLaundryJobsService = async (queries: LaundryJobQueries) => {
 
       filter.orderId = { in: orderIds };
       filter.workerId = { equals: null };
+      filter.isCompleted = false;
     } else if (queries.requestType == "history") {
       filter.workerId = worker.Employee!.id;
       filter.isCompleted = true;

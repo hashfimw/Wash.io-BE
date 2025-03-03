@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { createAttendanceRecordService } from "../services/attendance/createAttendance.service";
 import { getAttendancesService } from "../services/attendance/getAttendances.service";
 import { AttendanceType } from "../../prisma/generated/client";
+import { findUser } from "../services/helpers/finder.service";
 
 export default class AttendanceController {
   async createAttendance(req: Request, res: Response) {
@@ -37,6 +38,18 @@ export default class AttendanceController {
       const result = await getAttendancesService(queries);
 
       res.status(200).send({ data: result.data, meta: result.meta });
+    } catch (error) {
+      console.log(error);
+      res.status(400).send(error);
+    }
+  }
+
+  async getEmployeeStatus(req: Request, res: Response) {
+    try {
+      const user = await findUser(req.user!.id);
+      const { EmployeeAttendance, ...employee } = user.Employee!;
+
+      res.status(200).send({ data: { ...employee } });
     } catch (error) {
       console.log(error);
       res.status(400).send(error);

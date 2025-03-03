@@ -71,6 +71,7 @@ export const getTransportJobsService = async (queries: TransportJobQueries) => {
 
       filter.orderId = { in: orderIds };
       filter.driverId = { equals: null };
+      filter.isCompleted = false;
     } else if (queries.requestType == "history") {
       const driver = await findUser(queries.userId);
       if (driver.role != "DRIVER") throw { message: "This user can't access this feature" };

@@ -8,9 +8,21 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __rest = (this && this.__rest) || function (s, e) {
+    var t = {};
+    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
+        t[p] = s[p];
+    if (s != null && typeof Object.getOwnPropertySymbols === "function")
+        for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
+            if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
+                t[p[i]] = s[p[i]];
+        }
+    return t;
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const createAttendance_service_1 = require("../services/attendance/createAttendance.service");
 const getAttendances_service_1 = require("../services/attendance/getAttendances.service");
+const finder_service_1 = require("../services/helpers/finder.service");
 class AttendanceController {
     createAttendance(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -44,6 +56,19 @@ class AttendanceController {
                 };
                 const result = yield (0, getAttendances_service_1.getAttendancesService)(queries);
                 res.status(200).send({ data: result.data, meta: result.meta });
+            }
+            catch (error) {
+                console.log(error);
+                res.status(400).send(error);
+            }
+        });
+    }
+    getEmployeeStatus(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const user = yield (0, finder_service_1.findUser)(req.user.id);
+                const _a = user.Employee, { EmployeeAttendance } = _a, employee = __rest(_a, ["EmployeeAttendance"]);
+                res.status(200).send({ data: Object.assign({}, employee) });
             }
             catch (error) {
                 console.log(error);
