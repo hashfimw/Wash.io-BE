@@ -22,7 +22,7 @@ const findUser = (id) => __awaiter(void 0, void 0, void 0, function* () {
         const user = yield prisma_1.default.user.findFirst({
             where: { id: id },
             include: {
-                Employee: { include: { EmployeeAttendance: true } },
+                Employee: { include: { EmployeeAttendance: { orderBy: { createdAt: "desc" } } } },
             },
         });
         if (!user)

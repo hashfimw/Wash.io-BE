@@ -27,7 +27,11 @@ export const updateTransportJobByIdService = async (transportJobId: number, user
       data: {},
     };
 
-    if (currentOrderStatus == "WAITING_FOR_PICKUP_DRIVER" || currentOrderStatus == "WAITING_FOR_DELIVERY_DRIVER") {
+    if (
+      currentOrderStatus == "WAITING_FOR_PICKUP_DRIVER" ||
+      currentOrderStatus == "WAITING_FOR_DELIVERY_DRIVER" ||
+      currentOrderStatus == "READY_FOR_DELIVERY"
+    ) {
       await getIdleDriver(userId, tzo);
 
       if (transportType == "PICKUP") newOrderStatus = "ON_THE_WAY_TO_CUSTOMER";

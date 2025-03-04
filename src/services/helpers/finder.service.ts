@@ -1,4 +1,3 @@
-import { getRuntime } from "@prisma/client/runtime/library";
 import { OrderStatus, Prisma, Role, WorkerStation } from "../../../prisma/generated/client";
 import prisma from "../../prisma";
 import { getOutletTzo } from "../attendance/attendanceScheduler.service";
@@ -9,7 +8,7 @@ export const findUser = async (id: number) => {
     const user = await prisma.user.findFirst({
       where: { id: id },
       include: {
-        Employee: { include: { EmployeeAttendance: true } },
+        Employee: { include: { EmployeeAttendance: { orderBy: { createdAt: "desc" } } } },
       },
     });
     if (!user) throw { message: "User not found!" };

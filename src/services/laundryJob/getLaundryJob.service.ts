@@ -70,7 +70,6 @@ export const getLaundryJobsService = async (queries: LaundryJobQueries) => {
 
       filter.orderId = { in: orderIds };
       filter.workerId = { equals: null };
-      filter.isCompleted = false;
     } else if (queries.requestType == "history") {
       filter.workerId = worker.Employee!.id;
       filter.isCompleted = true;
@@ -141,8 +140,8 @@ export const getOngoingLaundryJobService = async (userId: number) => {
       select: { id: true },
     });
     if (laundryJob) {
-      return await getLaundryJobById(laundryJob.id);
-    } else throw { message: "You aren't assigned to a job right now!" };
+      return laundryJob.id
+    } return 0
   } catch (error) {
     throw error;
   }

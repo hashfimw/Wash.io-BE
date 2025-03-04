@@ -30,7 +30,7 @@ const getTransportJobs = async (filter: Prisma.TransportJobWhereInput, meta: Pag
       skip: (meta.page - 1) * meta.limit,
       take: meta.limit,
       orderBy: { [meta.sortBy]: meta.sortOrder },
-      select: { id: true, orderId: true, createdAt: true, transportType: true },
+      select: { id: true, orderId: true, createdAt: true, transportType: true, distance: true },
     });
     const total_data = await prisma.transportJob.count({ where: filter });
     const total_pages = Math.ceil(total_data / meta.limit);
@@ -142,8 +142,8 @@ export const getOngoingTransportJobService = async (userId: number) => {
       select: { id: true },
     });
     if (transportJob) {
-      return await getTransportJobById(transportJob.id);
-    } else throw { message: "You aren't assigned to a job right now!" };
+      return transportJob.id;
+    } else return 0;
   } catch (error) {
     throw error;
   }

@@ -84,7 +84,6 @@ const getLaundryJobsService = (queries) => __awaiter(void 0, void 0, void 0, fun
             const orderIds = yield (0, finder_service_1.findOutletsOrderIds)(outletId);
             filter.orderId = { in: orderIds };
             filter.workerId = { equals: null };
-            filter.isCompleted = false;
         }
         else if (queries.requestType == "history") {
             filter.workerId = worker.Employee.id;
@@ -151,10 +150,9 @@ const getOngoingLaundryJobService = (userId) => __awaiter(void 0, void 0, void 0
             select: { id: true },
         });
         if (laundryJob) {
-            return yield getLaundryJobById(laundryJob.id);
+            return laundryJob.id;
         }
-        else
-            throw { message: "You aren't assigned to a job right now!" };
+        return 0;
     }
     catch (error) {
         throw error;
