@@ -13,32 +13,32 @@ export class AuthController {
     try {
       const result = await registerService(req, res);
 
-      res.status(200).send(result);
+      res.status(200).json(result);
     } catch (error) {
       console.log(error);
-      res.status(400).send(error);
+      res.status(400);
     }
   }
 
-  async verifyEmailController(req: Request, res: Response) {
+  async verifyEmailController(req: Request, res: Response): Promise<void> {
     try {
-      const result = await verifEmailService(req, res);
+      const result = await verifEmailService(req);
 
-      res.status(200).send(result);
+      res.status(result.status).json({ message: result.message });
     } catch (error) {
       console.log(error);
-      res.status(400).send(error);
+      res.status(500).json({ message: "Internal Server Error" });
     }
   }
 
   async completeRegistController(req: Request, res: Response) {
     try {
-      const result = await completeRegistService(req, res);
+      const result = await completeRegistService(req);
 
-      res.status(200).send(result);
+      res.status(result.status).json({ message: result.message });
     } catch (error) {
       console.log(error);
-      res.status(400).send(error);
+      res.status(400).json({ message: "An error occurred" });
     }
   }
 
@@ -47,10 +47,10 @@ export class AuthController {
       const { code } = req.body;
       const result = await getGoogleTokenService(code);
 
-      res.status(200).send(result);
+      res.status(200).json(result);
     } catch (error) {
-      console.log(error);
-      res.status(400).send(error);
+      console.error("Google Auth Error:", Error);
+      res.status(400).json({ message: "Google login failed", error: Error });
     }
   }
   async loginController(req: Request, res: Response): Promise<void> {
@@ -59,6 +59,8 @@ export class AuthController {
       res.status(200).json(result);
     } catch (error) {
       console.error(error);
+
+      // Safely extract error message
       const errorMessage =
         error instanceof Error ? error.message : "An unexpected error occurred";
 
@@ -72,10 +74,10 @@ export class AuthController {
     try {
       const result = await forgotPasswordService(req, res);
 
-      res.status(200).send(result);
+      res.status(200).json(result);
     } catch (error) {
       console.log(error);
-      res.status(400).send(error);
+      res.status(400);
     }
   }
 
@@ -83,10 +85,10 @@ export class AuthController {
     try {
       const result = await resetPasswrodService(req, res);
 
-      res.status(200).send(result);
+      res.status(200).json(result);
     } catch (error) {
       console.log(error);
-      res.status(400).send(error);
+      res.status(400);
     }
   }
 

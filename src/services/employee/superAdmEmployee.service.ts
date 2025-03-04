@@ -1,4 +1,3 @@
-// src/services/superAdmEmployee.service.ts
 import { Request, Response } from "express";
 import { genSalt, hash } from "bcrypt";
 import prisma from "../../prisma";
@@ -42,7 +41,7 @@ export const createEmployeeService = async (req: Request, res: Response) => {
 
     if (localWorkShift === workShift) {
       await tx.employeeAttendance.create({
-        data: { canClockIn: true, employeeId: employee.id },
+        data: { canClockIn: true, employeeId: employee.id, updatedAt:Date() },
       });
     }
 
