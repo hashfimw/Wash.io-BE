@@ -11,10 +11,10 @@ export class UserController {
     try {
       const result = await getUserService(req, res);
 
-      res.status(200).send(result);
+      res.status(200).json(result);
     } catch (error) {
       console.log(error);
-      res.status(400).send(error);
+      res.status(400);
     }
   }
 
@@ -22,10 +22,10 @@ export class UserController {
     try {
       const result = await getUserIdService(req, res);
 
-      res.status(200).send(result);
+      res.status(200).json(result);
     } catch (error) {
       console.log(error);
-      res.status(400).send(error);
+      res.status(400);
     }
   }
 
@@ -33,10 +33,10 @@ export class UserController {
     try {
       const result = await createUserservice(req, res);
 
-      res.status(200).send(result);
+      res.status(200).json(result);
     } catch (error) {
       console.log(error);
-      res.status(400).send(error);
+      res.status(400);
     }
   }
 
@@ -44,10 +44,10 @@ export class UserController {
     try {
       const result = await editUserService(req, res);
 
-      res.status(200).send(result);
+      res.status(200).json(result);
     } catch (error) {
       console.log(error);
-      res.status(400).send(error);
+      res.status(400);
     }
   }
 
@@ -55,10 +55,10 @@ export class UserController {
     try {
       const result = await deleteUserService(req, res);
 
-      res.status(200).send(result);
+      res.status(200).json(result);
     } catch (error) {
       console.log(error);
-      res.status(400).send(error);
+      res.status(400);
     }
   }
 
@@ -66,10 +66,10 @@ export class UserController {
     try {
       const result = await editAvatarCloudService(req, res);
 
-      res.status(200).send(result);
+      res.status(200).json(result);
     } catch (error) {
       console.log(error);
-      res.status(400).send(error);
+      res.status(400);
     }
   }
 }
