@@ -1,6 +1,8 @@
 import { Request, Response } from "express";
 import { getOngoingTransportJobService, getTransportJobByIdService, getTransportJobsService } from "../services/transportJob/getTransportJob.service";
 import { updateTransportJobByIdService } from "../services/transportJob/updateTransportJob.service";
+import { findUser } from "../services/helpers/finder.service";
+import prisma from "../prisma";
 
 export default class TransportJobController {
   async getTransportJobs(req: Request, res: Response) {
@@ -43,6 +45,27 @@ export default class TransportJobController {
       const result = await getOngoingTransportJobService(+req.user!.id);
 
       res.status(200).send({ data: result });
+    } catch (error) {
+      console.log(error);
+      res.status(400).send(error);
+    }
+  }
+
+  async countTransportJobs(req: Request, res: Response) {
+    try {
+      const requestType = req.query.requestType as "request" | "history";
+      const driver = await findUser(req.user!.id);
+      if (driver.role != "DRIVER") throw { message: "This user can't access this feature" };
+
+      let count;
+      if (requestType == "history") count = await prisma.transportJob.count({ where: { driverId: driver.Employee!.id } });
+      else if (requestType == "request") {
+        count = await prisma.transportJob.count({ where: { isCompleted: false, order: { outletId: driver.Employee!.outletId } } });
+      }
+
+      if (count != undefined) {
+        res.status(200).send({ data: !!count });
+      } else throw { message: "Invalid request" };
     } catch (error) {
       console.log(error);
       res.status(400).send(error);

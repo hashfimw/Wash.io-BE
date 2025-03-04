@@ -52,20 +52,17 @@ export const updateLaundryJobByIdService = async (laundryJobId: number, userId: 
 
       if (station == "WASHING") {
         const ironerIds = await getIdleEmployees(outletId, "WORKER", "IRONING");
-        if (ironerIds.length == 0) throw { message: "No idle Ironer present at the outlet!" };
 
         notificationData = createMultipleNotificationDataService(ironerIds, "Ironing Job Alert", "A new ironing job is available!");
         newOrderStatus = "WASHING_COMPLETED";
       } else if (station == "IRONING") {
         const packerIds = await getIdleEmployees(outletId, "WORKER", "PACKING");
-        if (packerIds.length == 0) throw { message: "No idle Packer present at the outlet!" };
 
         newLaundryJobData.station = "PACKING";
         notificationData = createMultipleNotificationDataService(packerIds, "Packing Job Alert", "A new packing job is available!");
         newOrderStatus = "IRONING_COMPLETED";
       } else if (station == "PACKING" && laundryJob.isPaid) {
         const driverIds = await getIdleEmployees(outletId, "DRIVER");
-        if (driverIds.length == 0) throw { message: "No idle Driver present at the outlet!" };
         distance = (await prisma.transportJob.findFirst({
           where: { orderId, transportType: "PICKUP" },
         }))!.distance;

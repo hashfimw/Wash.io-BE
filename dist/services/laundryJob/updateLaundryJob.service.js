@@ -64,23 +64,17 @@ const updateLaundryJobByIdService = (laundryJobId, userId, orderItemInput, tzo) 
             const outletId = worker.Employee.outletId;
             if (station == "WASHING") {
                 const ironerIds = yield (0, finder_service_1.getIdleEmployees)(outletId, "WORKER", "IRONING");
-                if (ironerIds.length == 0)
-                    throw { message: "No idle Ironer present at the outlet!" };
                 notificationData = (0, notification_service_1.createMultipleNotificationDataService)(ironerIds, "Ironing Job Alert", "A new ironing job is available!");
                 newOrderStatus = "WASHING_COMPLETED";
             }
             else if (station == "IRONING") {
                 const packerIds = yield (0, finder_service_1.getIdleEmployees)(outletId, "WORKER", "PACKING");
-                if (packerIds.length == 0)
-                    throw { message: "No idle Packer present at the outlet!" };
                 newLaundryJobData.station = "PACKING";
                 notificationData = (0, notification_service_1.createMultipleNotificationDataService)(packerIds, "Packing Job Alert", "A new packing job is available!");
                 newOrderStatus = "IRONING_COMPLETED";
             }
             else if (station == "PACKING" && laundryJob.isPaid) {
                 const driverIds = yield (0, finder_service_1.getIdleEmployees)(outletId, "DRIVER");
-                if (driverIds.length == 0)
-                    throw { message: "No idle Driver present at the outlet!" };
                 distance = (yield prisma_1.default.transportJob.findFirst({
                     where: { orderId, transportType: "PICKUP" },
                 })).distance;

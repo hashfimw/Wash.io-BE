@@ -15,6 +15,7 @@ export default class AttendanceRouter {
 
   private initializeRoutes() {
     this.router.get("/", verifyToken, this.controller.getAttendances);
+    this.router.get("/check", verifyToken, this.controller.getEmployeeStatus);
     this.router.post("/", verifyToken, this.controller.createAttendance);
     this.router.post("/force", forceAlterEmployeeAttendances);
   }

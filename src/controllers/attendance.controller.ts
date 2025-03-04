@@ -2,6 +2,9 @@ import { Request, Response } from "express";
 import { createAttendanceRecordService } from "../services/attendance/createAttendance.service";
 import { getAttendancesService } from "../services/attendance/getAttendances.service";
 import { AttendanceType } from "../../prisma/generated/client";
+import { findUser } from "../services/helpers/finder.service";
+import prisma from "../prisma";
+import { shiftChecker } from "../services/helpers/dateTime.service";
 
 export default class AttendanceController {
   async createAttendance(req: Request, res: Response) {
@@ -37,6 +40,31 @@ export default class AttendanceController {
       const result = await getAttendancesService(queries);
 
       res.status(200).send({ data: result.data, meta: result.meta });
+    } catch (error) {
+      console.log(error);
+      res.status(400).send(error);
+    }
+  }
+
+  async getEmployeeStatus(req: Request, res: Response) {
+    try {
+      const tzo = +(req.query.tzo as string);
+      const user = await findUser(req.user!.id);
+      const count = await prisma.employeeAttendance.count({ where: { employeeId: user.Employee!.id, isAttended: true } });
+      const { EmployeeAttendance, workShift, ...employee } = user.Employee!;
+
+      const canClockIn = EmployeeAttendance[0].canClockIn;
+      const isAttended = EmployeeAttendance[0].isAttended;
+
+      const shiftStart = EmployeeAttendance[0].createdAt;
+
+      let isOnWorkShift = false;
+      if (tzo) {
+        const localWorkShift = shiftChecker(tzo);
+        if (user.Employee!.workShift == localWorkShift) isOnWorkShift = true;
+      } else throw { message: "Invalid time zone offset!" };
+
+      res.status(200).send({ data: { ...employee, workShift, isOnWorkShift, count, canClockIn, isAttended, shiftStart } });
     } catch (error) {
       console.log(error);
       res.status(400).send(error);

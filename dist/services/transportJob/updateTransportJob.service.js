@@ -41,7 +41,9 @@ const updateTransportJobByIdService = (transportJobId, userId, tzo) => __awaiter
             where: { id: driver.Employee.id },
             data: {},
         };
-        if (currentOrderStatus == "WAITING_FOR_PICKUP_DRIVER" || currentOrderStatus == "WAITING_FOR_DELIVERY_DRIVER") {
+        if (currentOrderStatus == "WAITING_FOR_PICKUP_DRIVER" ||
+            currentOrderStatus == "WAITING_FOR_DELIVERY_DRIVER" ||
+            currentOrderStatus == "READY_FOR_DELIVERY") {
             yield (0, getTransportJob_service_1.getIdleDriver)(userId, tzo);
             if (transportType == "PICKUP")
                 newOrderStatus = "ON_THE_WAY_TO_CUSTOMER";

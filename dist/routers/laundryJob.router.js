@@ -15,6 +15,7 @@ class LaundryJobRouter {
     initializeRoutes() {
         this.router.get("/", verifyToken_1.verifyToken, this.controller.getLaundryJobs);
         this.router.get("/ongoing", verifyToken_1.verifyToken, this.controller.getOngoingLaundryJob);
+        this.router.get("/check", verifyToken_1.verifyToken, this.controller.countLaundryJobs);
         this.router.get("/:id", verifyToken_1.verifyToken, this.controller.getLaundryJobById);
         this.router.patch("/:id", verifyToken_1.verifyToken, this.controller.updateLaundryJobById);
     }

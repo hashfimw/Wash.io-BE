@@ -22,6 +22,8 @@ export const getIdleWorker = async (id: number, tzo: number) => {
 
 const getLaundryJobs = async (filter: Prisma.LaundryJobWhereInput, meta: PaginationQueries) => {
   try {
+    if (meta.sortBy == "date") meta.sortBy = "createdAt";
+
     const laundryJobs = await prisma.laundryJob.findMany({
       where: filter,
       skip: (meta.page - 1) * meta.limit,
@@ -138,8 +140,8 @@ export const getOngoingLaundryJobService = async (userId: number) => {
       select: { id: true },
     });
     if (laundryJob) {
-      return await getLaundryJobById(laundryJob.id);
-    } else throw { message: "You aren't assigned to a job right now!" };
+      return laundryJob.id
+    } return 0
   } catch (error) {
     throw error;
   }

@@ -8513,27 +8513,27 @@ export namespace Prisma {
   }
 
   /**
-   * Order.TransportJob
+   * Order.OrderItem
    */
-  export type Order$TransportJobArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type Order$OrderItemArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the TransportJob
+     * Select specific fields to fetch from the OrderItem
      */
-    select?: TransportJobSelect<ExtArgs> | null
+    select?: OrderItemSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the TransportJob
+     * Omit specific fields from the OrderItem
      */
-    omit?: TransportJobOmit<ExtArgs> | null
+    omit?: OrderItemOmit<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: TransportJobInclude<ExtArgs> | null
-    where?: TransportJobWhereInput
-    orderBy?: TransportJobOrderByWithRelationInput | TransportJobOrderByWithRelationInput[]
-    cursor?: TransportJobWhereUniqueInput
+    include?: OrderItemInclude<ExtArgs> | null
+    where?: OrderItemWhereInput
+    orderBy?: OrderItemOrderByWithRelationInput | OrderItemOrderByWithRelationInput[]
+    cursor?: OrderItemWhereUniqueInput
     take?: number
     skip?: number
-    distinct?: TransportJobScalarFieldEnum | TransportJobScalarFieldEnum[]
+    distinct?: OrderItemScalarFieldEnum | OrderItemScalarFieldEnum[]
   }
 
   /**
