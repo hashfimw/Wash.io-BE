@@ -34,7 +34,7 @@ export class OrderItemsRouter {
       "/items",
       verifyToken,
       AdminAuth([Role.SUPER_ADMIN, Role.OUTLET_ADMIN]),
-      this.controller.geOrdersItemsByOutletController
+      this.controller.getOrdersItemsByOutletController
     );
 
     this.router.put(

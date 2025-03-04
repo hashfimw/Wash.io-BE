@@ -356,7 +356,11 @@ const config = {
       "value": "prisma-client-js"
     },
     "output": {
+<<<<<<< HEAD
+      "value": "/Users/hashfimawarid/Documents/Washio-BE/prisma/generated/client",
+=======
       "value": "D:\\Purwadhika\\washio-be\\prisma\\generated\\client",
+>>>>>>> f138895d38efd3abdd38a4638758a0d136f60b6b
       "fromEnvVar": null
     },
     "config": {
@@ -365,12 +369,16 @@ const config = {
     "binaryTargets": [
       {
         "fromEnvVar": null,
-        "value": "windows",
+        "value": "darwin-arm64",
         "native": true
       }
     ],
     "previewFeatures": [],
+<<<<<<< HEAD
+    "sourceFilePath": "/Users/hashfimawarid/Documents/Washio-BE/prisma/schema.prisma",
+=======
     "sourceFilePath": "D:\\Purwadhika\\washio-be\\prisma\\schema.prisma",
+>>>>>>> f138895d38efd3abdd38a4638758a0d136f60b6b
     "isCustomOutput": true
   },
   "relativeEnvPaths": {

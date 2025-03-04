@@ -1,4 +1,3 @@
- 
 import { Request, Response } from "express";
 import prisma from "../../prisma";
 import { compare } from "bcrypt";

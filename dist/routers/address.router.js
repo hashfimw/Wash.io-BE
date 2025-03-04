@@ -14,6 +14,7 @@ class AddressRouter {
         this.router.use(verifyToken_1.verifyToken);
         this.router.use(verifyToken_1.checkUser);
         this.router.post("/nearest-outlet", this.addressController.findNearestOutlet.bind(this.addressController));
+        this.router.get("/", this.addressController.getUserAddresses.bind(this.addressController));
         this.router.post("/", this.addressController.createUserAddress.bind(this.addressController));
         this.router.get("/:addressId", this.addressController.getAddressById.bind(this.addressController));
         this.router.patch("/:addressId", this.addressController.updateUserAddress.bind(this.addressController));
