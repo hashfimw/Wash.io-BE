@@ -48,6 +48,8 @@ const getIdleWorker = (id, tzo) => __awaiter(void 0, void 0, void 0, function* (
 exports.getIdleWorker = getIdleWorker;
 const getLaundryJobs = (filter, meta) => __awaiter(void 0, void 0, void 0, function* () {
     try {
+        if (meta.sortBy == "date")
+            meta.sortBy = "createdAt";
         const laundryJobs = yield prisma_1.default.laundryJob.findMany({
             where: filter,
             skip: (meta.page - 1) * meta.limit,
@@ -148,10 +150,9 @@ const getOngoingLaundryJobService = (userId) => __awaiter(void 0, void 0, void 0
             select: { id: true },
         });
         if (laundryJob) {
-            return yield getLaundryJobById(laundryJob.id);
+            return laundryJob.id;
         }
-        else
-            throw { message: "You aren't assigned to a job right now!" };
+        return 0;
     }
     catch (error) {
         throw error;

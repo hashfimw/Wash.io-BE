@@ -8,9 +8,14 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const getTransportJob_service_1 = require("../services/transportJob/getTransportJob.service");
 const updateTransportJob_service_1 = require("../services/transportJob/updateTransportJob.service");
+const finder_service_1 = require("../services/helpers/finder.service");
+const prisma_1 = __importDefault(require("../prisma"));
 class TransportJobController {
     getTransportJobs(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -53,6 +58,31 @@ class TransportJobController {
             try {
                 const result = yield (0, getTransportJob_service_1.getOngoingTransportJobService)(+req.user.id);
                 res.status(200).send({ data: result });
+            }
+            catch (error) {
+                console.log(error);
+                res.status(400).send(error);
+            }
+        });
+    }
+    countTransportJobs(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const requestType = req.query.requestType;
+                const driver = yield (0, finder_service_1.findUser)(req.user.id);
+                if (driver.role != "DRIVER")
+                    throw { message: "This user can't access this feature" };
+                let count;
+                if (requestType == "history")
+                    count = yield prisma_1.default.transportJob.count({ where: { driverId: driver.Employee.id } });
+                else if (requestType == "request") {
+                    count = yield prisma_1.default.transportJob.count({ where: { isCompleted: false, order: { outletId: driver.Employee.outletId } } });
+                }
+                if (count != undefined) {
+                    res.status(200).send({ data: !!count });
+                }
+                else
+                    throw { message: "Invalid request" };
             }
             catch (error) {
                 console.log(error);

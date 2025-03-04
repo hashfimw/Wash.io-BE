@@ -5,7 +5,7 @@ const attendanceSorter = (sortBy, sortOrder) => {
     if (sortBy == "date")
         return { createdAt: sortOrder };
     else if (sortBy == "attendanceType")
-        return { AttendanceType: sortOrder };
+        return { attendanceType: sortOrder };
     else if (sortBy == "name")
         return { employeeAttendance: { employee: { user: { fullName: sortOrder } } } };
     else if (sortBy == "employeeId")
@@ -16,6 +16,8 @@ const attendanceSorter = (sortBy, sortOrder) => {
         return { employeeAttendance: { employee: { outletId: sortOrder } } };
     else if (sortBy == "outletName")
         return { employeeAttendance: { employee: { outlet: { outletName: sortOrder } } } };
+    else if (sortBy == "workShift")
+        return { employeeAttendance: { employee: { workShift: sortOrder } } };
     else
         throw { message: "Invalid sort argument!" };
 };
