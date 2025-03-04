@@ -76,7 +76,6 @@ class AuthController {
             }
             catch (error) {
                 console.error(error);
-                // Safely extract error message
                 const errorMessage = error instanceof Error ? error.message : "An unexpected error occurred";
                 res.status(400).json({
                     message: errorMessage,
@@ -111,8 +110,7 @@ class AuthController {
     getSessionController(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const result = yield (0, getSession_service_1.getSessionService)(req, res);
-                res.status(200).json(result);
+                yield (0, getSession_service_1.getSessionService)(req, res);
             }
             catch (error) {
                 console.log(error);
