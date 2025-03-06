@@ -21,7 +21,6 @@ const requestBypassService = (req, res) => __awaiter(void 0, void 0, void 0, fun
     var _a;
     const userId = Number((_a = req.user) === null || _a === void 0 ? void 0 : _a.id);
     const { laundryJobId, byPassNote } = req.body;
-    // Dapatkan data worker dari database termasuk role
     const worker = yield prisma_1.default.user.findUnique({
         where: { id: userId },
         include: {
@@ -31,7 +30,6 @@ const requestBypassService = (req, res) => __awaiter(void 0, void 0, void 0, fun
     if (!worker || !worker.Employee) {
         throw new Error("Data worker tidak ditemukan");
     }
-    // Update laundry job dengan bypass request
     const updatedLaundryJob = yield prisma_1.default.laundryJob.update({
         where: { id: Number(laundryJobId) },
         data: {

@@ -1,4 +1,3 @@
-// src/services/bypassRequest.service.ts
 import { Request, Response } from "express";
 import prisma from "../../prisma";
 import { Role } from "../../../prisma/generated/client";
@@ -9,8 +8,6 @@ export const requestBypassService = async (req: Request, res: Response) => {
   const userId = Number(req.user?.id);
 
   const { laundryJobId, byPassNote } = req.body;
-
-  // Dapatkan data worker dari database termasuk role
   const worker = await prisma.user.findUnique({
     where: { id: userId },
     include: {
@@ -22,7 +19,6 @@ export const requestBypassService = async (req: Request, res: Response) => {
     throw new Error("Data worker tidak ditemukan");
   }
 
-  // Update laundry job dengan bypass request
   const updatedLaundryJob = await prisma.laundryJob.update({
     where: { id: Number(laundryJobId) },
     data: {
