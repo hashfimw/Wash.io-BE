@@ -1,7 +1,6 @@
 import express, { Application, Response } from "express";
 import cors from "cors";
 import dotenv from "dotenv";
-import cron from "node-cron";
 import path from "path";
 import { AuthRouter } from "./routers/auth.router";
 import { UserRouter } from "./routers/user.router";
