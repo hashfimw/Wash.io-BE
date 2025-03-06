@@ -38,6 +38,7 @@ export const createEmployeeService = async (req: Request, res: Response) => {
     });
 
     const workShiftChecker = newEmployeeAttendanceChecker(outletTzo, workShift);
+    
     if (workShiftChecker) {
       await tx.employeeAttendance.create({
         data: { canClockIn: true, employeeId: employee.id },

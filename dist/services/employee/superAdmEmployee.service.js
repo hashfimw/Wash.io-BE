@@ -42,7 +42,6 @@ const createEmployeeService = (req, res) => __awaiter(void 0, void 0, void 0, fu
     const salt = yield (0, bcrypt_1.genSalt)(10);
     const hashedPassword = yield (0, bcrypt_1.hash)(password, salt);
     const outletTzo = yield (0, attendanceScheduler_service_1.getOutletTzo)(outletId);
-    const localWorkShift = (0, dateTime_service_1.shiftChecker)(outletTzo);
     yield prisma_1.default.$transaction((tx) => __awaiter(void 0, void 0, void 0, function* () {
         const employee = yield tx.user.create({
             data: {
@@ -57,9 +56,10 @@ const createEmployeeService = (req, res) => __awaiter(void 0, void 0, void 0, fu
             },
             include: { Employee: true },
         });
-        if (localWorkShift === workShift) {
+        const workShiftChecker = (0, dateTime_service_1.newEmployeeAttendanceChecker)(outletTzo, workShift);
+        if (workShiftChecker) {
             yield tx.employeeAttendance.create({
-                data: { canClockIn: true, employeeId: employee.id, updatedAt: Date() },
+                data: { canClockIn: true, employeeId: employee.id },
             });
         }
         const { password: _ } = employee, employeeWithoutPassword = __rest(employee, ["password"]);
@@ -83,16 +83,13 @@ const getAllEmployeesService = (req, res) => __awaiter(void 0, void 0, void 0, f
         isDeleted: false,
         role: { in: [client_1.Role.WORKER, client_1.Role.DRIVER, client_1.Role.OUTLET_ADMIN] },
     };
-    const { page = 1, limit = 10, sortOrder = "asc", role, outletName, } = req.query;
+    const { page = 1, limit = 10, sortOrder = "asc", role, outletName } = req.query;
     const search = req.query.search;
     let sortBy = req.query.sortBy;
     if (!sortBy)
         sortBy = "fullName";
     if (search) {
-        filter.OR = [
-            { fullName: { contains: search, mode: "insensitive" } },
-            { email: { contains: search, mode: "insensitive" } },
-        ];
+        filter.OR = [{ fullName: { contains: search, mode: "insensitive" } }, { email: { contains: search, mode: "insensitive" } }];
     }
     if (role && role !== "ALL Role") {
         filter.role = role;
