@@ -91,7 +91,7 @@ const groupByOffset = (outlets) => {
         ids,
     }));
 };
-const attendanceSchedule = () => __awaiter(void 0, void 0, void 0, function* () {
+const attendanceSchedule = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const getOutlets = yield prisma_1.default.outlet.findMany({
             where: { isDeleted: false },
@@ -125,6 +125,7 @@ const attendanceSchedule = () => __awaiter(void 0, void 0, void 0, function* () 
         }
         yield (0, updatePickupOrder_service_1.updateDeliveredOrderStatus)();
         console.log(`running cron job at ${new Date().toLocaleString()}`);
+        res.status(200).send({ message: `Successful attendance cron job at ${new Date().toLocaleString()}` });
     }
     catch (error) {
         console.log(error);

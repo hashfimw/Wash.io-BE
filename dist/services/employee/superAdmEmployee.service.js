@@ -42,7 +42,6 @@ const createEmployeeService = (req, res) => __awaiter(void 0, void 0, void 0, fu
     const salt = yield (0, bcrypt_1.genSalt)(10);
     const hashedPassword = yield (0, bcrypt_1.hash)(password, salt);
     const outletTzo = yield (0, attendanceScheduler_service_1.getOutletTzo)(outletId);
-    const localWorkShift = (0, dateTime_service_1.shiftChecker)(outletTzo);
     yield prisma_1.default.$transaction((tx) => __awaiter(void 0, void 0, void 0, function* () {
         const employee = yield tx.user.create({
             data: {
@@ -57,7 +56,8 @@ const createEmployeeService = (req, res) => __awaiter(void 0, void 0, void 0, fu
             },
             include: { Employee: true },
         });
-        if (localWorkShift === workShift) {
+        const workShiftChecker = (0, dateTime_service_1.newEmployeeAttendanceChecker)(outletTzo, workShift);
+        if (workShiftChecker) {
             yield tx.employeeAttendance.create({
                 data: { canClockIn: true, employeeId: employee.id, updatedAt: Date() },
             });
