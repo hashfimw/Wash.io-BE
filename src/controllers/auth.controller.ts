@@ -53,15 +53,12 @@ export class AuthController {
       res.status(400).json({ message: "Google login failed", error: Error });
     }
   }
-
   async loginController(req: Request, res: Response): Promise<void> {
     try {
       const result = await loginService(req);
       res.status(200).json(result);
     } catch (error) {
       console.error(error);
-
-      // Safely extract error message
       const errorMessage =
         error instanceof Error ? error.message : "An unexpected error occurred";
 
@@ -95,9 +92,8 @@ export class AuthController {
 
   async getSessionController(req: Request, res: Response): Promise<void> {
     try {
-      const result = await getSessionService(req, res);
+      await getSessionService(req, res);
 
-      res.status(200).json(result);
     } catch (error) {
       console.log(error);
       res.status(400);

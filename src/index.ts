@@ -1,4 +1,4 @@
-import express, { Application, Request, Response } from "express";
+import express, { Application, Response } from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import cron from "node-cron";
@@ -18,44 +18,33 @@ import AttendanceRouter from "./routers/attendance.router";
 import TransportJobRouter from "./routers/transportJob.router";
 import LaundryJobRouter from "./routers/laundryJob.router";
 import NotificationRouter from "./routers/notification.router";
-import { OutletsRouter } from "./routers/outlets.router";
 
 dotenv.config();
-const PORT: number = 8000;
-const app: Application = express();
 
-// ✅ Fix CORS & COOP
+const PORT: number = 8000;
+
+const app: Application = express();
+app.use(express.json());
 app.use(
   cors({
     methods: "GET, POST, PATCH, PUT, DELETE, OPTIONS",
     optionsSuccessStatus: 200,
-    origin: `${process.env.BASE_URL_FE}`, // Pastikan ini sudah benar di .env
+    origin: `${process.env.BASE_URL_FE}`,
     credentials: true,
   })
 );
 
-// ✅ Tambahkan Header COOP agar Google OAuth tidak terblokir
-app.use((req, res, next) => {
-  res.setHeader("Cross-Origin-Opener-Policy", "same-origin-allow-popups");
-  res.setHeader("Cross-Origin-Resource-Policy", "cross-origin");
-  next();
-});
-
-app.use(express.json());
-
-app.get("/api", (req: Request, res: Response) => {
+app.get("/api", (res: Response) => {
   res.status(200).send("Welcome to my API");
 });
 
 app.use("/api/public", express.static(path.join(__dirname, "../public")));
 
-// 🔥 Routing API
 const authRouter = new AuthRouter();
 const userRouter = new UserRouter();
 const addressRouter = new AddressRouter();
 const pickupOrderRouter = new PickupOrderRouter();
 const paymentRouter = new PaymentRouter();
-const outletsRouter = new OutletsRouter();
 
 const superAdmEmployee = new SuperAdmEmployeeRouter();
 const superAdmOutlets = new SuperAdmOutletRouter();
@@ -74,7 +63,6 @@ app.use("/api/users", userRouter.getRouter());
 app.use("/api/address", addressRouter.getRouter());
 app.use("/api/pickup-orders", pickupOrderRouter.getRouter());
 app.use("/api/payments", paymentRouter.getRouter());
-app.use("/api/outlets", outletsRouter.getRouter());
 
 app.use("/api/adm-employees", superAdmEmployee.getRouter());
 app.use("/api/adm-outlets", superAdmOutlets.getRouter());
@@ -89,7 +77,7 @@ app.use("/api/laundry-jobs", laundryJobRouter.getRouter());
 app.use("/api/notifications", notificationRouter.getRouter());
 
 app.listen(PORT, () => {
-  console.log(`🚀 Server is running on => http://localhost:${PORT}/api`);
+  console.log(`server is running on => http://localhost:${PORT}/api`);
 });
 
 export default app;

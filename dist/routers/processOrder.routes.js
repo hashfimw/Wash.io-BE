@@ -16,7 +16,7 @@ class OrderItemsRouter {
     initializeRoutes() {
         this.router.post("/process-order", verifyToken_1.verifyToken, (0, AdminAuth_middleware_1.AdminAuth)([client_1.Role.SUPER_ADMIN, client_1.Role.OUTLET_ADMIN]), this.controller.processOrders);
         this.router.post("/items", verifyToken_1.verifyToken, (0, AdminAuth_middleware_1.AdminAuth)([client_1.Role.SUPER_ADMIN, client_1.Role.OUTLET_ADMIN]), this.controller.createLaundryItemController);
-        this.router.get("/items", verifyToken_1.verifyToken, (0, AdminAuth_middleware_1.AdminAuth)([client_1.Role.SUPER_ADMIN, client_1.Role.OUTLET_ADMIN]), this.controller.geOrdersItemsByOutletController);
+        this.router.get("/items", verifyToken_1.verifyToken, (0, AdminAuth_middleware_1.AdminAuth)([client_1.Role.SUPER_ADMIN, client_1.Role.OUTLET_ADMIN]), this.controller.getOrdersItemsByOutletController);
         this.router.put("/items/:id", verifyToken_1.verifyToken, (0, AdminAuth_middleware_1.AdminAuth)([client_1.Role.SUPER_ADMIN]), this.controller.updateLaundryItemController);
         this.router.delete("/items/:id", verifyToken_1.verifyToken, (0, AdminAuth_middleware_1.AdminAuth)([client_1.Role.SUPER_ADMIN]), this.controller.deleteLaundryItemController);
     }

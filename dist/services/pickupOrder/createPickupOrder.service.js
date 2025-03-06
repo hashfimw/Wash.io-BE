@@ -45,6 +45,7 @@ const findNearestOutlet = (latitude, longitude) => __awaiter(void 0, void 0, voi
 const createPickupOrderService = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
     try {
+        console.log("Request body:", req.body);
         const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.id;
         const { addressId } = req.body;
         console.log("User ID:", userId);

@@ -40,6 +40,7 @@ const findNearestOutlet = async (latitude: any, longitude: any) => {
 
 export const createPickupOrderService = async (req: Request, res: Response): Promise<void> => {
   try {
+    console.log("Request body:", req.body);
     const userId = req.user?.id;
     const { addressId } = req.body;
 
