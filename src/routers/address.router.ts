@@ -20,6 +20,11 @@ export class AddressRouter {
       "/nearest-outlet",
       this.addressController.findNearestOutlet.bind(this.addressController)
     );
+    this.router.get(
+      "/",
+      this.addressController.getUserAddresses.bind(this.addressController)
+    );
+
     this.router.post(
       "/",
       this.addressController.createUserAddress.bind(this.addressController)

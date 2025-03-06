@@ -22,10 +22,10 @@ export class SuperAdmEmployeeRouter {
   private initializeRoutes() {
     this.router.post(
       "/",
-      // isSuperAdmin,
+
       verifyToken,
       AdminAuth([Role.SUPER_ADMIN]),
-      validateCreateEmployee,
+
       this.controller.createEmployeeController
     );
     this.router.get(
@@ -38,14 +38,12 @@ export class SuperAdmEmployeeRouter {
       "/:id",
       verifyToken,
       AdminAuth([Role.SUPER_ADMIN]),
-      validateUpdateEmployee,
       this.controller.updateEmployeeController
     );
     this.router.delete(
       "/:id",
       verifyToken,
       AdminAuth([Role.SUPER_ADMIN]),
-      validateDeleteEmployee,
       this.controller.deleteEmployeeController
     );
     this.router.get(

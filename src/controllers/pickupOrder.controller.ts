@@ -9,10 +9,10 @@ export class PickupOrderController {
     try {
       const result = await createPickupOrderService(req, res);
 
-      res.status(200).send(result);
+      res.status(200).json(result);
     } catch (error) {
       console.log(error);
-      res.status(400).send(error);
+      res.status(400)
     }
   }
 
@@ -20,32 +20,34 @@ export class PickupOrderController {
     try {
       const result = await getPickupOrderService(req, res);
 
-      res.status(200).send(result);
+      res.status(200).json(result);
     } catch (error) {
       console.log(error);
-      res.status(400).send(error);
+      res.status(400)
     }
   }
 
   async getPickupOrders(req: Request, res: Response) {
     try {
-      const result = await getAllUserOrdersService(req, res);
-
-      res.status(200).send(result);
+      await getAllUserOrdersService(req, res); 
     } catch (error) {
-      console.log(error);
-      res.status(400).send(error);
+      console.error(error);
+      res.status(500).json({ 
+        success: false,
+        message: "Terjadi kesalahan pada server." 
+      });
     }
-  }
+}
+
 
   async deletePickupOrder(req: Request, res: Response) {
     try {
       const result = await deletePickupOrderService(req, res);
 
-      res.status(200).send(result);
+      res.status(200).json(result);
     } catch (error) {
       console.log(error);
-      res.status(400).send(error);
+      res.status(400)
     }
   }
 }

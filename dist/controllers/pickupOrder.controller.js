@@ -19,11 +19,11 @@ class PickupOrderController {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const result = yield (0, createPickupOrder_service_1.createPickupOrderService)(req, res);
-                res.status(200).send(result);
+                res.status(200).json(result);
             }
             catch (error) {
                 console.log(error);
-                res.status(400).send(error);
+                res.status(400);
             }
         });
     }
@@ -31,23 +31,25 @@ class PickupOrderController {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const result = yield (0, getPickupOrder_service_1.getPickupOrderService)(req, res);
-                res.status(200).send(result);
+                res.status(200).json(result);
             }
             catch (error) {
                 console.log(error);
-                res.status(400).send(error);
+                res.status(400);
             }
         });
     }
     getPickupOrders(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const result = yield (0, getPickupOrders_service_1.getAllUserOrdersService)(req, res);
-                res.status(200).send(result);
+                yield (0, getPickupOrders_service_1.getAllUserOrdersService)(req, res);
             }
             catch (error) {
-                console.log(error);
-                res.status(400).send(error);
+                console.error(error);
+                res.status(500).json({
+                    success: false,
+                    message: "Terjadi kesalahan pada server."
+                });
             }
         });
     }
@@ -55,11 +57,11 @@ class PickupOrderController {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const result = yield (0, deletePickupOrder_service_1.deletePickupOrderService)(req, res);
-                res.status(200).send(result);
+                res.status(200).json(result);
             }
             catch (error) {
                 console.log(error);
-                res.status(400).send(error);
+                res.status(400);
             }
         });
     }

@@ -21,11 +21,11 @@ class UserController {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const result = yield (0, getUser_service_1.getUserService)(req, res);
-                res.status(200).send(result);
+                res.status(200).json(result);
             }
             catch (error) {
                 console.log(error);
-                res.status(400).send(error);
+                res.status(400);
             }
         });
     }
@@ -33,11 +33,11 @@ class UserController {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const result = yield (0, getUserId_service_1.getUserIdService)(req, res);
-                res.status(200).send(result);
+                res.status(200).json(result);
             }
             catch (error) {
                 console.log(error);
-                res.status(400).send(error);
+                res.status(400);
             }
         });
     }
@@ -45,11 +45,11 @@ class UserController {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const result = yield (0, createUser_service_1.createUserservice)(req, res);
-                res.status(200).send(result);
+                res.status(200).json(result);
             }
             catch (error) {
                 console.log(error);
-                res.status(400).send(error);
+                res.status(400);
             }
         });
     }
@@ -57,11 +57,11 @@ class UserController {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const result = yield (0, editUser_service_1.editUserService)(req, res);
-                res.status(200).send(result);
+                res.status(200).json(result);
             }
             catch (error) {
                 console.log(error);
-                res.status(400).send(error);
+                res.status(400);
             }
         });
     }
@@ -69,11 +69,11 @@ class UserController {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const result = yield (0, deleteUser_service_1.deleteUserService)(req, res);
-                res.status(200).send(result);
+                res.status(200).json(result);
             }
             catch (error) {
                 console.log(error);
-                res.status(400).send(error);
+                res.status(400);
             }
         });
     }
@@ -81,11 +81,11 @@ class UserController {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const result = yield (0, editAvatarCloud_service_1.editAvatarCloudService)(req, res);
-                res.status(200).send(result);
+                res.status(200).json(result);
             }
             catch (error) {
                 console.log(error);
-                res.status(400).send(error);
+                res.status(400);
             }
         });
     }
