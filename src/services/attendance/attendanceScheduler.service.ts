@@ -90,7 +90,7 @@ const groupByOffset = (outlets: IOutlets[]) => {
   }));
 };
 
-const attendanceSchedule = async () => {
+const attendanceSchedule = async (req: Request, res: Response) => {
   try {
     const getOutlets = await prisma.outlet.findMany({
       where: { isDeleted: false },
@@ -117,6 +117,7 @@ const attendanceSchedule = async () => {
     }
     await updateDeliveredOrderStatus();
     console.log(`running cron job at ${new Date().toLocaleString()}`);
+    res.status(200).send({ message: `Successful attendance cron job at ${new Date().toLocaleString()}` });
   } catch (error) {
     console.log(error);
   }

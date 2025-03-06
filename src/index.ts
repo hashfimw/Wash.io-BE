@@ -15,7 +15,6 @@ import { OrderItemsRouter } from "./routers/processOrder.routes";
 import { BypassRequestRouter } from "./routers/bypassProcess.router";
 import { ReportRouter } from "./routers/report.router";
 import AttendanceRouter from "./routers/attendance.router";
-import attendanceSchedule from "./services/attendance/attendanceScheduler.service";
 import TransportJobRouter from "./routers/transportJob.router";
 import LaundryJobRouter from "./routers/laundryJob.router";
 import NotificationRouter from "./routers/notification.router";
@@ -47,8 +46,6 @@ app.use(express.json());
 app.get("/api", (req: Request, res: Response) => {
   res.status(200).send("Welcome to my API");
 });
-
-cron.schedule("*/15 * * * *", attendanceSchedule);
 
 app.use("/api/public", express.static(path.join(__dirname, "../public")));
 
