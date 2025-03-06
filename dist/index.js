@@ -6,7 +6,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const cors_1 = __importDefault(require("cors"));
 const dotenv_1 = __importDefault(require("dotenv"));
-const node_cron_1 = __importDefault(require("node-cron"));
 const path_1 = __importDefault(require("path"));
 const auth_router_1 = require("./routers/auth.router");
 const user_router_1 = require("./routers/user.router");
@@ -20,7 +19,6 @@ const processOrder_routes_1 = require("./routers/processOrder.routes");
 const bypassProcess_router_1 = require("./routers/bypassProcess.router");
 const report_router_1 = require("./routers/report.router");
 const attendance_router_1 = __importDefault(require("./routers/attendance.router"));
-const attendanceScheduler_service_1 = __importDefault(require("./services/attendance/attendanceScheduler.service"));
 const transportJob_router_1 = __importDefault(require("./routers/transportJob.router"));
 const laundryJob_router_1 = __importDefault(require("./routers/laundryJob.router"));
 const notification_router_1 = __importDefault(require("./routers/notification.router"));
@@ -45,7 +43,6 @@ app.use(express_1.default.json());
 app.get("/api", (req, res) => {
     res.status(200).send("Welcome to my API");
 });
-node_cron_1.default.schedule("*/15 * * * *", attendanceScheduler_service_1.default);
 app.use("/api/public", express_1.default.static(path_1.default.join(__dirname, "../public")));
 // 🔥 Routing API
 const authRouter = new auth_router_1.AuthRouter();

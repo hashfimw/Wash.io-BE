@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.dateValidator = exports.shiftChecker = exports.localTimeChecker = void 0;
+exports.newEmployeeAttendanceChecker = exports.dateValidator = exports.shiftChecker = exports.localTimeChecker = void 0;
 const client_1 = require("../../../prisma/generated/client");
 const localTimeChecker = (tzo) => {
     const nowUTC = new Date().getTime();
@@ -30,12 +30,9 @@ const dateValidator = (startDate, endDate) => {
             start = origin;
         if (!endDate)
             end = now;
-        if (start > now || end > now)
-            throw { message: "Start/end date cannot be greater than current date" };
-        if (start >= end)
-            throw { message: "End date cannot be greater than start date" };
-        if (start < origin || end < origin)
-            throw { message: "Start/end date cannot be less than 1970-01-01" };
+        // if (start > now || end > now) throw { message: "Start/end date cannot be greater than current date" };
+        // if (start >= end) throw { message: "End date cannot be greater than start date" };
+        // if (start < origin || end < origin) throw { message: "Start/end date cannot be less than 1970-01-01" };
         return { start: start, end: end };
     }
     catch (error) {
@@ -43,3 +40,27 @@ const dateValidator = (startDate, endDate) => {
     }
 };
 exports.dateValidator = dateValidator;
+const newEmployeeAttendanceChecker = (tzo, workShift) => {
+    const nowLocal = (0, exports.localTimeChecker)(tzo).getUTCHours();
+    if (workShift == "MORNING") {
+        if (nowLocal >= 5 && nowLocal < 14)
+            return true;
+        else
+            return false;
+    }
+    else if (workShift == "NOON") {
+        if (nowLocal >= 13 && nowLocal < 22)
+            return true;
+        else
+            return false;
+    }
+    else {
+        if (nowLocal >= 0 && nowLocal < 6)
+            return true;
+        else if (nowLocal >= 21 && nowLocal < 24)
+            return true;
+        else
+            return false;
+    }
+};
+exports.newEmployeeAttendanceChecker = newEmployeeAttendanceChecker;
