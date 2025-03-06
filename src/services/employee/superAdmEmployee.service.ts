@@ -3,7 +3,7 @@ import { genSalt, hash } from "bcrypt";
 import prisma from "../../prisma";
 import { Prisma, Role } from "../../../prisma/generated/client";
 import { getOutletTzo } from "../attendance/attendanceScheduler.service";
-import { newEmployeeAttendanceChecker, shiftChecker } from "../helpers/dateTime.service";
+import { newEmployeeAttendanceChecker } from "../helpers/dateTime.service";
 
 export const createEmployeeService = async (req: Request, res: Response) => {
   // Pastikan hanya super admin yang bisa membuat employee
@@ -20,7 +20,7 @@ export const createEmployeeService = async (req: Request, res: Response) => {
   const salt = await genSalt(10);
   const hashedPassword = await hash(password, salt);
 
-  const outletTzo = await getOutletTzo(outletId);
+  const outletTzo = await getOutletTzo(outletId); 
 
   await prisma.$transaction(async (tx) => {
     const employee = await tx.user.create({
@@ -38,10 +38,10 @@ export const createEmployeeService = async (req: Request, res: Response) => {
     });
 
     const workShiftChecker = newEmployeeAttendanceChecker(outletTzo, workShift);
-    
+
     if (workShiftChecker) {
       await tx.employeeAttendance.create({
-        data: { canClockIn: true, employeeId: employee.id },
+        data: { canClockIn: true, employeeId: employee.id, updatedAt: Date() },
       });
     }
 
