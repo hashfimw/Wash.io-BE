@@ -27,7 +27,7 @@ class PublicOutletController {
                     message: "Failed to fetch outlets",
                     data: null,
                     meta: null,
-                    error: error instanceof Error ? error.message : "Unknown error occurred"
+                    error: error instanceof Error ? error.message : "Unknown error occurred",
                 });
             }
         });
