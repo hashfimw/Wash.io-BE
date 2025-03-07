@@ -12,7 +12,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.BypassRequestController = void 0;
 const bypassProcess_service_1 = require("../services/outlets/bypassProcess.service");
 class BypassRequestController {
-    // Worker mengajukan permintaan bypass
     requestBypassController(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
@@ -27,7 +26,6 @@ class BypassRequestController {
             }
         });
     }
-    // Admin menangani (menyetujui/menolak) permintaan bypass
     handleBypassRequestController(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
@@ -42,7 +40,6 @@ class BypassRequestController {
             }
         });
     }
-    // Mendapatkan daftar permintaan bypass (admin only)
     getBypassRequestsController(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
@@ -57,7 +54,6 @@ class BypassRequestController {
             }
         });
     }
-    // Mendapatkan detail permintaan bypass berdasarkan ID
     getBypassRequestByIdController(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {

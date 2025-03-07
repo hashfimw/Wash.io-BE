@@ -1,4 +1,3 @@
-// src/controllers/bypassRequest.controller.ts
 import { Request, Response } from "express";
 import {
   getBypassRequestByIdService,
@@ -8,7 +7,6 @@ import {
 } from "../services/outlets/bypassProcess.service";
 
 export class BypassRequestController {
-  // Worker mengajukan permintaan bypass
   async requestBypassController(req: Request, res: Response): Promise<void> {
     try {
       const result = await requestBypassService(req, res);
@@ -21,7 +19,6 @@ export class BypassRequestController {
     }
   }
 
-  // Admin menangani (menyetujui/menolak) permintaan bypass
   async handleBypassRequestController(
     req: Request,
     res: Response
@@ -37,7 +34,6 @@ export class BypassRequestController {
     }
   }
 
-  // Mendapatkan daftar permintaan bypass (admin only)
   async getBypassRequestsController(
     req: Request,
     res: Response
@@ -53,7 +49,6 @@ export class BypassRequestController {
     }
   }
 
-  // Mendapatkan detail permintaan bypass berdasarkan ID
   async getBypassRequestByIdController(
     req: Request,
     res: Response
