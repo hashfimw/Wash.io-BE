@@ -57,14 +57,11 @@ export const getAllOutletsService = async (req: Request, res: Response) => {
       Employee: true,
     },
   });
-
   const { page = 1, limit = 10, sortOrder = "asc", search } = req.query;
-
   // Buat filter dasar
   const filter: Prisma.OutletWhereInput = {
     isDeleted: false,
   };
-
   // Jika user adalah OUTLET_ADMIN, filter hanya outletnya saja
   if (user?.role === Role.OUTLET_ADMIN && user.Employee?.outletId) {
     filter.id = user.Employee.outletId;
