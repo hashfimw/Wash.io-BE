@@ -6,6 +6,7 @@ import {
   processOrderService,
   updateOrderItemService,
 } from "../services/outlets/processOrderItems.service";
+import { getAllOrdersService } from "../services/outlets/orderOutlets.service";
 
 export class processOrderItemController {
   processOrders = async (req: Request, res: Response): Promise<void> => {
@@ -57,7 +58,7 @@ export class processOrderItemController {
     }
   };
 
-  geOrdersItemsByOutletController = async (
+  getOrdersItemsByOutletController = async (
     req: Request,
     res: Response
   ): Promise<void> => {

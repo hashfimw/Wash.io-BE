@@ -53,7 +53,6 @@ export class AuthController {
       res.status(400).json({ message: "Google login failed", error: Error });
     }
   }
-
   async loginController(req: Request, res: Response): Promise<void> {
     try {
       const result = await loginService(req);

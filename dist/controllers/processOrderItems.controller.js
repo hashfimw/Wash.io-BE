@@ -53,7 +53,7 @@ class processOrderItemController {
                 res.status(500).json({ message: "Internal server error" });
             }
         });
-        this.geOrdersItemsByOutletController = (req, res) => __awaiter(this, void 0, void 0, function* () {
+        this.getOrdersItemsByOutletController = (req, res) => __awaiter(this, void 0, void 0, function* () {
             try {
                 const result = yield (0, processOrderItems_service_1.getOrderItemService)(req, res);
                 res.status(200).json(result);

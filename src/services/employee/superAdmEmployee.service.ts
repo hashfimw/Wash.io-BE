@@ -3,7 +3,7 @@ import { genSalt, hash } from "bcrypt";
 import prisma from "../../prisma";
 import { Prisma, Role } from "../../../prisma/generated/client";
 import { getOutletTzo } from "../attendance/attendanceScheduler.service";
-import { shiftChecker } from "../helpers/dateTime.service";
+import { newEmployeeAttendanceChecker } from "../helpers/dateTime.service";
 
 export const createEmployeeService = async (req: Request, res: Response) => {
   // Pastikan hanya super admin yang bisa membuat employee
@@ -15,14 +15,12 @@ export const createEmployeeService = async (req: Request, res: Response) => {
     throw new Error("Only Super Admin can create employees");
   }
 
-  const { fullName, email, password, role, workShift, station, outletId } =
-    req.body;
+  const { fullName, email, password, role, workShift, station, outletId } = req.body;
 
   const salt = await genSalt(10);
   const hashedPassword = await hash(password, salt);
 
   const outletTzo = await getOutletTzo(outletId); 
-  const localWorkShift = shiftChecker(outletTzo);
 
   await prisma.$transaction(async (tx) => {
     const employee = await tx.user.create({
@@ -39,9 +37,11 @@ export const createEmployeeService = async (req: Request, res: Response) => {
       include: { Employee: true },
     });
 
-    if (localWorkShift === workShift) {
+    const workShiftChecker = newEmployeeAttendanceChecker(outletTzo, workShift);
+
+    if (workShiftChecker) {
       await tx.employeeAttendance.create({
-        data: { canClockIn: true, employeeId: employee.id, updatedAt:Date() },
+        data: { canClockIn: true, employeeId: employee.id, updatedAt: Date() },
       });
     }
 
@@ -68,22 +68,13 @@ export const getAllEmployeesService = async (req: Request, res: Response) => {
     isDeleted: false,
     role: { in: [Role.WORKER, Role.DRIVER, Role.OUTLET_ADMIN] },
   };
-  const {
-    page = 1,
-    limit = 10,
-    sortOrder = "asc",
-    role,
-    outletName,
-  } = req.query;
+  const { page = 1, limit = 10, sortOrder = "asc", role, outletName } = req.query;
   const search = req.query.search as string | undefined;
   let sortBy = req.query.sortBy as string;
   if (!sortBy) sortBy = "fullName";
 
   if (search) {
-    filter.OR = [
-      { fullName: { contains: search, mode: "insensitive" } },
-      { email: { contains: search, mode: "insensitive" } },
-    ];
+    filter.OR = [{ fullName: { contains: search, mode: "insensitive" } }, { email: { contains: search, mode: "insensitive" } }];
   }
 
   if (role && role !== "ALL Role") {

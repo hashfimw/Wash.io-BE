@@ -495,7 +495,7 @@ export namespace Prisma {
   export type DecimalJsLike = runtime.DecimalJsLike
 
   /**
-   * Metrics
+   * Metrics 
    */
   export type Metrics = runtime.Metrics
   export type Metric<T> = runtime.Metric<T>
@@ -513,14 +513,14 @@ export namespace Prisma {
   export import Exact = $Public.Exact
 
   /**
-   * Prisma Client JS version: 6.4.1
-   * Query Engine version: a9055b89e58b4b5bfb59600785423b1db3d0e75d
+   * Prisma Client JS version: 6.2.1
+   * Query Engine version: 4123509d24aa4dede1e864b46351bf2790323b69
    */
   export type PrismaVersion = {
     client: string
   }
 
-  export const prismaVersion: PrismaVersion
+  export const prismaVersion: PrismaVersion 
 
   /**
    * Utility Types
@@ -536,15 +536,15 @@ export namespace Prisma {
 
   /**
    * Types of the values used to represent different kinds of `null` values when working with JSON fields.
-   *
+   * 
    * @see https://www.prisma.io/docs/concepts/components/prisma-client/working-with-fields/working-with-json-fields#filtering-on-a-json-field
    */
   namespace NullTypes {
     /**
     * Type of `Prisma.DbNull`.
-    *
+    * 
     * You cannot use other instances of this class. Please use the `Prisma.DbNull` value.
-    *
+    * 
     * @see https://www.prisma.io/docs/concepts/components/prisma-client/working-with-fields/working-with-json-fields#filtering-on-a-json-field
     */
     class DbNull {
@@ -554,9 +554,9 @@ export namespace Prisma {
 
     /**
     * Type of `Prisma.JsonNull`.
-    *
+    * 
     * You cannot use other instances of this class. Please use the `Prisma.JsonNull` value.
-    *
+    * 
     * @see https://www.prisma.io/docs/concepts/components/prisma-client/working-with-fields/working-with-json-fields#filtering-on-a-json-field
     */
     class JsonNull {
@@ -566,9 +566,9 @@ export namespace Prisma {
 
     /**
     * Type of `Prisma.AnyNull`.
-    *
+    * 
     * You cannot use other instances of this class. Please use the `Prisma.AnyNull` value.
-    *
+    * 
     * @see https://www.prisma.io/docs/concepts/components/prisma-client/working-with-fields/working-with-json-fields#filtering-on-a-json-field
     */
     class AnyNull {
@@ -579,21 +579,21 @@ export namespace Prisma {
 
   /**
    * Helper for filtering JSON entries that have `null` on the database (empty on the db)
-   *
+   * 
    * @see https://www.prisma.io/docs/concepts/components/prisma-client/working-with-fields/working-with-json-fields#filtering-on-a-json-field
    */
   export const DbNull: NullTypes.DbNull
 
   /**
    * Helper for filtering JSON entries that have JSON `null` values (not empty on the db)
-   *
+   * 
    * @see https://www.prisma.io/docs/concepts/components/prisma-client/working-with-fields/working-with-json-fields#filtering-on-a-json-field
    */
   export const JsonNull: NullTypes.JsonNull
 
   /**
    * Helper for filtering JSON entries that are `Prisma.DbNull` or `Prisma.JsonNull`
-   *
+   * 
    * @see https://www.prisma.io/docs/concepts/components/prisma-client/working-with-fields/working-with-json-fields#filtering-on-a-json-field
    */
   export const AnyNull: NullTypes.AnyNull
@@ -3318,10 +3318,6 @@ export namespace Prisma {
      * Filter which Users to update
      */
     where?: UserWhereInput
-    /**
-     * Limit how many Users to update.
-     */
-    limit?: number
   }
 
   /**
@@ -3344,10 +3340,6 @@ export namespace Prisma {
      * Filter which Users to update
      */
     where?: UserWhereInput
-    /**
-     * Limit how many Users to update.
-     */
-    limit?: number
   }
 
   /**
@@ -4594,10 +4586,6 @@ export namespace Prisma {
      * Filter which Employees to update
      */
     where?: EmployeeWhereInput
-    /**
-     * Limit how many Employees to update.
-     */
-    limit?: number
   }
 
   /**
@@ -4620,10 +4608,6 @@ export namespace Prisma {
      * Filter which Employees to update
      */
     where?: EmployeeWhereInput
-    /**
-     * Limit how many Employees to update.
-     */
-    limit?: number
     /**
      * Choose, which related nodes to fetch as well
      */
@@ -5889,10 +5873,6 @@ export namespace Prisma {
      * Filter which Addresses to update
      */
     where?: AddressWhereInput
-    /**
-     * Limit how many Addresses to update.
-     */
-    limit?: number
   }
 
   /**
@@ -5915,10 +5895,6 @@ export namespace Prisma {
      * Filter which Addresses to update
      */
     where?: AddressWhereInput
-    /**
-     * Limit how many Addresses to update.
-     */
-    limit?: number
     /**
      * Choose, which related nodes to fetch as well
      */
@@ -5985,10 +5961,6 @@ export namespace Prisma {
      * Filter which Addresses to delete
      */
     where?: AddressWhereInput
-    /**
-     * Limit how many Addresses to delete.
-     */
-    limit?: number
   }
 
   /**
@@ -7083,10 +7055,6 @@ export namespace Prisma {
      * Filter which Outlets to update
      */
     where?: OutletWhereInput
-    /**
-     * Limit how many Outlets to update.
-     */
-    limit?: number
   }
 
   /**
@@ -7109,10 +7077,6 @@ export namespace Prisma {
      * Filter which Outlets to update
      */
     where?: OutletWhereInput
-    /**
-     * Limit how many Outlets to update.
-     */
-    limit?: number
     /**
      * Choose, which related nodes to fetch as well
      */
@@ -8343,10 +8307,6 @@ export namespace Prisma {
      * Filter which Orders to update
      */
     where?: OrderWhereInput
-    /**
-     * Limit how many Orders to update.
-     */
-    limit?: number
   }
 
   /**
@@ -8369,10 +8329,6 @@ export namespace Prisma {
      * Filter which Orders to update
      */
     where?: OrderWhereInput
-    /**
-     * Limit how many Orders to update.
-     */
-    limit?: number
     /**
      * Choose, which related nodes to fetch as well
      */
@@ -8513,27 +8469,27 @@ export namespace Prisma {
   }
 
   /**
-   * Order.OrderItem
+   * Order.TransportJob
    */
-  export type Order$OrderItemArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type Order$TransportJobArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the OrderItem
+     * Select specific fields to fetch from the TransportJob
      */
-    select?: OrderItemSelect<ExtArgs> | null
+    select?: TransportJobSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the OrderItem
+     * Omit specific fields from the TransportJob
      */
-    omit?: OrderItemOmit<ExtArgs> | null
+    omit?: TransportJobOmit<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: OrderItemInclude<ExtArgs> | null
-    where?: OrderItemWhereInput
-    orderBy?: OrderItemOrderByWithRelationInput | OrderItemOrderByWithRelationInput[]
-    cursor?: OrderItemWhereUniqueInput
+    include?: TransportJobInclude<ExtArgs> | null
+    where?: TransportJobWhereInput
+    orderBy?: TransportJobOrderByWithRelationInput | TransportJobOrderByWithRelationInput[]
+    cursor?: TransportJobWhereUniqueInput
     take?: number
     skip?: number
-    distinct?: OrderItemScalarFieldEnum | OrderItemScalarFieldEnum[]
+    distinct?: TransportJobScalarFieldEnum | TransportJobScalarFieldEnum[]
   }
 
   /**
@@ -9573,10 +9529,6 @@ export namespace Prisma {
      * Filter which OrderItems to update
      */
     where?: OrderItemWhereInput
-    /**
-     * Limit how many OrderItems to update.
-     */
-    limit?: number
   }
 
   /**
@@ -9599,10 +9551,6 @@ export namespace Prisma {
      * Filter which OrderItems to update
      */
     where?: OrderItemWhereInput
-    /**
-     * Limit how many OrderItems to update.
-     */
-    limit?: number
     /**
      * Choose, which related nodes to fetch as well
      */
@@ -9669,10 +9617,6 @@ export namespace Prisma {
      * Filter which OrderItems to delete
      */
     where?: OrderItemWhereInput
-    /**
-     * Limit how many OrderItems to delete.
-     */
-    limit?: number
   }
 
   /**
@@ -10791,10 +10735,6 @@ export namespace Prisma {
      * Filter which LaundryJobs to update
      */
     where?: LaundryJobWhereInput
-    /**
-     * Limit how many LaundryJobs to update.
-     */
-    limit?: number
   }
 
   /**
@@ -10817,10 +10757,6 @@ export namespace Prisma {
      * Filter which LaundryJobs to update
      */
     where?: LaundryJobWhereInput
-    /**
-     * Limit how many LaundryJobs to update.
-     */
-    limit?: number
     /**
      * Choose, which related nodes to fetch as well
      */
@@ -10887,10 +10823,6 @@ export namespace Prisma {
      * Filter which LaundryJobs to delete
      */
     where?: LaundryJobWhereInput
-    /**
-     * Limit how many LaundryJobs to delete.
-     */
-    limit?: number
   }
 
   /**
@@ -11987,10 +11919,6 @@ export namespace Prisma {
      * Filter which TransportJobs to update
      */
     where?: TransportJobWhereInput
-    /**
-     * Limit how many TransportJobs to update.
-     */
-    limit?: number
   }
 
   /**
@@ -12013,10 +11941,6 @@ export namespace Prisma {
      * Filter which TransportJobs to update
      */
     where?: TransportJobWhereInput
-    /**
-     * Limit how many TransportJobs to update.
-     */
-    limit?: number
     /**
      * Choose, which related nodes to fetch as well
      */
@@ -12083,10 +12007,6 @@ export namespace Prisma {
      * Filter which TransportJobs to delete
      */
     where?: TransportJobWhereInput
-    /**
-     * Limit how many TransportJobs to delete.
-     */
-    limit?: number
   }
 
   /**
@@ -13167,10 +13087,6 @@ export namespace Prisma {
      * Filter which Notifications to update
      */
     where?: NotificationWhereInput
-    /**
-     * Limit how many Notifications to update.
-     */
-    limit?: number
   }
 
   /**
@@ -13193,10 +13109,6 @@ export namespace Prisma {
      * Filter which Notifications to update
      */
     where?: NotificationWhereInput
-    /**
-     * Limit how many Notifications to update.
-     */
-    limit?: number
     /**
      * Choose, which related nodes to fetch as well
      */
@@ -13263,10 +13175,6 @@ export namespace Prisma {
      * Filter which Notifications to delete
      */
     where?: NotificationWhereInput
-    /**
-     * Limit how many Notifications to delete.
-     */
-    limit?: number
   }
 
   /**
@@ -14345,10 +14253,6 @@ export namespace Prisma {
      * Filter which Payments to update
      */
     where?: PaymentWhereInput
-    /**
-     * Limit how many Payments to update.
-     */
-    limit?: number
   }
 
   /**
@@ -14371,10 +14275,6 @@ export namespace Prisma {
      * Filter which Payments to update
      */
     where?: PaymentWhereInput
-    /**
-     * Limit how many Payments to update.
-     */
-    limit?: number
     /**
      * Choose, which related nodes to fetch as well
      */
@@ -14441,10 +14341,6 @@ export namespace Prisma {
      * Filter which Payments to delete
      */
     where?: PaymentWhereInput
-    /**
-     * Limit how many Payments to delete.
-     */
-    limit?: number
   }
 
   /**
@@ -15486,10 +15382,6 @@ export namespace Prisma {
      * Filter which EmployeeAttendances to update
      */
     where?: EmployeeAttendanceWhereInput
-    /**
-     * Limit how many EmployeeAttendances to update.
-     */
-    limit?: number
   }
 
   /**
@@ -15512,10 +15404,6 @@ export namespace Prisma {
      * Filter which EmployeeAttendances to update
      */
     where?: EmployeeAttendanceWhereInput
-    /**
-     * Limit how many EmployeeAttendances to update.
-     */
-    limit?: number
     /**
      * Choose, which related nodes to fetch as well
      */
@@ -15582,10 +15470,6 @@ export namespace Prisma {
      * Filter which EmployeeAttendances to delete
      */
     where?: EmployeeAttendanceWhereInput
-    /**
-     * Limit how many EmployeeAttendances to delete.
-     */
-    limit?: number
   }
 
   /**
@@ -16632,10 +16516,6 @@ export namespace Prisma {
      * Filter which AttendanceRecords to update
      */
     where?: AttendanceRecordWhereInput
-    /**
-     * Limit how many AttendanceRecords to update.
-     */
-    limit?: number
   }
 
   /**
@@ -16658,10 +16538,6 @@ export namespace Prisma {
      * Filter which AttendanceRecords to update
      */
     where?: AttendanceRecordWhereInput
-    /**
-     * Limit how many AttendanceRecords to update.
-     */
-    limit?: number
     /**
      * Choose, which related nodes to fetch as well
      */
@@ -16728,10 +16604,6 @@ export namespace Prisma {
      * Filter which AttendanceRecords to delete
      */
     where?: AttendanceRecordWhereInput
-    /**
-     * Limit how many AttendanceRecords to delete.
-     */
-    limit?: number
   }
 
   /**
