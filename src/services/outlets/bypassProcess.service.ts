@@ -125,7 +125,6 @@ export const handleBypassRequestService = async (
         where: { id: Number(laundryJobId) },
         data: {
           byPassStatus: isApproved ? "ACCEPTED" : "REJECTED",
-          isCompleted: isApproved,
           // Tambahkan catatan admin jika ada
           byPassNote: adminNote
             ? `${currentJob.byPassNote || ""}\n\nTanggapan Admin: ${adminNote}`
@@ -242,7 +241,6 @@ export const handleBypassRequestService = async (
         where: { id: Number(laundryJobId) },
         data: {
           byPassStatus: isApproved ? "ACCEPTED" : "REJECTED",
-          isCompleted: isApproved,
           // Tambahkan catatan admin jika ada
           byPassNote: adminNote
             ? `${currentJob.byPassNote || ""}\n\nTanggapan Admin: ${adminNote}`

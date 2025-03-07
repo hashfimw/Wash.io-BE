@@ -1,7 +1,6 @@
 import { Router } from "express";
 import { PublicOutletController } from "../controllers/outlets.controller";
 
-
 export class OutletsRouter {
   private publicOutletController: PublicOutletController;
   private router: Router;
@@ -13,10 +12,7 @@ export class OutletsRouter {
   }
 
   private initializeRoutes(): void {
-    // Endpoint untuk mendapatkan daftar outlet tanpa autentikasi
-    this.router.get("/", this.publicOutletController.getPublicOutlets);
-    
-    // Tambahkan endpoint publik lainnya di sini jika diperlukan
+    this.router.get("/", this.publicOutletController.getPublicOutlets.bind(this.publicOutletController));
   }
 
   getRouter(): Router {

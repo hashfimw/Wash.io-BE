@@ -72,7 +72,6 @@ app.use("/api/orders", orderItemsRouter.getRouter());
 app.use("/api/orders/show-order", showOrder.getRouter());
 app.use("/api/bypass", bypassProcess.getRouter());
 app.use("/api/reports", reportRouter.getRouter());
-
 app.use("/api/attendances", attendanceRouter.getRouter());
 app.use("/api/transport-jobs", transportJobRouter.getRouter());
 app.use("/api/laundry-jobs", laundryJobRouter.getRouter());
