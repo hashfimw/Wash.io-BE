@@ -30,7 +30,7 @@ export class AddressController {
         where: { customerId: userId, isDeleted: false },
       });
 
-      res.status(200).json(addresses);
+      res.status(200).send({data: addresses});
     } catch (error) {
       console.error(error);
       res
