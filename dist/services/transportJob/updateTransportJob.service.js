@@ -82,10 +82,10 @@ const updateTransportJobByIdService = (transportJobId, userId, tzo) => __awaiter
                 })).map((item) => item.id);
                 const superAdminIds = (yield tx.user.findMany({ where: { role: "SUPER_ADMIN", isDeleted: false }, select: { id: true } })).map((item) => item.id);
                 yield tx.notification.createMany({
-                    data: (0, notification_service_1.createMultipleNotificationDataService)(superAdminIds, "New order alert", "A new order arrived at the outlet!", `/dashboard/super-admin/${orderId}`),
+                    data: (0, notification_service_1.createMultipleNotificationDataService)(superAdminIds, "New order alert", "A new order arrived at the outlet!", `/dashboard/super-admin/orders/process/${orderId}`),
                 });
                 yield tx.notification.createMany({
-                    data: (0, notification_service_1.createMultipleNotificationDataService)(outletAdminIds, "New order alert", "A new order arrived at the outlet!", `/dashboard/outlet-admin/${orderId}`),
+                    data: (0, notification_service_1.createMultipleNotificationDataService)(outletAdminIds, "New order alert", "A new order arrived at the outlet!", `/dashboard/outlet-admin/orders/process/${orderId}`),
                 });
             }
             if (newOrderStatus == "RECEIVED_BY_CUSTOMER") {

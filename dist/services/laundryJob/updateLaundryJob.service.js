@@ -98,14 +98,16 @@ const updateLaundryJobByIdService = (laundryJobId, userId, orderItemInput, tzo) 
                 notificationData = notificationData.map((item) => {
                     return Object.assign(Object.assign({}, item), { url: `/employee-dashboard/driver/${transportJobId}` });
                 });
-                yield tx.notification.createMany({ data: notificationData });
+                if (notificationData.length > 0)
+                    yield tx.notification.createMany({ data: notificationData });
             }
             if (currentOrderStatus == "BEING_WASHED" || currentOrderStatus == "BEING_IRONED") {
                 const laundryJobId = (yield tx.laundryJob.create({ data: newLaundryJobData })).id;
                 notificationData = notificationData.map((item) => {
                     return Object.assign(Object.assign({}, item), { url: `/employee-dashboard/worker/${laundryJobId}` });
                 });
-                yield tx.notification.createMany({ data: notificationData });
+                if (notificationData.length > 0)
+                    yield tx.notification.createMany({ data: notificationData });
             }
             if (newOrderStatus == "AWAITING_PAYMENT") {
                 const customerId = (_a = (yield tx.order.findFirst({ where: { id: orderId }, include: { customerAddress: true } }))) === null || _a === void 0 ? void 0 : _a.customerAddress.customerId;

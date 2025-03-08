@@ -17,7 +17,7 @@ export const updateDeliveredOrderStatus = async () => {
           await tx.notification.create({
             data: {
               userId,
-              title: "Order auto=completion alert",
+              title: "Order auto completion alert",
               description: "Your delivered order is automatically changed its status 2 days after it is delivered.",
               url: `/order/${item.id}`,
             },
