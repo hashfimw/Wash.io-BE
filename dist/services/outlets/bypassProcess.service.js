@@ -37,6 +37,7 @@ const requestBypassService = (req, res) => __awaiter(void 0, void 0, void 0, fun
                 workerId: worker.Employee.id,
                 isByPassRequested: true,
                 byPassNote,
+                byPassStatus: null,
             },
         });
         // Cari outlet admin untuk notifikasi

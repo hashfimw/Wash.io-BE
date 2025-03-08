@@ -26,6 +26,7 @@ export const requestBypassService = async (req: Request, res: Response) => {
         workerId: worker.Employee.id,
         isByPassRequested: true,
         byPassNote,
+        byPassStatus: null,
       },
     });
 
