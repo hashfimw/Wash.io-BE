@@ -276,7 +276,7 @@ export const handleBypassRequestService = async (
                   ? `Catatan: ${adminNote}`
                   : "Harap lengkapi data yang kurang dalam 30 menit."
               }`,
-          url: `/dashboard/laundry-jobs/${laundryJobId}`,
+          url: `/employee-dashboard/worker/${laundryJobId}`,
         },
       });
 
@@ -297,7 +297,7 @@ export const handleBypassRequestService = async (
                   userId: job.worker!.userId,
                   title: "Waktu Habis!",
                   description: `30 menit telah berlalu. Harap segera update item yang kurang untuk Order #${job.order.id}`,
-                  url: `/dashboard/laundry-jobs/${laundryJobId}`,
+                  url: `/employee-dashboard/worker/${laundryJobId}`,
                 },
               });
             }
