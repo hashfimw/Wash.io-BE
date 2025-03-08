@@ -59,7 +59,7 @@ const createEmployeeService = (req, res) => __awaiter(void 0, void 0, void 0, fu
         const workShiftChecker = (0, dateTime_service_1.newEmployeeAttendanceChecker)(outletTzo, workShift);
         if (workShiftChecker) {
             yield tx.employeeAttendance.create({
-                data: { canClockIn: true, employeeId: employee.id, updatedAt: Date() },
+                data: { canClockIn: true, employeeId: employee.id },
             });
         }
         const { password: _ } = employee, employeeWithoutPassword = __rest(employee, ["password"]);

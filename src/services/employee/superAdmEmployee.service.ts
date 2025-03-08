@@ -41,7 +41,7 @@ export const createEmployeeService = async (req: Request, res: Response) => {
 
     if (workShiftChecker) {
       await tx.employeeAttendance.create({
-        data: { canClockIn: true, employeeId: employee.id, updatedAt: Date() },
+        data: { canClockIn: true, employeeId: employee.id},
       });
     }
 
