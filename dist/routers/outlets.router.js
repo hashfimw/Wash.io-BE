@@ -10,9 +10,7 @@ class OutletsRouter {
         this.initializeRoutes();
     }
     initializeRoutes() {
-        // Endpoint untuk mendapatkan daftar outlet tanpa autentikasi
-        this.router.get("/", this.publicOutletController.getPublicOutlets);
-        // Tambahkan endpoint publik lainnya di sini jika diperlukan
+        this.router.get("/", this.publicOutletController.getPublicOutlets.bind(this.publicOutletController));
     }
     getRouter() {
         return this.router;

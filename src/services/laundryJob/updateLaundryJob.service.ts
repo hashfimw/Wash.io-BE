@@ -84,14 +84,14 @@ export const updateLaundryJobByIdService = async (laundryJobId: number, userId: 
         notificationData = notificationData.map((item) => {
           return { ...item, url: `/employee-dashboard/driver/${transportJobId}` };
         });
-        await tx.notification.createMany({ data: notificationData });
+        if (notificationData.length > 0) await tx.notification.createMany({ data: notificationData });
       }
       if (currentOrderStatus == "BEING_WASHED" || currentOrderStatus == "BEING_IRONED") {
         const laundryJobId = (await tx.laundryJob.create({ data: newLaundryJobData })).id;
         notificationData = notificationData.map((item) => {
           return { ...item, url: `/employee-dashboard/worker/${laundryJobId}` };
         });
-        await tx.notification.createMany({ data: notificationData });
+        if (notificationData.length > 0) await tx.notification.createMany({ data: notificationData });
       }
       if (newOrderStatus == "AWAITING_PAYMENT") {
         const customerId = (await tx.order.findFirst({ where: { id: orderId }, include: { customerAddress: true } }))?.customerAddress!.customerId!;

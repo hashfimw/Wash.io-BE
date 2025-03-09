@@ -72,7 +72,7 @@ export const updateTransportJobByIdService = async (transportJobId: number, user
             superAdminIds,
             "New order alert",
             "A new order arrived at the outlet!",
-            `/dashboard/super-admin/${orderId}`
+            `/dashboard/super-admin/orders/process/${orderId}`
           ),
         });
 
@@ -81,7 +81,7 @@ export const updateTransportJobByIdService = async (transportJobId: number, user
             outletAdminIds,
             "New order alert",
             "A new order arrived at the outlet!",
-            `/dashboard/outlet-admin/${orderId}`
+            `/dashboard/outlet-admin/orders/process/${orderId}`
           ),
         });
       }

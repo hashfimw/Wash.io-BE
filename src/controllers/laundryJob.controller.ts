@@ -59,7 +59,9 @@ export default class LaundryJobController {
       let count;
       if (requestType == "history") count = await prisma.laundryJob.count({ where: { workerId: worker.Employee!.id } });
       else if (requestType == "request") {
-        count = await prisma.laundryJob.count({ where: { isCompleted: false, order: { outletId: worker.Employee!.outletId } } });
+        count = await prisma.laundryJob.count({
+          where: { isCompleted: false, station: worker.Employee!.station!, order: { outletId: worker.Employee!.outletId } },
+        });
       }
 
       if (count != undefined) {

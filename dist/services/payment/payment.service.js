@@ -263,9 +263,11 @@ const handlePaymentNotificationService = (req, res) => __awaiter(void 0, void 0,
                         },
                     });
                     const driverIds = yield (0, finder_service_1.getIdleEmployees)(+orderId, "DRIVER");
-                    yield tx.notification.createMany({
-                        data: (0, notification_service_1.createMultipleNotificationDataService)(driverIds, "Delivery Job alert", " A new delivery job is available!", `/employee-dashboard/driver/${deliveryJob.id}`),
-                    });
+                    if (driverIds.length > 0) {
+                        yield tx.notification.createMany({
+                            data: (0, notification_service_1.createMultipleNotificationDataService)(driverIds, "Delivery Job alert", " A new delivery job is available!", `/employee-dashboard/driver/${deliveryJob.id}`),
+                        });
+                    }
                 }
                 // Create notification for user
                 yield tx.notification.create({

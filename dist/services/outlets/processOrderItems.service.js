@@ -87,9 +87,11 @@ const processOrderService = (req, res) => __awaiter(void 0, void 0, void 0, func
                 },
             });
             const washerIds = yield (0, finder_service_1.getIdleEmployees)(updatedOrder.outletId, "WORKER", "WASHING");
-            yield prisma.notification.createMany({
-                data: (0, notification_service_1.createMultipleNotificationDataService)(washerIds, "Washing Job alert", " A new washing job is available!", `/employee-dashboard/worker/${laundryJob.id}`),
-            });
+            if (washerIds.length > 0) {
+                yield prisma.notification.createMany({
+                    data: (0, notification_service_1.createMultipleNotificationDataService)(washerIds, "Washing Job alert", " A new washing job is available!", `/employee-dashboard/worker/${laundryJob.id}`),
+                });
+            }
             yield prisma.notification.create({
                 data: {
                     userId: updatedOrder.customerAddress.customerId,

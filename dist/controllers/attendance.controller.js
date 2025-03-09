@@ -73,20 +73,31 @@ class AttendanceController {
             try {
                 const tzo = +req.query.tzo;
                 const user = yield (0, finder_service_1.findUser)(req.user.id);
-                const count = yield prisma_1.default.employeeAttendance.count({ where: { employeeId: user.Employee.id, isAttended: true } });
-                const _a = user.Employee, { EmployeeAttendance, workShift } = _a, employee = __rest(_a, ["EmployeeAttendance", "workShift"]);
-                const canClockIn = EmployeeAttendance[0].canClockIn;
-                const isAttended = EmployeeAttendance[0].isAttended;
-                const shiftStart = EmployeeAttendance[0].createdAt;
-                let isOnWorkShift = false;
-                if (tzo) {
-                    const localWorkShift = (0, dateTime_service_1.shiftChecker)(tzo);
-                    if (user.Employee.workShift == localWorkShift)
-                        isOnWorkShift = true;
+                if (user.role == "DRIVER" || user.role == "WORKER") {
+                    const count = yield prisma_1.default.attendanceRecord.count({ where: { employeeAttendance: { employeeId: user.Employee.id } } });
+                    const _a = user.Employee, { EmployeeAttendance, workShift } = _a, employee = __rest(_a, ["EmployeeAttendance", "workShift"]);
+                    const canClockIn = EmployeeAttendance[0].canClockIn;
+                    const isAttended = EmployeeAttendance[0].isAttended;
+                    const shiftStart = EmployeeAttendance[0].createdAt;
+                    let isOnWorkShift = false;
+                    if (tzo) {
+                        const localWorkShift = (0, dateTime_service_1.shiftChecker)(tzo);
+                        if (user.Employee.workShift == localWorkShift)
+                            isOnWorkShift = true;
+                    }
+                    else
+                        throw { message: "Invalid time zone offset!" };
+                    res.status(200).send({ data: Object.assign(Object.assign({}, employee), { workShift, isOnWorkShift, count, canClockIn, isAttended, shiftStart }) });
                 }
-                else
-                    throw { message: "Invalid time zone offset!" };
-                res.status(200).send({ data: Object.assign(Object.assign({}, employee), { workShift, isOnWorkShift, count, canClockIn, isAttended, shiftStart }) });
+                else if (user.role == "OUTLET_ADMIN") {
+                    const employeeIds = (yield prisma_1.default.employee.findMany({ where: { outletId: user.Employee.outletId }, select: { id: true } })).map((item) => item.id);
+                    const count = yield prisma_1.default.attendanceRecord.count({ where: { employeeAttendance: { employeeId: { in: employeeIds } } } });
+                    res.status(200).send({ data: { count } });
+                }
+                else if (user.role == "SUPER_ADMIN") {
+                    const count = yield prisma_1.default.attendanceRecord.count();
+                    res.status(200).send({ data: { count } });
+                }
             }
             catch (error) {
                 console.log(error);

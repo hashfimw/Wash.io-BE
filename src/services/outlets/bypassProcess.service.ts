@@ -15,63 +15,67 @@ export const requestBypassService = async (req: Request, res: Response) => {
     },
   });
 
-  if (!worker || !worker.Employee) {
-    throw new Error("Data worker tidak ditemukan");
-  }
+  await prisma.$transaction(async (prisma) => {
+    if (!worker || !worker.Employee) {
+      throw new Error("Data worker tidak ditemukan");
+    }
 
-  const updatedLaundryJob = await prisma.laundryJob.update({
-    where: { id: Number(laundryJobId) },
-    data: {
-      isByPassRequested: true,
-      byPassNote,
-    },
-  });
-
-  // Cari outlet admin untuk notifikasi
-  const outletAdmins = await prisma.employee.findMany({
-    where: {
-      outletId: worker.Employee.outletId,
-      user: {
-        role: Role.OUTLET_ADMIN,
-      },
-    },
-    include: {
-      user: true,
-    },
-  });
-
-  // Cari super admin untuk notifikasi
-  const superAdmins = await prisma.user.findMany({
-    where: {
-      role: Role.SUPER_ADMIN,
-    },
-  });
-
-  // Kirim notifikasi ke outlet admin
-  for (const admin of outletAdmins) {
-    await prisma.notification.create({
+    const updatedLaundryJob = await prisma.laundryJob.update({
+      where: { id: Number(laundryJobId) },
       data: {
-        userId: admin.userId,
-        title: "Permintaan Bypass Baru",
-        description: `Worker ${worker.fullName} meminta bypass untuk Order #${laundryJobId}. Alasan: ${byPassNote}`,
-        url: `/dashboard/outlet-admin/bypass/${laundryJobId}`,
+        workerId: worker.Employee.id,
+        isByPassRequested: true,
+        byPassNote,
+        byPassStatus: null,
       },
     });
-  }
 
-  // Kirim notifikasi ke super admin
-  for (const admin of superAdmins) {
-    await prisma.notification.create({
-      data: {
-        userId: admin.id,
-        title: "Permintaan Bypass Baru",
-        description: `Worker ${worker.fullName} meminta bypass untuk Order #${laundryJobId} di outlet ${worker.Employee.outletId}. Alasan: ${byPassNote}`,
-        url: `/dashboard/super-admin/bypass/${laundryJobId}`,
+    // Cari outlet admin untuk notifikasi
+    const outletAdmins = await prisma.employee.findMany({
+      where: {
+        outletId: worker.Employee.outletId,
+        user: {
+          role: Role.OUTLET_ADMIN,
+        },
+      },
+      include: {
+        user: true,
       },
     });
-  }
 
-  return { data: updatedLaundryJob };
+    // Cari super admin untuk notifikasi
+    const superAdmins = await prisma.user.findMany({
+      where: {
+        role: Role.SUPER_ADMIN,
+      },
+    });
+
+    // Kirim notifikasi ke outlet admin
+    for (const admin of outletAdmins) {
+      await prisma.notification.create({
+        data: {
+          userId: admin.userId,
+          title: "Permintaan Bypass Baru",
+          description: `Worker ${worker.fullName} meminta bypass untuk Order #${laundryJobId}. Alasan: ${byPassNote}`,
+          url: `/dashboard/outlet-admin/bypass/${laundryJobId}`,
+        },
+      });
+    }
+
+    // Kirim notifikasi ke super admin
+    for (const admin of superAdmins) {
+      await prisma.notification.create({
+        data: {
+          userId: admin.id,
+          title: "Permintaan Bypass Baru",
+          description: `Worker ${worker.fullName} meminta bypass untuk Order #${laundryJobId} di outlet ${worker.Employee.outletId}. Alasan: ${byPassNote}`,
+          url: `/dashboard/super-admin/bypass/${laundryJobId}`,
+        },
+      });
+    }
+
+    return { data: updatedLaundryJob };
+  });
 };
 
 // Service untuk admin handle bypass request
@@ -276,7 +280,7 @@ export const handleBypassRequestService = async (
                   ? `Catatan: ${adminNote}`
                   : "Harap lengkapi data yang kurang dalam 30 menit."
               }`,
-          url: `/dashboard/laundry-jobs/${laundryJobId}`,
+          url: `/employee-dashboard/worker/${laundryJobId}`,
         },
       });
 
@@ -297,7 +301,7 @@ export const handleBypassRequestService = async (
                   userId: job.worker!.userId,
                   title: "Waktu Habis!",
                   description: `30 menit telah berlalu. Harap segera update item yang kurang untuk Order #${job.order.id}`,
-                  url: `/dashboard/laundry-jobs/${laundryJobId}`,
+                  url: `/employee-dashboard/worker/${laundryJobId}`,
                 },
               });
             }
