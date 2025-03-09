@@ -193,8 +193,8 @@ export const trackOrderService = async (req: Request, res: Response) => {
 
   if (order.orderStatus === OrderStatus.COMPLETED) {
     timeline.push({
-      stage: "COMPLETED" as unknown as TransportType,
-      driver: lastDriverName,
+      stage: "COMPLETED" as unknown as TransportType, // Cast ke TransportType agar sesuai dengan tipe
+      driver: lastDriverName, // Menggunakan driver dari last transport job
       status: "Completed",
       timestamp: order.updatedAt,
     });

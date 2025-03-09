@@ -28,6 +28,7 @@ export class PickupOrderRouter {
         this.pickupOrderController
       )
     );
+    this.router.put("/:id/status", this.pickupOrderController.updateOrderStatus);
     this.router.get(
       "/:id",
       this.pickupOrderController.getPickupOrder.bind(this.pickupOrderController)

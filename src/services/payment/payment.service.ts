@@ -96,6 +96,11 @@ export const createPaymentService = async (req: Request, res: Response): Promise
     const transactionDetails = {
       order_id: `ORDER-${order.id}-${Date.now()}`,
       gross_amount: totalPrice,
+      expiry: {
+        start_time: new Date().toISOString().slice(0, 19).replace("T", " "), 
+        unit: "minute",
+        duration: 5,
+      },
     };
 
     const customerDetails = {
@@ -177,6 +182,7 @@ export const handlePaymentNotificationService = async (req: Request, res: Respon
 
     // Verify notification from Midtrans
     const statusResponse = await snap.transaction.notification(notification);
+    console.log(statusResponse)
     const orderId = statusResponse.order_id;
     const transactionStatus = statusResponse.transaction_status;
     const fraudStatus = statusResponse.fraud_status;
@@ -252,7 +258,6 @@ export const handlePaymentNotificationService = async (req: Request, res: Respon
         },
       });
 
-      // If payment succeeded, mark order as paid and update order status
       if (paymentStatus === "SUCCEEDED") {
         await tx.order.update({
           where: { id: payment.orderId },
@@ -274,7 +279,7 @@ export const handlePaymentNotificationService = async (req: Request, res: Respon
             },
           });
 
-          const driverIds = await getIdleEmployees(+orderId, "DRIVER");
+          const driverIds = await getIdleEmployees(order!.outletId, "DRIVER");
 
           if (driverIds.length > 0) {
             await tx.notification.createMany({

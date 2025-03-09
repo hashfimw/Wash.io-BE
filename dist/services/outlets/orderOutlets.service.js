@@ -188,8 +188,8 @@ const trackOrderService = (req, res) => __awaiter(void 0, void 0, void 0, functi
     }
     if (order.orderStatus === client_1.OrderStatus.COMPLETED) {
         timeline.push({
-            stage: "COMPLETED",
-            driver: lastDriverName,
+            stage: "COMPLETED", // Cast ke TransportType agar sesuai dengan tipe
+            driver: lastDriverName, // Menggunakan driver dari last transport job
             status: "Completed",
             timestamp: order.updatedAt,
         });

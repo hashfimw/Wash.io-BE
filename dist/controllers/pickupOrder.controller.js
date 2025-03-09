@@ -14,12 +14,12 @@ const createPickupOrder_service_1 = require("../services/pickupOrder/createPicku
 const getPickupOrder_service_1 = require("../services/pickupOrder/getPickupOrder.service");
 const deletePickupOrder_service_1 = require("../services/pickupOrder/deletePickupOrder.service");
 const getPickupOrders_service_1 = require("../services/pickupOrder/getPickupOrders.service");
+const updatePickupOrderStatus_service_1 = require("../services/pickupOrder/updatePickupOrderStatus.service");
 class PickupOrderController {
     createPickupOrder(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const result = yield (0, createPickupOrder_service_1.createPickupOrderService)(req, res);
-                res.status(200).json(result);
+                yield (0, createPickupOrder_service_1.createPickupOrderService)(req, res);
             }
             catch (error) {
                 console.log(error);
@@ -48,7 +48,7 @@ class PickupOrderController {
                 console.error(error);
                 res.status(500).json({
                     success: false,
-                    message: "Terjadi kesalahan pada server."
+                    message: "Terjadi kesalahan pada server.",
                 });
             }
         });
@@ -62,6 +62,20 @@ class PickupOrderController {
             catch (error) {
                 console.log(error);
                 res.status(400);
+            }
+        });
+    }
+    updateOrderStatus(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                yield (0, updatePickupOrderStatus_service_1.updatePickupOrderStatusService)(req, res);
+            }
+            catch (error) {
+                console.error(error);
+                res.status(500).json({
+                    success: false,
+                    message: "Gagal memperbarui status pesanan",
+                });
             }
         });
     }
