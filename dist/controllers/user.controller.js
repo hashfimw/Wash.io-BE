@@ -80,8 +80,7 @@ class UserController {
     editAvatarCloud(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const result = yield (0, editAvatarCloud_service_1.editAvatarCloudService)(req, res);
-                res.status(200).json(result);
+                yield (0, editAvatarCloud_service_1.editAvatarCloudService)(req, res);
             }
             catch (error) {
                 console.log(error);
