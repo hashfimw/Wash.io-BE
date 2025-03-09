@@ -19,7 +19,7 @@ const notification_service_1 = require("../notification/notification.service");
 const finder_service_1 = require("../helpers/finder.service");
 // Initialize Midtrans client
 const snap = new midtrans_client_1.default.Snap({
-    isProduction: process.env.NODE_ENV === "production",
+    isProduction: false,
     serverKey: process.env.MIDTRANS_SERVER_KEY,
     clientKey: process.env.MIDTRANS_CLIENT_KEY,
 });
@@ -279,9 +279,7 @@ const handlePaymentNotificationService = (req, res) => __awaiter(void 0, void 0,
                     data: {
                         userId: payment.order.customerAddress.customerId,
                         title: "Pembayaran Berhasil",
-                        description: `Pembayaran untuk order #${payment.orderId} telah berhasil. ${(order === null || order === void 0 ? void 0 : order.orderStatus) == "AWAITING_PAYMENT"
-                            ? "Pesanan Anda akan segera dikirim"
-                            : ""}.`,
+                        description: `Pembayaran untuk order #${payment.orderId} telah berhasil. ${(order === null || order === void 0 ? void 0 : order.orderStatus) == "AWAITING_PAYMENT" ? "Pesanan Anda akan segera dikirim" : ""}.`,
                         url: `/order/${payment.orderId}`,
                     },
                 });
