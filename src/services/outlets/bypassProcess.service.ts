@@ -62,7 +62,6 @@ export const requestBypassService = async (req: Request, res: Response) => {
       });
     }
 
-    // Kirim notifikasi ke super admin
     for (const admin of superAdmins) {
       await prisma.notification.create({
         data: {
@@ -79,10 +78,7 @@ export const requestBypassService = async (req: Request, res: Response) => {
 };
 
 // Service untuk admin handle bypass request
-export const handleBypassRequestService = async (
-  req: Request,
-  res: Response
-) => {
+export const handleBypassRequestService = async (req: Request, res: Response) => {
   // Cek role pengguna dengan mengambil dari database
   const userId = Number(req.user?.id);
   const user = await prisma.user.findUnique({
@@ -92,13 +88,8 @@ export const handleBypassRequestService = async (
     },
   });
 
-  if (
-    !user ||
-    (user.role !== Role.SUPER_ADMIN && user.role !== Role.OUTLET_ADMIN)
-  ) {
-    throw new Error(
-      "Hanya Super Admin dan Outlet Admin yang dapat menangani permintaan bypass"
-    );
+  if (!user || (user.role !== Role.SUPER_ADMIN && user.role !== Role.OUTLET_ADMIN)) {
+    throw new Error("Hanya Super Admin dan Outlet Admin yang dapat menangani permintaan bypass");
   }
 
   const { laundryJobId, isApproved, adminNote } = req.body;
@@ -148,21 +139,13 @@ export const handleBypassRequestService = async (
       await prisma.notification.create({
         data: {
           userId: job.worker!.userId,
-          title: isApproved
-            ? "Permintaan Bypass Disetujui"
-            : "Permintaan Bypass Ditolak",
+          title: isApproved ? "Permintaan Bypass Disetujui" : "Permintaan Bypass Ditolak",
           description: isApproved
-            ? `Permintaan bypass Anda untuk Order #${
-                job.order.id
-              } telah disetujui oleh Super Admin. ${
+            ? `Permintaan bypass Anda untuk Order #${job.order.id} telah disetujui oleh Super Admin. ${
                 adminNote ? `Catatan: ${adminNote}` : ""
               }`
-            : `Permintaan bypass Anda untuk Order #${
-                job.order.id
-              } telah ditolak oleh Super Admin. ${
-                adminNote
-                  ? `Catatan: ${adminNote}`
-                  : "Harap lengkapi data yang kurang dalam 30 menit."
+            : `Permintaan bypass Anda untuk Order #${job.order.id} telah ditolak oleh Super Admin. ${
+                adminNote ? `Catatan: ${adminNote}` : "Harap lengkapi data yang kurang dalam 30 menit."
               }`,
           url: `/employee-dashboard/worker/${laundryJobId}`,
         },
@@ -264,21 +247,13 @@ export const handleBypassRequestService = async (
       await prisma.notification.create({
         data: {
           userId: job.worker!.userId,
-          title: isApproved
-            ? "Permintaan Bypass Disetujui"
-            : "Permintaan Bypass Ditolak",
+          title: isApproved ? "Permintaan Bypass Disetujui" : "Permintaan Bypass Ditolak",
           description: isApproved
-            ? `Permintaan bypass Anda untuk Order #${
-                job.order.id
-              } telah disetujui oleh Outlet Admin. ${
+            ? `Permintaan bypass Anda untuk Order #${job.order.id} telah disetujui oleh Outlet Admin. ${
                 adminNote ? `Catatan: ${adminNote}` : ""
               }`
-            : `Permintaan bypass Anda untuk Order #${
-                job.order.id
-              } telah ditolak oleh Outlet Admin. ${
-                adminNote
-                  ? `Catatan: ${adminNote}`
-                  : "Harap lengkapi data yang kurang dalam 30 menit."
+            : `Permintaan bypass Anda untuk Order #${job.order.id} telah ditolak oleh Outlet Admin. ${
+                adminNote ? `Catatan: ${adminNote}` : "Harap lengkapi data yang kurang dalam 30 menit."
               }`,
           url: `/employee-dashboard/worker/${laundryJobId}`,
         },
@@ -408,11 +383,7 @@ export const getBypassRequestsService = async (req: Request, res: Response) => {
 };
 
 // Service untuk mendapatkan permintaan bypass tertentu berdasarkan ID
-export const getBypassRequestByIdService = async (
-  req: Request,
-  res: Response,
-  id: number
-) => {
+export const getBypassRequestByIdService = async (req: Request, res: Response, id: number) => {
   const userId = Number(req.user?.id);
 
   // Dapatkan role pengguna dari database
@@ -463,17 +434,13 @@ export const getBypassRequestByIdService = async (
   } else if (user.role === Role.OUTLET_ADMIN && user.Employee?.outletId) {
     // Outlet admin hanya dapat melihat permintaan bypass dari outletnya
     if (bypassRequest.worker?.outletId !== user.Employee.outletId) {
-      throw new Error(
-        "Anda tidak memiliki izin untuk melihat permintaan bypass ini"
-      );
+      throw new Error("Anda tidak memiliki izin untuk melihat permintaan bypass ini");
     }
     return { data: bypassRequest };
   } else if (user.role === Role.WORKER) {
     // Worker hanya dapat melihat permintaan bypass mereka sendiri
     if (bypassRequest.workerId !== userId) {
-      throw new Error(
-        "Anda tidak memiliki izin untuk melihat permintaan bypass ini"
-      );
+      throw new Error("Anda tidak memiliki izin untuk melihat permintaan bypass ini");
     }
     return { data: bypassRequest };
   } else {

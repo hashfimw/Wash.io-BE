@@ -105,7 +105,7 @@ const getAllOrdersService = (req, res) => __awaiter(void 0, void 0, void 0, func
 });
 exports.getAllOrdersService = getAllOrdersService;
 const trackOrderService = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a, _b;
+    var _a, _b, _c;
     // Cek role pengguna
     const user = yield prisma_1.default.user.findUnique({
         where: { id: Number((_a = req.user) === null || _a === void 0 ? void 0 : _a.id) },
@@ -129,6 +129,8 @@ const trackOrderService = (req, res) => __awaiter(void 0, void 0, void 0, functi
         include: {
             outlet: true,
             OrderItem: true,
+            Payment: true,
+            customerAddress: true,
             LaundryJob: {
                 include: {
                     worker: {
@@ -152,6 +154,7 @@ const trackOrderService = (req, res) => __awaiter(void 0, void 0, void 0, functi
     if (!order) {
         throw new Error("Order not found or unauthorized to access this order");
     }
+    // Map LaundryJob dan TransportJob ke timeline
     const timeline = [
         ...order.LaundryJob.map((job) => {
             var _a;
@@ -171,12 +174,52 @@ const trackOrderService = (req, res) => __awaiter(void 0, void 0, void 0, functi
                 timestamp: job.createdAt,
             });
         }),
-    ].sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime());
+    ];
+    // Dapatkan TransportJob terakhir untuk driver info
+    const lastTransportJob = order.TransportJob[order.TransportJob.length - 1];
+    const lastDriverName = (_c = lastTransportJob === null || lastTransportJob === void 0 ? void 0 : lastTransportJob.driver) === null || _c === void 0 ? void 0 : _c.user.fullName;
+    // Add additional stages based on order status
+    // Membuat objek sebagai TransportType untuk menyesuaikan dengan tipe yang diharapkan
+    if (order.orderStatus === client_1.OrderStatus.RECEIVED_BY_CUSTOMER || order.orderStatus === client_1.OrderStatus.COMPLETED) {
+        timeline.push({
+            stage: "RECEIVED_BY_CUSTOMER", // Cast ke TransportType agar sesuai dengan tipe
+            driver: lastDriverName, // Menggunakan driver dari last transport job
+            status: "Completed",
+            timestamp: order.updatedAt,
+        });
+    }
+    if (order.orderStatus === client_1.OrderStatus.COMPLETED) {
+        timeline.push({
+            stage: "COMPLETED", // Cast ke TransportType agar sesuai dengan tipe
+            driver: lastDriverName, // Menggunakan driver dari last transport job
+            status: "Completed",
+            timestamp: order.updatedAt,
+        });
+    }
+    // Sort the timeline by timestamp
+    const sortedTimeline = timeline.sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime());
+    // Format payment information
+    const paymentInfo = order.Payment
+        ? {
+            isPaid: order.isPaid,
+            paymentStatus: order.Payment.paymentStatus,
+            paymentMethod: order.Payment.paymentMethod,
+            totalPrice: order.Payment.totalPrice,
+            snapRedirectURL: order.Payment.snapRedirectURL,
+        }
+        : {
+            isPaid: order.isPaid,
+            paymentStatus: null,
+            paymentMethod: null,
+            totalPrice: null,
+            snapRedirectURL: null,
+        };
     return {
         message: "Order tracking fetched successfully",
         data: {
             order,
-            timeline,
+            timeline: sortedTimeline,
+            payment: paymentInfo,
         },
     };
 });
