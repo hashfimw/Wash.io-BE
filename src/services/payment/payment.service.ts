@@ -7,15 +7,12 @@ import { Prisma } from "../../../prisma/generated/client";
 
 // Initialize Midtrans client
 const snap = new midtransClient.Snap({
-  isProduction: process.env.NODE_ENV === "production",
+  isProduction: false,
   serverKey: process.env.MIDTRANS_SERVER_KEY as string,
   clientKey: process.env.MIDTRANS_CLIENT_KEY as string,
 });
 
-export const createPaymentService = async (
-  req: Request,
-  res: Response
-): Promise<void> => {
+export const createPaymentService = async (req: Request, res: Response): Promise<void> => {
   try {
     const userId = req.user?.id;
     const { orderId } = req.body;
@@ -174,10 +171,7 @@ export const createPaymentService = async (
   }
 };
 
-export const handlePaymentNotificationService = async (
-  req: Request,
-  res: Response
-): Promise<void> => {
+export const handlePaymentNotificationService = async (req: Request, res: Response): Promise<void> => {
   try {
     const notification = req.body;
 
@@ -216,8 +210,7 @@ export const handlePaymentNotificationService = async (
       return;
     }
 
-    let paymentStatus: "PENDING" | "SUCCEEDED" | "CANCELLED" | "EXPIRED" =
-      "PENDING";
+    let paymentStatus: "PENDING" | "SUCCEEDED" | "CANCELLED" | "EXPIRED" = "PENDING";
 
     // Handle different transaction statuses
     if (transactionStatus === "capture" || transactionStatus === "settlement") {
@@ -245,8 +238,7 @@ export const handlePaymentNotificationService = async (
     });
 
     const updateData: Prisma.OrderUncheckedUpdateInput = { isPaid: true };
-    if (order!.orderStatus == "AWAITING_PAYMENT")
-      updateData.orderStatus = "WAITING_FOR_DELIVERY_DRIVER";
+    if (order!.orderStatus == "AWAITING_PAYMENT") updateData.orderStatus = "WAITING_FOR_DELIVERY_DRIVER";
 
     await prisma.$transaction(async (tx) => {
       // Update payment status
@@ -301,12 +293,8 @@ export const handlePaymentNotificationService = async (
           data: {
             userId: payment.order.customerAddress.customerId!,
             title: "Pembayaran Berhasil",
-            description: `Pembayaran untuk order #${
-              payment.orderId
-            } telah berhasil. ${
-              order?.orderStatus == "AWAITING_PAYMENT"
-                ? "Pesanan Anda akan segera dikirim"
-                : ""
+            description: `Pembayaran untuk order #${payment.orderId} telah berhasil. ${
+              order?.orderStatus == "AWAITING_PAYMENT" ? "Pesanan Anda akan segera dikirim" : ""
             }.`,
             url: `/order/${payment.orderId}`,
           },
@@ -327,10 +315,7 @@ export const handlePaymentNotificationService = async (
   }
 };
 
-export const getPaymentStatusService = async (
-  req: Request,
-  res: Response
-): Promise<void> => {
+export const getPaymentStatusService = async (req: Request, res: Response): Promise<void> => {
   try {
     const userId = req.user?.id;
     const { orderId } = req.params;
