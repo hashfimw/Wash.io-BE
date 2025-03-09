@@ -3402,10 +3402,6 @@ export namespace Prisma {
      * Filter which Users to delete
      */
     where?: UserWhereInput
-    /**
-     * Limit how many Users to delete.
-     */
-    limit?: number
   }
 
   /**
@@ -4674,10 +4670,6 @@ export namespace Prisma {
      * Filter which Employees to delete
      */
     where?: EmployeeWhereInput
-    /**
-     * Limit how many Employees to delete.
-     */
-    limit?: number
   }
 
   /**
@@ -7143,10 +7135,6 @@ export namespace Prisma {
      * Filter which Outlets to delete
      */
     where?: OutletWhereInput
-    /**
-     * Limit how many Outlets to delete.
-     */
-    limit?: number
   }
 
   /**
@@ -8395,10 +8383,6 @@ export namespace Prisma {
      * Filter which Orders to delete
      */
     where?: OrderWhereInput
-    /**
-     * Limit how many Orders to delete.
-     */
-    limit?: number
   }
 
   /**
