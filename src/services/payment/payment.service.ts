@@ -289,14 +289,16 @@ export const handlePaymentNotificationService = async (
 
           const driverIds = await getIdleEmployees(order!.outletId, "DRIVER");
 
-          await tx.notification.createMany({
-            data: createMultipleNotificationDataService(
-              driverIds,
-              "Delivery Job alert",
-              " A new delivery job is available!",
-              `/employee-dashboard/driver/${deliveryJob.id}`
-            ),
-          });
+          if (driverIds.length > 0) {
+            await tx.notification.createMany({
+              data: createMultipleNotificationDataService(
+                driverIds,
+                "Delivery Job alert",
+                " A new delivery job is available!",
+                `/employee-dashboard/driver/${deliveryJob.id}`
+              ),
+            });
+          }
         }
 
         // Create notification for user

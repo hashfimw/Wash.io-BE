@@ -27,57 +27,60 @@ const requestBypassService = (req, res) => __awaiter(void 0, void 0, void 0, fun
             Employee: true,
         },
     });
-    if (!worker || !worker.Employee) {
-        throw new Error("Data worker tidak ditemukan");
-    }
-    const updatedLaundryJob = yield prisma_1.default.laundryJob.update({
-        where: { id: Number(laundryJobId) },
-        data: {
-            isByPassRequested: true,
-            byPassNote,
-        },
-    });
-    // Cari outlet admin untuk notifikasi
-    const outletAdmins = yield prisma_1.default.employee.findMany({
-        where: {
-            outletId: worker.Employee.outletId,
-            user: {
-                role: client_1.Role.OUTLET_ADMIN,
-            },
-        },
-        include: {
-            user: true,
-        },
-    });
-    // Cari super admin untuk notifikasi
-    const superAdmins = yield prisma_1.default.user.findMany({
-        where: {
-            role: client_1.Role.SUPER_ADMIN,
-        },
-    });
-    // Kirim notifikasi ke outlet admin
-    for (const admin of outletAdmins) {
-        yield prisma_1.default.notification.create({
+    yield prisma_1.default.$transaction((prisma) => __awaiter(void 0, void 0, void 0, function* () {
+        if (!worker || !worker.Employee) {
+            throw new Error("Data worker tidak ditemukan");
+        }
+        const updatedLaundryJob = yield prisma.laundryJob.update({
+            where: { id: Number(laundryJobId) },
             data: {
-                userId: admin.userId,
-                title: "Permintaan Bypass Baru",
-                description: `Worker ${worker.fullName} meminta bypass untuk Order #${laundryJobId}. Alasan: ${byPassNote}`,
-                url: `/dashboard/outlet-admin/bypass/${laundryJobId}`,
+                workerId: worker.Employee.id,
+                isByPassRequested: true,
+                byPassNote,
+                byPassStatus: null,
             },
         });
-    }
-    // Kirim notifikasi ke super admin
-    for (const admin of superAdmins) {
-        yield prisma_1.default.notification.create({
-            data: {
-                userId: admin.id,
-                title: "Permintaan Bypass Baru",
-                description: `Worker ${worker.fullName} meminta bypass untuk Order #${laundryJobId} di outlet ${worker.Employee.outletId}. Alasan: ${byPassNote}`,
-                url: `/dashboard/super-admin/bypass/${laundryJobId}`,
+        // Cari outlet admin untuk notifikasi
+        const outletAdmins = yield prisma.employee.findMany({
+            where: {
+                outletId: worker.Employee.outletId,
+                user: {
+                    role: client_1.Role.OUTLET_ADMIN,
+                },
+            },
+            include: {
+                user: true,
             },
         });
-    }
-    return { data: updatedLaundryJob };
+        // Cari super admin untuk notifikasi
+        const superAdmins = yield prisma.user.findMany({
+            where: {
+                role: client_1.Role.SUPER_ADMIN,
+            },
+        });
+        // Kirim notifikasi ke outlet admin
+        for (const admin of outletAdmins) {
+            yield prisma.notification.create({
+                data: {
+                    userId: admin.userId,
+                    title: "Permintaan Bypass Baru",
+                    description: `Worker ${worker.fullName} meminta bypass untuk Order #${laundryJobId}. Alasan: ${byPassNote}`,
+                    url: `/dashboard/outlet-admin/bypass/${laundryJobId}`,
+                },
+            });
+        }
+        for (const admin of superAdmins) {
+            yield prisma.notification.create({
+                data: {
+                    userId: admin.id,
+                    title: "Permintaan Bypass Baru",
+                    description: `Worker ${worker.fullName} meminta bypass untuk Order #${laundryJobId} di outlet ${worker.Employee.outletId}. Alasan: ${byPassNote}`,
+                    url: `/dashboard/super-admin/bypass/${laundryJobId}`,
+                },
+            });
+        }
+        return { data: updatedLaundryJob };
+    }));
 });
 exports.requestBypassService = requestBypassService;
 // Service untuk admin handle bypass request
@@ -91,8 +94,7 @@ const handleBypassRequestService = (req, res) => __awaiter(void 0, void 0, void 
             Employee: true,
         },
     });
-    if (!user ||
-        (user.role !== client_1.Role.SUPER_ADMIN && user.role !== client_1.Role.OUTLET_ADMIN)) {
+    if (!user || (user.role !== client_1.Role.SUPER_ADMIN && user.role !== client_1.Role.OUTLET_ADMIN)) {
         throw new Error("Hanya Super Admin dan Outlet Admin yang dapat menangani permintaan bypass");
     }
     const { laundryJobId, isApproved, adminNote } = req.body;
@@ -138,14 +140,10 @@ const handleBypassRequestService = (req, res) => __awaiter(void 0, void 0, void 
             yield prisma.notification.create({
                 data: {
                     userId: job.worker.userId,
-                    title: isApproved
-                        ? "Permintaan Bypass Disetujui"
-                        : "Permintaan Bypass Ditolak",
+                    title: isApproved ? "Permintaan Bypass Disetujui" : "Permintaan Bypass Ditolak",
                     description: isApproved
                         ? `Permintaan bypass Anda untuk Order #${job.order.id} telah disetujui oleh Super Admin. ${adminNote ? `Catatan: ${adminNote}` : ""}`
-                        : `Permintaan bypass Anda untuk Order #${job.order.id} telah ditolak oleh Super Admin. ${adminNote
-                            ? `Catatan: ${adminNote}`
-                            : "Harap lengkapi data yang kurang dalam 30 menit."}`,
+                        : `Permintaan bypass Anda untuk Order #${job.order.id} telah ditolak oleh Super Admin. ${adminNote ? `Catatan: ${adminNote}` : "Harap lengkapi data yang kurang dalam 30 menit."}`,
                     url: `/employee-dashboard/worker/${laundryJobId}`,
                 },
             });
@@ -233,15 +231,11 @@ const handleBypassRequestService = (req, res) => __awaiter(void 0, void 0, void 
             yield prisma.notification.create({
                 data: {
                     userId: job.worker.userId,
-                    title: isApproved
-                        ? "Permintaan Bypass Disetujui"
-                        : "Permintaan Bypass Ditolak",
+                    title: isApproved ? "Permintaan Bypass Disetujui" : "Permintaan Bypass Ditolak",
                     description: isApproved
                         ? `Permintaan bypass Anda untuk Order #${job.order.id} telah disetujui oleh Outlet Admin. ${adminNote ? `Catatan: ${adminNote}` : ""}`
-                        : `Permintaan bypass Anda untuk Order #${job.order.id} telah ditolak oleh Outlet Admin. ${adminNote
-                            ? `Catatan: ${adminNote}`
-                            : "Harap lengkapi data yang kurang dalam 30 menit."}`,
-                    url: `/dashboard/laundry-jobs/${laundryJobId}`,
+                        : `Permintaan bypass Anda untuk Order #${job.order.id} telah ditolak oleh Outlet Admin. ${adminNote ? `Catatan: ${adminNote}` : "Harap lengkapi data yang kurang dalam 30 menit."}`,
+                    url: `/employee-dashboard/worker/${laundryJobId}`,
                 },
             });
             // Jika ditolak, tambahkan timer 30 menit
@@ -259,7 +253,7 @@ const handleBypassRequestService = (req, res) => __awaiter(void 0, void 0, void 
                                 userId: job.worker.userId,
                                 title: "Waktu Habis!",
                                 description: `30 menit telah berlalu. Harap segera update item yang kurang untuk Order #${job.order.id}`,
-                                url: `/dashboard/laundry-jobs/${laundryJobId}`,
+                                url: `/employee-dashboard/worker/${laundryJobId}`,
                             },
                         });
                     }

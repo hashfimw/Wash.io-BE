@@ -50,21 +50,34 @@ export default class AttendanceController {
     try {
       const tzo = +(req.query.tzo as string);
       const user = await findUser(req.user!.id);
-      const count = await prisma.employeeAttendance.count({ where: { employeeId: user.Employee!.id, isAttended: true } });
-      const { EmployeeAttendance, workShift, ...employee } = user.Employee!;
+      if (user.role == "DRIVER" || user.role == "WORKER") {
+        const count = await prisma.attendanceRecord.count({ where: { employeeAttendance: { employeeId: user.Employee!.id } } });
+        const { EmployeeAttendance, workShift, ...employee } = user.Employee!;
 
-      const canClockIn = EmployeeAttendance[0].canClockIn;
-      const isAttended = EmployeeAttendance[0].isAttended;
+        const canClockIn = EmployeeAttendance[0].canClockIn;
+        const isAttended = EmployeeAttendance[0].isAttended;
 
-      const shiftStart = EmployeeAttendance[0].createdAt;
+        const shiftStart = EmployeeAttendance[0].createdAt;
 
-      let isOnWorkShift = false;
-      if (tzo) {
-        const localWorkShift = shiftChecker(tzo);
-        if (user.Employee!.workShift == localWorkShift) isOnWorkShift = true;
-      } else throw { message: "Invalid time zone offset!" };
+        let isOnWorkShift = false;
+        if (tzo) {
+          const localWorkShift = shiftChecker(tzo);
+          if (user.Employee!.workShift == localWorkShift) isOnWorkShift = true;
+        } else throw { message: "Invalid time zone offset!" };
 
-      res.status(200).send({ data: { ...employee, workShift, isOnWorkShift, count, canClockIn, isAttended, shiftStart } });
+        res.status(200).send({ data: { ...employee, workShift, isOnWorkShift, count, canClockIn, isAttended, shiftStart } });
+      } else if (user.role == "OUTLET_ADMIN") {
+        const employeeIds = (await prisma.employee.findMany({ where: { outletId: user.Employee!.outletId }, select: { id: true } })).map(
+          (item) => item.id
+        );
+        const count = await prisma.attendanceRecord.count({ where: { employeeAttendance: { employeeId: { in: employeeIds } } } });
+
+        res.status(200).send({ data: { count } });
+      } else if (user.role == "SUPER_ADMIN") {
+        const count = await prisma.attendanceRecord.count();
+
+        res.status(200).send({ data: { count } });
+      }
     } catch (error) {
       console.log(error);
       res.status(400).send(error);
