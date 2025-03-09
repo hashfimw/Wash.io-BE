@@ -18,6 +18,7 @@ import TransportJobRouter from "./routers/transportJob.router";
 import LaundryJobRouter from "./routers/laundryJob.router";
 import NotificationRouter from "./routers/notification.router";
 import { OutletsRouter } from "./routers/outlets.router";
+import { ContactRouter } from "./routers/contact.router";
 
 dotenv.config();
 
@@ -46,6 +47,7 @@ const addressRouter = new AddressRouter();
 const pickupOrderRouter = new PickupOrderRouter();
 const paymentRouter = new PaymentRouter();
 const outletsRouter = new OutletsRouter();
+const contactRouter = new ContactRouter();
 
 const superAdmEmployee = new SuperAdmEmployeeRouter();
 const superAdmOutlets = new SuperAdmOutletRouter();
@@ -65,6 +67,7 @@ app.use("/api/address", addressRouter.getRouter());
 app.use("/api/pickup-orders", pickupOrderRouter.getRouter());
 app.use("/api/payments", paymentRouter.getRouter());
 app.use("/api/outlets", outletsRouter.getRouter());
+app.use("/api/contact", contactRouter.getRouter());
 
 app.use("/api/adm-employees", superAdmEmployee.getRouter());
 app.use("/api/adm-outlets", superAdmOutlets.getRouter());

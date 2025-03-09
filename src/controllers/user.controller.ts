@@ -64,9 +64,8 @@ export class UserController {
 
   async editAvatarCloud(req: Request, res: Response) {
     try {
-      const result = await editAvatarCloudService(req, res);
-
-      res.status(200).json(result);
+      await editAvatarCloudService(req, res);
+      
     } catch (error) {
       console.log(error);
       res.status(400);
