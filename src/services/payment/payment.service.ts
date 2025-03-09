@@ -76,7 +76,16 @@ export const createPaymentService = async (req: Request, res: Response): Promise
 
     // Calculate total price
     const pickupOrder = await prisma.transportJob.findFirst({ where: { orderId, transportType: "PICKUP" } });
-    const distance = pickupOrder!.distance;
+
+    if (!pickupOrder) {
+      res.status(404).json({
+        success: false,
+        message: "Pickup order tidak ditemukan.",
+      });
+      return;
+    }
+
+    const distance = pickupOrder.distance;
 
     const fare = Math.round(distance * 8000);
     const totalPrice = order.laundryPrice + fare;
@@ -97,7 +106,7 @@ export const createPaymentService = async (req: Request, res: Response): Promise
       order_id: `ORDER-${order.id}-${Date.now()}`,
       gross_amount: totalPrice,
       expiry: {
-        start_time: new Date().toISOString().slice(0, 19).replace("T", " "), 
+        start_time: new Date().toISOString().slice(0, 19).replace("T", " "),
         unit: "minute",
         duration: 5,
       },
@@ -182,7 +191,7 @@ export const handlePaymentNotificationService = async (req: Request, res: Respon
 
     // Verify notification from Midtrans
     const statusResponse = await snap.transaction.notification(notification);
-    console.log(statusResponse)
+    console.log(statusResponse);
     const orderId = statusResponse.order_id;
     const transactionStatus = statusResponse.transaction_status;
     const fraudStatus = statusResponse.fraud_status;
