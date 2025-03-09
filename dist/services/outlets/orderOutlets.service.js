@@ -29,13 +29,11 @@ const getAllOrdersService = (req, res) => __awaiter(void 0, void 0, void 0, func
     };
     // Logika filter berbeda berdasarkan role
     if ((user === null || user === void 0 ? void 0 : user.role) === client_1.Role.SUPER_ADMIN) {
-        // Super admin bisa filter berdasarkan outletId
         if (outletId) {
             whereClause.outletId = Number(outletId);
         }
     }
     else if ((user === null || user === void 0 ? void 0 : user.role) === client_1.Role.OUTLET_ADMIN) {
-        // Outlet admin hanya bisa lihat order di outlet miliknya
         if (!((_b = user.Employee) === null || _b === void 0 ? void 0 : _b.outletId)) {
             throw new Error("Outlet not found for this user");
         }
@@ -190,8 +188,8 @@ const trackOrderService = (req, res) => __awaiter(void 0, void 0, void 0, functi
     }
     if (order.orderStatus === client_1.OrderStatus.COMPLETED) {
         timeline.push({
-            stage: "COMPLETED", // Cast ke TransportType agar sesuai dengan tipe
-            driver: lastDriverName, // Menggunakan driver dari last transport job
+            stage: "COMPLETED",
+            driver: lastDriverName,
             status: "Completed",
             timestamp: order.updatedAt,
         });

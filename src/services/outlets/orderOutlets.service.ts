@@ -28,12 +28,10 @@ export const getAllOrdersService = async (req: Request, res: Response) => {
 
   // Logika filter berbeda berdasarkan role
   if (user?.role === Role.SUPER_ADMIN) {
-    // Super admin bisa filter berdasarkan outletId
     if (outletId) {
       whereClause.outletId = Number(outletId);
     }
   } else if (user?.role === Role.OUTLET_ADMIN) {
-    // Outlet admin hanya bisa lihat order di outlet miliknya
     if (!user.Employee?.outletId) {
       throw new Error("Outlet not found for this user");
     }
@@ -195,8 +193,8 @@ export const trackOrderService = async (req: Request, res: Response) => {
 
   if (order.orderStatus === OrderStatus.COMPLETED) {
     timeline.push({
-      stage: "COMPLETED" as unknown as TransportType, // Cast ke TransportType agar sesuai dengan tipe
-      driver: lastDriverName, // Menggunakan driver dari last transport job
+      stage: "COMPLETED" as unknown as TransportType,
+      driver: lastDriverName,
       status: "Completed",
       timestamp: order.updatedAt,
     });
