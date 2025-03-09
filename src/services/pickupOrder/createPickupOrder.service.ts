@@ -57,6 +57,14 @@ export const createPickupOrderService = async (req: Request, res: Response): Pro
       return;
     }
 
+    console.log(address.isPrimary);
+    
+    if (!address.isPrimary) {
+      res.status(404).json({ message: "Alamat ini bukan utama" });
+      return;
+    }
+
+
     // Cari outlet terdekat berdasarkan koordinat latitude & longitude
     const nearestOutlet = await findNearestOutlet(address.latitude, address.longitude);
 
