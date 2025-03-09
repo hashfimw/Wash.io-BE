@@ -355,7 +355,7 @@ const config = {
       "value": "prisma-client-js"
     },
     "output": {
-      "value": "C:\\Purwadhika\\Codes\\washio-be\\prisma\\generated\\client",
+      "value": "/Users/hashfimawarid/Documents/Washio-BE/prisma/generated/client",
       "fromEnvVar": null
     },
     "config": {
@@ -364,12 +364,12 @@ const config = {
     "binaryTargets": [
       {
         "fromEnvVar": null,
-        "value": "windows",
+        "value": "darwin-arm64",
         "native": true
       }
     ],
     "previewFeatures": [],
-    "sourceFilePath": "C:\\Purwadhika\\Codes\\washio-be\\prisma\\schema.prisma",
+    "sourceFilePath": "/Users/hashfimawarid/Documents/Washio-BE/prisma/schema.prisma",
     "isCustomOutput": true
   },
   "relativeEnvPaths": {
