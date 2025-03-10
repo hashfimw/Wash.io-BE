@@ -142,25 +142,40 @@ const updateEmployeeService = (req, res) => __awaiter(void 0, void 0, void 0, fu
     }
     const { id } = req.params;
     const { fullName, email, workShift, station, outletId } = req.body;
-    const employee = yield prisma_1.default.user.update({
-        where: { id: Number(id) },
-        data: {
-            fullName: fullName || undefined,
-            email: email || undefined,
-            Employee: {
-                update: {
-                    workShift: workShift || undefined,
-                    station: station || undefined,
-                    outletId: outletId || undefined,
+    yield prisma_1.default.$transaction((prisma) => __awaiter(void 0, void 0, void 0, function* () {
+        const existingEmployee = yield prisma.user.findUnique({
+            where: { id: +id },
+            include: { Employee: true },
+        });
+        const updatedEmployee = yield prisma.user.update({
+            where: { id: Number(id) },
+            data: {
+                fullName: fullName || undefined,
+                email: email || undefined,
+                Employee: {
+                    update: {
+                        workShift: workShift || undefined,
+                        station: station || undefined,
+                        outletId: outletId || undefined,
+                    },
                 },
             },
-        },
-        include: { Employee: true },
-    });
-    return {
-        message: "Employee updated successfully",
-        data: employee,
-    };
+            include: { Employee: true },
+        });
+        if (existingEmployee.Employee.workShift != updatedEmployee.Employee.workShift) {
+            const outletTzo = yield (0, attendanceScheduler_service_1.getOutletTzo)(outletId);
+            const workShiftChecker = (0, dateTime_service_1.newEmployeeAttendanceChecker)(outletTzo, workShift);
+            if (workShiftChecker) {
+                yield prisma.employeeAttendance.create({
+                    data: { canClockIn: true, employeeId: updatedEmployee.Employee.id },
+                });
+            }
+        }
+        return {
+            message: "Employee updated successfully",
+            data: updatedEmployee,
+        };
+    }));
 });
 exports.updateEmployeeService = updateEmployeeService;
 const deleteEmployeeService = (req, res) => __awaiter(void 0, void 0, void 0, function* () {

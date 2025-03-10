@@ -138,26 +138,45 @@ export const updateEmployeeService = async (req: Request, res: Response) => {
   const { id } = req.params;
   const { fullName, email, workShift, station, outletId } = req.body;
 
-  const employee = await prisma.user.update({
-    where: { id: Number(id) },
-    data: {
-      fullName: fullName || undefined,
-      email: email || undefined,
-      Employee: {
-        update: {
-          workShift: workShift || undefined,
-          station: station || undefined,
-          outletId: outletId || undefined,
+  await prisma.$transaction(async (prisma) => {
+    const existingEmployee = await prisma.user.findUnique({
+      where: { id: +id },
+      include: { Employee: true },
+    });
+
+    const updatedEmployee = await prisma.user.update({
+      where: { id: Number(id) },
+      data: {
+        fullName: fullName || undefined,
+        email: email || undefined,
+        Employee: {
+          update: {
+            workShift: workShift || undefined,
+            station: station || undefined,
+            outletId: outletId || undefined,
+          },
         },
       },
-    },
-    include: { Employee: true },
-  });
+      include: { Employee: true },
+    });
 
-  return {
-    message: "Employee updated successfully",
-    data: employee,
-  };
+    if (existingEmployee!.Employee!.workShift != updatedEmployee.Employee!.workShift) {
+      const outletTzo = await getOutletTzo(outletId);
+
+      const workShiftChecker = newEmployeeAttendanceChecker(outletTzo, workShift);
+
+      if (workShiftChecker) {
+        await prisma.employeeAttendance.create({
+          data: { canClockIn: true, employeeId: updatedEmployee.Employee!.id },
+        });
+      }
+    }
+
+    return {
+      message: "Employee updated successfully",
+      data: updatedEmployee,
+    };
+  });
 };
 
 export const deleteEmployeeService = async (req: Request, res: Response) => {
