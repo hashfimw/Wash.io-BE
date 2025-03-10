@@ -28,7 +28,7 @@ const registerService = (req, res) => __awaiter(void 0, void 0, void 0, function
             return res.status(400).send({ message: "Invalid email provided!" });
         }
         // Check if the email already exists
-        const existingUser = yield prisma_1.default.user.findFirst({
+        const existingUser = yield prisma_1.default.user.findUnique({
             where: { email },
         });
         if (existingUser) {

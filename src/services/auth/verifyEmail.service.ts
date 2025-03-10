@@ -58,10 +58,10 @@ export const verifEmailService = async (
       };
     }
 
-    await prisma.user.update({
-      where: { id: user.id },
-      data: { isVerified: true },
-    });
+    // await prisma.user.update({
+    //   where: { id: user.id },
+    //   data: { isVerified: true },
+    // });
 
     return {
       status: 200,
