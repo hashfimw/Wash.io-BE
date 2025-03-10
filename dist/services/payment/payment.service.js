@@ -82,6 +82,13 @@ const createPaymentService = (req, res) => __awaiter(void 0, void 0, void 0, fun
         }
         // Calculate total price
         const pickupOrder = yield prisma_1.default.transportJob.findFirst({ where: { orderId, transportType: "PICKUP" } });
+        if (!pickupOrder) {
+            res.status(404).json({
+                success: false,
+                message: "Pickup order tidak ditemukan.",
+            });
+            return;
+        }
         const distance = pickupOrder.distance;
         const fare = Math.round(distance * 8000);
         const totalPrice = order.laundryPrice + fare;
@@ -279,9 +286,7 @@ const handlePaymentNotificationService = (req, res) => __awaiter(void 0, void 0,
                     data: {
                         userId: payment.order.customerAddress.customerId,
                         title: "Pembayaran Berhasil",
-                        description: `Pembayaran untuk order #${payment.orderId} telah berhasil. ${(order === null || order === void 0 ? void 0 : order.orderStatus) == "AWAITING_PAYMENT"
-                            ? "Pesanan Anda akan segera dikirim"
-                            : ""}.`,
+                        description: `Pembayaran untuk order #${payment.orderId} telah berhasil. ${(order === null || order === void 0 ? void 0 : order.orderStatus) == "AWAITING_PAYMENT" ? "Pesanan Anda akan segera dikirim" : ""}.`,
                         url: `/order/${payment.orderId}`,
                     },
                 });

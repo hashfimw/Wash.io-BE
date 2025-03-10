@@ -12,11 +12,11 @@ class PaymentRouter {
     }
     initializeRoutes() {
         // Create payment (get payment token)
+        this.router.post("/notification", this.controller.handlePaymentNotification);
         this.router.post("/", verifyToken_1.verifyToken, this.controller.createPayment);
         // Get payment status
         this.router.get("/:orderId", verifyToken_1.verifyToken, this.controller.getPaymentStatus);
         // Handle notification from Midtrans (no auth - public endpoint)
-        this.router.post("/notification", this.controller.handlePaymentNotification);
     }
     getRouter() {
         return this.router;
