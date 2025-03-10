@@ -19,7 +19,7 @@ const notification_service_1 = require("../notification/notification.service");
 const finder_service_1 = require("../helpers/finder.service");
 // Initialize Midtrans client
 const snap = new midtrans_client_1.default.Snap({
-    isProduction: process.env.NODE_ENV === "production",
+    isProduction: false,
     serverKey: process.env.MIDTRANS_SERVER_KEY,
     clientKey: process.env.MIDTRANS_CLIENT_KEY,
 });

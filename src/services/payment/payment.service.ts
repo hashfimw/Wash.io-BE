@@ -7,7 +7,7 @@ import { Prisma } from "../../../prisma/generated/client";
 
 // Initialize Midtrans client
 const snap = new midtransClient.Snap({
-  isProduction: process.env.NODE_ENV === "production",
+  isProduction: false,
   serverKey: process.env.MIDTRANS_SERVER_KEY as string,
   clientKey: process.env.MIDTRANS_CLIENT_KEY as string,
 });
