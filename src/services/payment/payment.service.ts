@@ -191,6 +191,7 @@ export const handlePaymentNotificationService = async (req: Request, res: Respon
 
     // Verify notification from Midtrans
     const statusResponse = await snap.transaction.notification(notification);
+
     console.log(statusResponse);
     const orderId = statusResponse.order_id;
     const transactionStatus = statusResponse.transaction_status;

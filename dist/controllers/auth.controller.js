@@ -98,7 +98,7 @@ class AuthController {
     resetPasswordController(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const result = yield (0, resetPassword_service_1.resetPasswrodService)(req, res);
+                const result = yield (0, resetPassword_service_1.resetPasswordService)(req, res);
                 res.status(200).json(result);
             }
             catch (error) {

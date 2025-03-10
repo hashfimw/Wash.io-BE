@@ -4,7 +4,7 @@ import prisma from "../../prisma";
 import { genSalt, hash } from "bcrypt";
 import { appConfig } from "../../utils/config";
 
-export const resetPasswrodService = async (req: Request, res: Response) => {
+export const resetPasswordService = async (req: Request, res: Response) => {
   try {
     const { token, newPassword, confirmPassword } = req.body;
 
