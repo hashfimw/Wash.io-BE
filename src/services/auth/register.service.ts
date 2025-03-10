@@ -17,7 +17,7 @@ export const registerService = async (req: Request, res: Response) => {
     }
 
     // Check if the email already exists
-    const existingUser = await prisma.user.findFirst({
+    const existingUser = await prisma.user.findUnique({
       where: { email },
     });
 

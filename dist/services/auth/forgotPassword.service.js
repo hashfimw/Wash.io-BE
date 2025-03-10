@@ -35,7 +35,7 @@ const forgotPasswordService = (req, res) => __awaiter(void 0, void 0, void 0, fu
         // Generate reset token
         const payload = { id: user.id, email: user.email };
         const resetToken = (0, jsonwebtoken_1.sign)(payload, config_1.appConfig.SecretKey, { expiresIn: "1h" });
-        const resetLink = `${process.env.BASE_URL_FE}/resetPassword/${resetToken}`;
+        const resetLink = `${process.env.BASE_URL_FE}/reset-password/${resetToken}`;
         // Read email template
         const templatePath = path_1.default.join(__dirname, "../../templates", "forgotPassword.hbs");
         let templateSource;

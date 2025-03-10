@@ -25,7 +25,7 @@ export const forgotPasswordService = async (req: Request, res: Response) => {
     // Generate reset token
     const payload = { id: user.id, email: user.email };
     const resetToken = sign(payload, appConfig.SecretKey, { expiresIn: "1h" });
-    const resetLink = `${process.env.BASE_URL_FE}/resetPassword/${resetToken}`;
+    const resetLink = `${process.env.BASE_URL_FE}/reset-password/${resetToken}`;
 
     // Read email template
     const templatePath = path.join(

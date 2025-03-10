@@ -59,10 +59,10 @@ const verifEmailService = (req) => __awaiter(void 0, void 0, void 0, function* (
                 message: "Email already verified!",
             };
         }
-        yield prisma_1.default.user.update({
-            where: { id: user.id },
-            data: { isVerified: true },
-        });
+        // await prisma.user.update({
+        //   where: { id: user.id },
+        //   data: { isVerified: true },
+        // });
         return {
             status: 200,
             message: "Email successfully verified! ✅",
