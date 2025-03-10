@@ -58,6 +58,11 @@ const createPickupOrderService = (req, res) => __awaiter(void 0, void 0, void 0,
             res.status(404).json({ message: "Alamat tidak ditemukan atau bukan milik Anda." });
             return;
         }
+        console.log(address.isPrimary);
+        if (!address.isPrimary) {
+            res.status(404).json({ message: "Alamat ini bukan utama" });
+            return;
+        }
         // Cari outlet terdekat berdasarkan koordinat latitude & longitude
         const nearestOutlet = yield findNearestOutlet(address.latitude, address.longitude);
         if (!nearestOutlet) {

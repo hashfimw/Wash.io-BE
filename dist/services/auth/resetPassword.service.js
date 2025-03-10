@@ -12,12 +12,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.resetPasswrodService = void 0;
+exports.resetPasswordService = void 0;
 const jsonwebtoken_1 = require("jsonwebtoken");
 const prisma_1 = __importDefault(require("../../prisma"));
 const bcrypt_1 = require("bcrypt");
 const config_1 = require("../../utils/config");
-const resetPasswrodService = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const resetPasswordService = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { token, newPassword, confirmPassword } = req.body;
         console.log("Request body: ", req.body);
@@ -58,4 +58,4 @@ const resetPasswrodService = (req, res) => __awaiter(void 0, void 0, void 0, fun
         throw error;
     }
 });
-exports.resetPasswrodService = resetPasswrodService;
+exports.resetPasswordService = resetPasswordService;

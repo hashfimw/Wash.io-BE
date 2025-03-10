@@ -98,6 +98,11 @@ const createPaymentService = (req, res) => __awaiter(void 0, void 0, void 0, fun
         const transactionDetails = {
             order_id: `ORDER-${order.id}-${Date.now()}`,
             gross_amount: totalPrice,
+            expiry: {
+                start_time: new Date().toISOString().slice(0, 19).replace("T", " "),
+                unit: "minute",
+                duration: 5,
+            },
         };
         const customerDetails = {
             first_name: ((_b = order.customerAddress.customer) === null || _b === void 0 ? void 0 : _b.fullName) || "Customer",
@@ -174,6 +179,7 @@ const handlePaymentNotificationService = (req, res) => __awaiter(void 0, void 0,
         const notification = req.body;
         // Verify notification from Midtrans
         const statusResponse = yield snap.transaction.notification(notification);
+        console.log(statusResponse);
         const orderId = statusResponse.order_id;
         const transactionStatus = statusResponse.transaction_status;
         const fraudStatus = statusResponse.fraud_status;
@@ -242,7 +248,6 @@ const handlePaymentNotificationService = (req, res) => __awaiter(void 0, void 0,
                     paymentMethod: statusResponse.payment_type,
                 },
             });
-            // If payment succeeded, mark order as paid and update order status
             if (paymentStatus === "SUCCEEDED") {
                 yield tx.order.update({
                     where: { id: payment.orderId },
@@ -262,7 +267,7 @@ const handlePaymentNotificationService = (req, res) => __awaiter(void 0, void 0,
                             isCompleted: false,
                         },
                     });
-                    const driverIds = yield (0, finder_service_1.getIdleEmployees)(+orderId, "DRIVER");
+                    const driverIds = yield (0, finder_service_1.getIdleEmployees)(order.outletId, "DRIVER");
                     if (driverIds.length > 0) {
                         yield tx.notification.createMany({
                             data: (0, notification_service_1.createMultipleNotificationDataService)(driverIds, "Delivery Job alert", " A new delivery job is available!", `/employee-dashboard/driver/${deliveryJob.id}`),
